@@ -73,7 +73,7 @@ class UserInsertView(mixins.CreateModelMixin,
                 return response_error_400(status=STATUS_CODE_ERROR, message=message)
 
         except UserWarning:
-            raise exceptions.ParseError(message)
+            return response_error_400(status=STATUS_PHONE_NUMBER_ERROR, message=message)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

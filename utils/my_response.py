@@ -10,16 +10,15 @@ def response(code=_status.HTTP_201_CREATED, status=None, headers=None, **data):
     return Response(data, status=code, headers=headers)
 
 
-def response_success_200(status=STATUS_200_SUCCESS, headers=None, **data):
+def response_success_200(headers=None, **data):
     data['code'] = STATUS_200_SUCCESS
-    data['status'] = status
+    data['status'] = STATUS_200_SUCCESS
     return Response(data, status=_status.HTTP_200_OK, headers=headers)
 
 
-def response_error_400(status=None, headers=None, **data):
+def response_error_400(status=STATUS_400_BAD_REQUEST, headers=None, **data):
     data['code'] = STATUS_400_BAD_REQUEST
-    if status:
-        data['status'] = status
+    data['status'] = status
     return Response(data, status=_status.HTTP_400_BAD_REQUEST, headers=headers)
 
 
@@ -27,3 +26,9 @@ def response_error_500(status=STATUS_500_INTERNAL_SERVER_ERROR, headers=None, **
     data['code'] = STATUS_500_INTERNAL_SERVER_ERROR
     data['status'] = status
     return Response(data, status=_status.HTTP_500_INTERNAL_SERVER_ERROR, headers=headers)
+
+
+def response_not_found_404(status=STATUS_404_NOT_FOUND, headers=None, **data):
+    data['code'] = STATUS_404_NOT_FOUND
+    data['status'] = status
+    return Response(data, status=_status.HTTP_404_NOT_FOUND, headers=headers)

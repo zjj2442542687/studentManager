@@ -5,7 +5,7 @@ from user.models import User
 
 
 def send_code(phone_number: str) -> bool:
-    cache.set(f'{phone_number}_code', phone_number[-6:], 120)
+    cache.set(f'{phone_number}_code', phone_number[-6:], 600)
     return True
 
 
