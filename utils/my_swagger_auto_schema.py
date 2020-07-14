@@ -9,13 +9,13 @@ def request_body(properties, required=None):
     )
 
 
-def string_schema(description):
+def string_schema(description=None):
     return openapi.Schema(type=openapi.TYPE_STRING, description=description)
 
 
-def integer_schema(description):
+def integer_schema(description=None):
     return openapi.Schema(type=openapi.TYPE_INTEGER, description=description)
 
 
-def schema(type=openapi.TYPE_STRING, description=""):
+def schema(type=openapi.TYPE_STRING, description=None):
     return openapi.Schema(type=type, description=description)

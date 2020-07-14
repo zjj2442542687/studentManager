@@ -11,6 +11,7 @@ from user.models import User
 from rest_framework.response import Response
 
 from user.views.urls import judge_code, check_phone_number, check_user_name
+from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
 
@@ -63,13 +64,13 @@ class UserInsertView(mixins.CreateModelMixin,
 
             if check_user_name(user_name):
                 message = "用户名已存在"
-                return Response({"status": STATUS_USER_NAME_DUPLICATE, "message": message})
+                return response_error_400(status=STATUS_USER_NAME_DUPLICATE, message=message)
             if check_phone_number(phone_number):
                 message = "该手机号已被注册"
-                return Response({"status": STATUS_PHONE_NUMBER_DUPLICATE, "message": message})
+                return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message=message)
             if not judge_code(phone_number, request.data.get('code')):
                 message = "验证码不正确"
-                return Response({"status": STATUS_CODE_ERROR, "message": message})
+                return response_error_400(status=STATUS_CODE_ERROR, message=message)
 
         except UserWarning:
             raise exceptions.ParseError(message)
@@ -78,7 +79,7 @@ class UserInsertView(mixins.CreateModelMixin,
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response({"status": STATUS_SUCCESS, "data": serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
+        return response_success_200(data=serializer.data, headers=headers)
 
 
 def pd_phone_number(phone) -> bool:

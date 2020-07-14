@@ -8,7 +8,10 @@ from rest_framework.serializers import ModelSerializer
 from user.models import User
 from rest_framework.response import Response
 
+from user.views.urls import judge_code
 from user.views.user_insert import UserInfoSerializers
+from utils.my_response import *
+from utils.my_swagger_auto_schema import *
 
 
 class UserSelectView(mixins.ListModelMixin,
@@ -40,6 +43,10 @@ class UserSelectView(mixins.ListModelMixin,
 
     用户名或手机号加密码登录，同时优先用户名
 
+    login_phone_number:
+    手机号验证码登录
+
+    wu
     """
     queryset = User.objects.all()
     serializer_class = UserInfoSerializers
@@ -51,42 +58,37 @@ class UserSelectView(mixins.ListModelMixin,
         queryset = self.filter_queryset(self.get_queryset())
 
         serializer = self.get_serializer(queryset, many=True)
-        # Expected type 'str', got 'Dict[str, Union[int, Any]]' instead
-        return Response({"code": 200, "data": serializer.data})
+        return response_success_200(data=serializer.data)
 
     def retrieve_by_username(self, request, *args, **kwargs):
         try:
             instance = self.queryset.get(user_name=kwargs.get("user_name"))
         except User.DoesNotExist:
-            return Response({"message": "没找到"})
+            return response_error_500(message="没找到")
         except User.MultipleObjectsReturned:
-            return Response({"message": "返回多个"})
+            return response_error_500(message="返回多个")
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return response_success_200(data=serializer.data)
 
     def retrieve_by_phone_number(self, request, *args, **kwargs):
         try:
             instance = self.queryset.get(phone_number=kwargs.get("phone_number"))
         except User.DoesNotExist:
-            return Response({"message": "没找到"})
+            return response_error_500(message="没找到")
         except User.MultipleObjectsReturned:
-            return Response({"message": "返回多个"})
+            return response_error_500(message="返回多个")
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return response_success_200(data=serializer.data)
 
     @swagger_auto_schema(
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
+        request_body=request_body(
             required=["password"],
             properties={
-                'user_name': openapi.Schema(type=openapi.TYPE_STRING, description="这是用户名"),
-                'password': openapi.Schema(type=openapi.TYPE_STRING, description="密码"),
-                'phone_number': openapi.Schema(type=openapi.TYPE_STRING),
+                "user_name": string_schema('用户名'),
+                "password": string_schema('密码，必填'),
+                "phone_number": string_schema('手机号')
             }
-        ),
-        manual_parameters=[
-            openapi.Parameter('user_name', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='用户名')
-        ]
+        )
     )
     def login(self, request):
         username = request.data.get("user_name")
@@ -105,9 +107,25 @@ class UserSelectView(mixins.ListModelMixin,
             else:
                 instance = None
         except User.DoesNotExist:
-            return Response({"code": 400, "message": "用户名或密码错误"})
+            return response_error_400(message="用户名或密码错误")
         except UserWarning:
-            raise exceptions.ParseError('参数错误!!!!!!')
+            return response_error_400(message="参数错误！！！")
         serializer = self.get_serializer(instance)
         print(f'数据是：{serializer.data}')
-        return Response({"code": 200, "data": serializer.data})
+        return response_success_200(data=serializer.data)
+
+    @swagger_auto_schema(
+        request_body=request_body(
+            required=["phone_number", "code"],
+            properties={
+                "phone_number": string_schema('手机号，必填'),
+                "code": string_schema('验证码')
+            }
+        )
+    )
+    def login_phone_number(self, request):
+        phone_number = request.data.get("phone_number")
+        if not judge_code(phone_number, request.data.get('code')):
+            message = "验证码不正确"
+            return response_error_400(status=STATUS_CODE_ERROR, message=message)
+        return response_success_200(message="成功!!!!")

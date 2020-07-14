@@ -16,6 +16,7 @@ urlpatterns = [
     path("getUserByUserName/<str:user_name>", UserSelectView.as_view({'get': 'retrieve_by_username'})),
     path("getUserByPhoneNumber/<str:phone_number>", UserSelectView.as_view({'get': 'retrieve_by_phone_number'})),
     path("login", UserSelectView.as_view({'post': 'login'})),
+    path("loginPhoneNumber", UserSelectView.as_view({'post': 'login_phone_number'})),
 
     path("update/<int:pk>", UserOtherView.as_view({'patch': 'partial_update'})),
     path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
