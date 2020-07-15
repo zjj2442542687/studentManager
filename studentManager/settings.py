@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user.apps.UserConfig',
     'parent.apps.ParentConfig',
+    'student.apps.StudentConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
