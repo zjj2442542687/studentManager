@@ -21,7 +21,7 @@ class StudentInsertView(mixins.CreateModelMixin,
                         GenericViewSet):
     """
     create:
-    添加一条数据
+    添加一条学生信息数据
 
     无描述
     """
@@ -32,7 +32,7 @@ class StudentInsertView(mixins.CreateModelMixin,
 
 class StudentOtherView(ModelViewSet):
     """
-    update:修改家长表信息
+    update:修改学生表信息
 
     无描述
     """
@@ -52,9 +52,15 @@ class StudentSelectView(mixins.ListModelMixin,
                         GenericViewSet):
     """
     list:
-    获得所有家长信息
+    获得所有学生信息
 
     无描述
+
+    retrieve:
+    根据id查询学生信息
+
+    输入id
+
     """
     queryset = Student.objects.all()
     serializer_class = StudentInfoSerializers2
