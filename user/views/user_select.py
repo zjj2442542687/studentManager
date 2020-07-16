@@ -125,7 +125,11 @@ class UserSelectView(mixins.ListModelMixin,
     )
     def login_phone_number(self, request):
         phone_number = request.data.get("phone_number")
+        if not User.objects.filter(phone_number=phone_number):
+            return response_not_found_404(message="该手机号未被注册!!")
+        user = User.objects.filter(phone_number=phone_number).values()
         if not judge_code(phone_number, request.data.get('code')):
             message = "验证码不正确"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
-        return response_success_200(message="成功!!!!")
+
+        return response_success_200(message="成功!!!!", data=user[0])
