@@ -64,15 +64,12 @@ class UserInsertView(mixins.CreateModelMixin,
 
             if check_user_name(user_name):
                 message = "用户名已存在"
-                return Response({"status": STATUS_USER_NAME_DUPLICATE, "message": message})
                 return response_error_400(status=STATUS_USER_NAME_DUPLICATE, message=message)
             if check_phone_number(phone_number):
                 message = "该手机号已被注册"
-                return Response({"status": STATUS_PHONE_NUMBER_DUPLICATE, "message": message})
                 return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message=message)
             if not judge_code(phone_number, request.data.get('code')):
                 message = "验证码不正确"
-                return Response({"status": STATUS_CODE_ERROR, "message": message})
                 return response_error_400(status=STATUS_CODE_ERROR, message=message)
 
         except UserWarning:
