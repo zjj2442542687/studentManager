@@ -33,21 +33,21 @@ class UserOtherView(ModelViewSet):
         phone_number = request.data.get("phone_number")
         pk = kwargs['pk']
         if not User.objects.filter(pk=pk):
-            return response(code=STATUS_NOT_FOUND_ERROR, message="id未找到")
+            return response_not_found_404(status=STATUS_NOT_FOUND_ERROR, message="id未找到")
         # 验证手机号是否正确
         if phone_number and not pd_phone_number(phone_number):
-            return response(code=STATUS_PHONE_NUMBER_ERROR, message="手机号格式错误!!!!!!!")
+            return response_error_400(status=STATUS_PHONE_NUMBER_ERROR, message="手机号格式错误!!!!!!!")
         # 如果id一样且用户名不一样（因为前面已经判断了pk，所以pk是找得到的）
         if user_name and not User.objects.filter(pk=pk, user_name=user_name):
             # 如果这个名字已经被占用
             if User.objects.filter(user_name=user_name):
-                return response(code=STATUS_USER_NAME_DUPLICATE, message="用户名已经存在")
+                return response_error_400(status=STATUS_USER_NAME_DUPLICATE, message="用户名已经存在")
 
         # 如果id一样且手机号不一样（因为前面已经判断了pk，所以pk是找得到的）
         if phone_number and not User.objects.filter(pk=pk, phone_number=phone_number):
             # 如果这个手机号已经被占用
             if User.objects.filter(phone_number=phone_number):
-                return response(code=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已经被绑定")
+                return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已经被绑定")
 
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(message="修改成功!", data=resp.data)
@@ -80,5 +80,5 @@ class Other(APIView):
                 raise UserWarning
             send_code(phone_number)
         except UserWarning:
-            return response(code=STATUS_PHONE_NUMBER_ERROR, message='参数错误或手机号不合法')
+            return response_error_400(status=STATUS_PHONE_NUMBER_ERROR, message='参数错误或手机号不合法')
         return response_success_200(message="发送验证码成功,验证码在10分钟内有效")
