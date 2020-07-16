@@ -6,6 +6,7 @@ from rest_framework import serializers, mixins, status
 from rest_framework.serializers import ModelSerializer
 
 from parent.models import Parent
+from utils.my_response import response_success_200
 
 
 class ParentInfoSerializers(ModelSerializer):
@@ -26,3 +27,6 @@ class ParentInsertView(mixins.CreateModelMixin,
     queryset = Parent.objects.all()
     serializer_class = ParentInfoSerializers
 
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return response_success_200(data=response.data)
