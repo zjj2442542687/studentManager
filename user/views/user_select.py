@@ -64,9 +64,9 @@ class UserSelectView(mixins.ListModelMixin,
         try:
             instance = self.queryset.get(user_name=kwargs.get("user_name"))
         except User.DoesNotExist:
-            return response_success_200(message="没找到")
+            return response(code=STATUS_NOT_FOUND_ERROR, message="没找到")
         except User.MultipleObjectsReturned:
-            return response_success_200(message="返回多个")
+            return response(code=STATUS_MULTIPLE_ERROR, message="返回多个")
         serializer = self.get_serializer(instance)
         return response_success_200(data=serializer.data)
 
@@ -74,9 +74,9 @@ class UserSelectView(mixins.ListModelMixin,
         try:
             instance = self.queryset.get(phone_number=kwargs.get("phone_number"))
         except User.DoesNotExist:
-            return response_success_200(message="没找到")
+            return response(code=STATUS_NOT_FOUND_ERROR, message="没找到")
         except User.MultipleObjectsReturned:
-            return response_success_200(message="返回多个")
+            return response(code=STATUS_MULTIPLE_ERROR, message="返回多个")
         serializer = self.get_serializer(instance)
         return response_success_200(data=serializer.data)
 
@@ -109,7 +109,7 @@ class UserSelectView(mixins.ListModelMixin,
         except User.DoesNotExist:
             return response_success_200(message="用户名或密码错误")
         except UserWarning:
-            return response_success_200(message="参数错误！！！")
+            return response(code=STATUS_PARAMETER_ERROR, message="参数错误！！！")
         serializer = self.get_serializer(instance)
         print(f'数据是：{serializer.data}')
         return response_success_200(data=serializer.data)
@@ -126,10 +126,10 @@ class UserSelectView(mixins.ListModelMixin,
     def login_phone_number(self, request):
         phone_number = request.data.get("phone_number")
         if not User.objects.filter(phone_number=phone_number):
-            return response_success_200(message=f"该手机号({phone_number})未被注册!!")
+            return response(code=STATUS_NOT_FOUND_ERROR, message=f"该手机号({phone_number})未被注册!!")
         user = User.objects.filter(phone_number=phone_number).values()
         if not judge_code(phone_number, request.data.get('code')):
             message = "验证码不正确"
-            return response_success_200(status=STATUS_CODE_ERROR, message=message)
+            return response(code=STATUS_CODE_ERROR, message=message)
 
         return response_success_200(message="成功!!!!", data=user[0])

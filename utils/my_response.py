@@ -3,10 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status as _status
 
 
-def response(code=_status.HTTP_201_CREATED, status=None, headers=None, **data):
+def response(code=_status.HTTP_201_CREATED, headers=None, **data):
     data['code'] = code
-    if status:
-        data['status'] = status
     return Response(data, status=code, headers=headers)
 
 
