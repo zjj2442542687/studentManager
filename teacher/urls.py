@@ -14,6 +14,4 @@ urlpatterns = [
 
     path("update/<int:pk>", UserOtherView.as_view({'patch': 'partial_update'})),
     path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
-
-    path("sendCode", Other.as_view()),
 ]
