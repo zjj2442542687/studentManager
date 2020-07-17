@@ -24,6 +24,11 @@ class UserOtherView(ModelViewSet):
     根据id删除用户信息
 
     输入id删除
+
+    partial_update_Phone:
+    判断手机号码是否已经注册
+
+    传入手机号码
     """
     queryset = User.objects.all()
     serializer_class = UserInfoSerializers
@@ -49,6 +54,7 @@ class UserOtherView(ModelViewSet):
             if User.objects.filter(phone_number=phone_number):
                 return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已经被绑定")
 
+
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(message="修改成功!", data=resp.data)
 
@@ -56,6 +62,12 @@ class UserOtherView(ModelViewSet):
         super().destroy(request, *args, **kwargs)
 
         return response_success_200(message="删除成功!")
+
+    def partial_update_Phone(self, request, *args, **kwargs):
+        phone_number = kwargs.get("phone_number")
+        if User.objects.filter(phone_number=phone_number):
+            return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已经被注册")
+        return response_success_200(status=STATUS_PHONE_NUMBER_ERROR, message="SUCCESS")
 
 
 class Other(APIView):

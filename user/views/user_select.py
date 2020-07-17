@@ -47,6 +47,14 @@ class UserSelectView(mixins.ListModelMixin,
     手机号验证码登录
 
     wu
+
+    num_yanz:
+    登录时判断手机号是否未注册
+
+    传入手机号
+
+
+
     """
     queryset = User.objects.all()
     serializer_class = UserInfoSerializers
@@ -133,3 +141,10 @@ class UserSelectView(mixins.ListModelMixin,
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
 
         return response_success_200(message="成功!!!!", data=user[0])
+
+
+    def num_yanz(self, request, *args, **kwargs):
+        phone_number = kwargs.get("phone_number")
+        if not User.objects.filter(phone_number=phone_number):
+            return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号未注册")
+        return response_success_200(status=STATUS_PHONE_NUMBER_ERROR, message="SUCCESS")
