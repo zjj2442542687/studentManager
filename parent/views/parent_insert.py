@@ -30,8 +30,7 @@ class ParentInsertView(mixins.CreateModelMixin,
 
     @swagger_auto_schema(
         request_body=request_body(properties={
-            'user_info': string_schema('用户ID'),
-            'stu_info': string_schema('学生ID')
+            'user_info': string_schema('用户ID')
         })
     )
     def create(self, request, *args, **kwargs):
