@@ -62,12 +62,6 @@ class UserOtherView(ModelViewSet):
 
         return response_success_200(message="删除成功!!")
 
-    def partial_update_phone(self, request, *args, **kwargs):
-        phone_number = kwargs.get("phone_number")
-        if User.objects.filter(phone_number=phone_number):
-            return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已经被注册")
-        return response_success_200(status=STATUS_PHONE_NUMBER_ERROR, message="SUCCESS")
-
 
 class Other(APIView):
     """
