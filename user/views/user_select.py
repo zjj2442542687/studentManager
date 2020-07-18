@@ -49,7 +49,7 @@ class UserSelectView(mixins.ListModelMixin,
 
     wu
 
-    checkPhoneNumber:
+    check_phone_number:
     判断手机号是否注册
 
     传入手机号(0：未被注册，1：注册过）
