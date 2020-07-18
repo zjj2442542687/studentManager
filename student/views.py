@@ -51,7 +51,6 @@ class StudentOtherView(ModelViewSet):
     serializer_class = StudentInfoSerializers
 
 
-
 class StudentInfoSerializers2(ModelSerializer):
     class Meta:
         model = Student

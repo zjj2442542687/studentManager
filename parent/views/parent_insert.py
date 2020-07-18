@@ -7,6 +7,7 @@ from rest_framework.serializers import ModelSerializer
 
 from parent.models import Parent
 from utils.my_response import response_success_200
+from utils.my_swagger_auto_schema import request_body, string_schema
 
 
 class ParentInfoSerializers(ModelSerializer):
@@ -27,6 +28,12 @@ class ParentInsertView(mixins.CreateModelMixin,
     queryset = Parent.objects.all()
     serializer_class = ParentInfoSerializers
 
+    @swagger_auto_schema(
+        request_body=request_body(properties={
+            'user_info': string_schema('用户ID'),
+            'stu_info': string_schema('学生ID')
+        })
+    )
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         return response_success_200(data=response.data)
