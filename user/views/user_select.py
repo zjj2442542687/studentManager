@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 from user.views.urls import judge_code
 from user.views.user_insert import UserInfoSerializers
+from utils.my_encryption import my_encode
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
 
@@ -99,6 +100,7 @@ class UserSelectView(mixins.ListModelMixin,
         username = request.data.get("user_name")
         password = request.data.get("password")
         phone_number = request.data.get("phone_number")
+        password = my_encode(password)
 
         print(f"用户名:{username},password:{password},phone_number:{phone_number}")
         try:
@@ -139,7 +141,7 @@ class UserSelectView(mixins.ListModelMixin,
 
         return response_success_200(message="成功!!!!", data=user[0])
 
-    def checkPhoneNumber(self, request, *args, **kwargs):
+    def check_phone_number(self, request, *args, **kwargs):
         phone_number = kwargs.get("phone_number")
         print(phone_number)
         phone_number_status = 0

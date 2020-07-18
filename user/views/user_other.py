@@ -8,6 +8,7 @@ from user.models import User
 from user.views.urls import send_code
 from user.views.user_insert import pd_phone_number
 from user.views.user_select import UserInfoSerializers
+from utils.my_encryption import my_encode
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
@@ -36,6 +37,7 @@ class UserOtherView(ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         user_name = request.data.get("user_name")
         phone_number = request.data.get("phone_number")
+        password = request.data.get("password")
         pk = kwargs['pk']
         if not User.objects.filter(pk=pk):
             return response_not_found_404(status=STATUS_NOT_FOUND_ERROR, message="id未找到")
@@ -54,6 +56,9 @@ class UserOtherView(ModelViewSet):
             if User.objects.filter(phone_number=phone_number):
                 return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已经被绑定")
 
+        # 如果密码不为空就给密码加密
+        if password:
+            request.data['password'] = my_encode(password)
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(message="修改成功!", data=resp.data)
 

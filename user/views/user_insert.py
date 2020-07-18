@@ -1,5 +1,6 @@
 import re
 
+from django.core import signing
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -11,6 +12,7 @@ from user.models import User
 from rest_framework.response import Response
 
 from user.views.urls import judge_code, check_phone_number, check_user_name
+from utils.my_encryption import my_encode
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
@@ -55,7 +57,9 @@ class UserInsertView(mixins.CreateModelMixin,
         message = 'SUCCESS'
         user_name = request.data.get('user_name')
         phone_number = request.data.get("phone_number")
-        password = request.data.get('password')
+        password = request.data.get("password")
+        # 加密
+        request.data["password"] = my_encode(password)
 
         try:
             if not pd_phone_number(phone_number):

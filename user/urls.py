@@ -21,12 +21,13 @@ urlpatterns = [
     # 用户名密码登录
     path("login", UserSelectView.as_view({'post': 'login'})),
     # 判断手机号是否存在
-    path("checkPhoneNumber/<str:phone_number>", UserSelectView.as_view({'get': 'checkPhoneNumber'})),
+    path("checkPhoneNumber/<str:phone_number>", UserSelectView.as_view({'get': 'check_phone_number'})),
     # 手机号登录
     path("loginPhoneNumber", UserSelectView.as_view({'post': 'login_phone_number'})),
 
     # 根据id修改用户信息
     path("update/<int:pk>", UserOtherView.as_view({'patch': 'partial_update'})),
+    # 根据id删除用户信息
     path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
 
     path("sendCode", Other.as_view()),
