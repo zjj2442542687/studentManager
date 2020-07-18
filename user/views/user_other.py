@@ -60,7 +60,7 @@ class UserOtherView(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         super().destroy(request, *args, **kwargs)
 
-        return response_success_200(message="删除成功!")
+        return response_success_200(message="删除成功!!")
 
     def partial_update_phone(self, request, *args, **kwargs):
         phone_number = kwargs.get("phone_number")
