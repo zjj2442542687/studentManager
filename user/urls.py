@@ -19,7 +19,7 @@ urlpatterns = [
     path("loginPhoneNumberyz/<int:num>", UserSelectView.as_view({'post': 'num_yanz'})),
     path("loginPhoneNumber", UserSelectView.as_view({'post': 'login_phone_number'})),
     path("update/<int:pk>", UserOtherView.as_view({'patch': 'partial_update'})),
-    path("updatePhoneNumber/<int:num>", UserOtherView.as_view({'patch': 'partial_update_Phone'})),
+    path("updatePhoneNumber/<int:num>", UserOtherView.as_view({'patch': 'partial_update_phone'})),
     path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
 
     path("sendCode", Other.as_view()),
