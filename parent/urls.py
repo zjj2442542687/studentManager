@@ -15,6 +15,6 @@ urlpatterns = [
     path("insert", ParentInsertView.as_view({'post': 'create'})),
     path("getAll", ParentSelectView.as_view({'get': 'list'})),
     path("getParentById/<int:pk>", ParentSelectView.as_view({'get': 'retrieve'})),
-    path("update/<int:pk>", ParentOtherView.as_view({'patch': 'update'})),
-    # path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
+    # path("update/<int:pk>", ParentOtherView.as_view({'patch': 'update'})),
+    path("delete/<int:pk>", ParentOtherView.as_view({'delete': 'destroy'})),
 ]
