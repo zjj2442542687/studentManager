@@ -10,6 +10,8 @@ from rest_framework.serializers import ModelSerializer
 
 from student.models import Student
 from utils.my_response import *
+from user.models import User
+from parent.models import Parent
 from utils.my_swagger_auto_schema import *
 
 
@@ -30,6 +32,24 @@ class StudentInsertView(mixins.CreateModelMixin,
 
     queryset = Student.objects.all()
     serializer_class = StudentInfoSerializers
+
+    # @swagger_auto_schema(
+    #     request_body=request_body(properties={
+    #         'user_info': integer_schema('用户ID'),
+    #         'parent_info': integer_schema('主监护人用户ID')
+    #     })
+    # )
+    # def create(self, request, *args, **kwargs):
+    #     user_info = request.data.get('user_info')
+    #     parent_info = request.data.get('parent_info')
+    #     if not User.objects.filter(id=user_info):
+    #         message = "用户ID不存在"
+    #         return response_error_400(status=STATUS_CODE_ERROR, message=message)
+    #     if not User.objects.filter(id=parent_info):
+    #         message = "主监护人用户ID不存在"
+    #         return response_error_400(status=STATUS_CODE_ERROR, message=message)
+    #     response = super().create(request, user_info=user_info, parent_info=parent_info)
+    #     return response_success_200(data=response.data)
 
 
 class StudentOtherView(ModelViewSet):
@@ -72,7 +92,7 @@ class StudentSelectView(mixins.ListModelMixin,
 
     输入id
 
-    retrieve_by_studentname:
+    retrieve_by_student_name:
     根据名字查询学生信息
 
     输入姓名
@@ -87,7 +107,7 @@ class StudentSelectView(mixins.ListModelMixin,
         serializer = self.get_serializer(queryset, many=True)
         return response_success_200(data=serializer.data)
 
-    def retrieve_by_studentname(self, request, *args, **kwargs):
+    def retrieve_by_student_name(self, request, *args, **kwargs):
         try:
             instance = self.queryset.get(user_name=kwargs.get("student_name"))
         except Student.DoesNotExist:
