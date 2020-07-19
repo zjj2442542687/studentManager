@@ -6,7 +6,8 @@ from rest_framework import serializers, mixins, status
 from rest_framework.serializers import ModelSerializer
 
 from parent.models import Parent
-from utils.my_response import response_success_200
+from user.models import User
+from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 
 
@@ -34,5 +35,11 @@ class ParentInsertView(mixins.CreateModelMixin,
         })
     )
     def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
+        user_id = request.data.get('user_info')
+        if not User.objects.filter(id=user_id):
+            message = "用户ID不存在"
+            return response_error_400(status=STATUS_CODE_ERROR, message=message)
+        user_obj = User.objects.get(id=user_id)
+        # print(user_obj)
+        response = super().create(request, user_info=user_obj)
         return response_success_200(data=response.data)
