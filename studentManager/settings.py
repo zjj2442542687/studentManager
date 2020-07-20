@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'parent.apps.ParentConfig',
     'student.apps.StudentConfig',
     'teacher.apps.TeacherConfig',
+    'classs.apps.ClassConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
