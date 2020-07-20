@@ -12,13 +12,14 @@ from student.models import Student
 from utils.my_response import *
 from user.models import User
 from parent.models import Parent
+from parent.models import Parent
 from utils.my_swagger_auto_schema import *
 
 
 class StudentInfoSerializers(ModelSerializer):
     class Meta:
         model = Student
-        fields = ['user_info']
+        fields = ('user_info', 'parent_info')
 
 
 class StudentInsertView(mixins.CreateModelMixin,
@@ -33,23 +34,25 @@ class StudentInsertView(mixins.CreateModelMixin,
     queryset = Student.objects.all()
     serializer_class = StudentInfoSerializers
 
-    # @swagger_auto_schema(
-    #     request_body=request_body(properties={
-    #         'user_info': integer_schema('用户ID'),
-    #         'parent_info': integer_schema('主监护人用户ID')
-    #     })
-    # )
-    # def create(self, request, *args, **kwargs):
-    #     user_info = request.data.get('user_info')
-    #     parent_info = request.data.get('parent_info')
-    #     if not User.objects.filter(id=user_info):
-    #         message = "用户ID不存在"
-    #         return response_error_400(status=STATUS_CODE_ERROR, message=message)
-    #     if not User.objects.filter(id=parent_info):
-    #         message = "主监护人用户ID不存在"
-    #         return response_error_400(status=STATUS_CODE_ERROR, message=message)
-    #     response = super().create(request, user_info=user_info, parent_info=parent_info)
-    #     return response_success_200(data=response.data)
+    @swagger_auto_schema(
+        request_body=request_body(properties={
+            'user_info': integer_schema('用户ID'),
+            'parent_info': integer_schema('主监护人用户ID')
+        })
+    )
+    def create(self, request, *args, **kwargs):
+        user_info = request.data.get('user_info')
+        parent_info = request.data.get('parent_info')
+        print(user_info)
+        print(parent_info)
+        if not User.objects.filter(id=user_info):
+            message = "用户ID不存在"
+            return response_error_400(status=STATUS_CODE_ERROR, message=message)
+        if not Parent.objects.filter(id=parent_info):
+            message = "主监护人用户ID不存在"
+            return response_error_400(status=STATUS_CODE_ERROR, message=message)
+        response = super().create(request)
+        return response_success_200(data=response.data)
 
 
 class StudentOtherView(ModelViewSet):
@@ -69,6 +72,11 @@ class StudentOtherView(ModelViewSet):
     """
     queryset = Student.objects.all()
     serializer_class = StudentInfoSerializers
+
+    def destroy(self, request, *args, **kwargs):
+        super().destroy(request, *args, **kwargs)
+
+        return response_success_200(message="删除成功!!")
 
 
 class StudentInfoSerializers2(ModelSerializer):
