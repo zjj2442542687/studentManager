@@ -146,7 +146,7 @@ class UserSelectView(mixins.ListModelMixin,
         print(phone_number)
         phone_number_status = 0
         # 如果注册则它为1
-        if User.objects.filter(phone_number=phone_number):
+        if self.queryset.filter(phone_number=phone_number):
             phone_number_status = 1
         print(phone_number_status)
         return response_success_200(phone_number_status=phone_number_status,

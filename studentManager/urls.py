@@ -1,8 +1,11 @@
+from django.contrib import admin
 from django.urls import path, re_path, include
+from django.conf.urls.static import static
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-from django.contrib import admin
+
+from studentManager import settings
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -28,4 +31,8 @@ urlpatterns = [
     path('student/', include('student.urls')),
     path('teacher/', include('teacher.urls')),
     path('classs/', include('classs.urls')),
+    path('userDetails/', include('user_details.urls')),
 ]
+
+# 访问静态资源
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'student.apps.StudentConfig',
     'teacher.apps.TeacherConfig',
     'classs.apps.ClassConfig',
+    'user_details.apps.UserDetailsConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
@@ -149,3 +150,7 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with'
 )
+
+
+MEDIA_ROOT = os.path. join(BASE_DIR, 'images').replace('\\', '/')
+MEDIA_URL = '/statics/'

@@ -12,6 +12,7 @@ from user.models import User
 from rest_framework.response import Response
 
 from user.views.urls import judge_code, check_phone_number, check_user_name
+from user_details.views.urls import create_user_details
 from utils.my_encryption import my_encode
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
@@ -83,6 +84,8 @@ class UserInsertView(mixins.CreateModelMixin,
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        # 创建用户详情
+        create_user_details(serializer.data['id'])
         return response_success_200(data=serializer.data, headers=headers)
 
 
