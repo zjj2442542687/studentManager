@@ -16,6 +16,6 @@ from rest_framework.pagination import PageNumberPagination
 class MyLimitOffsetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = "size"
-    page_size_query_description = "lnt说的那种"
+    page_size_query_description = "lnt说的那种(多少个)"
     page_query_param = "index"
-    page_query_description = "lnt说的那种"
+    page_query_description = "lnt说的那种(第几页)"

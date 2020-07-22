@@ -5,6 +5,6 @@ from user.models import User
 from user_details.models import UserDetails
 
 
-def create_user_details(user_id: int) -> bool:
-    UserDetails.objects.create(user_id=user_id)
+def create_user_details(**kwargs) -> bool:
+    UserDetails.objects.create(**kwargs)
     return True

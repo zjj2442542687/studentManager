@@ -15,7 +15,7 @@ from user.views.urls import judge_code, check_phone_number, check_user_name
 from user_details.views.urls import create_user_details
 from utils.my_encryption import my_encode
 from utils.my_response import *
-from utils.my_swagger_auto_schema import request_body, string_schema
+from utils.my_swagger_auto_schema import *
 from utils.status import *
 
 
@@ -37,18 +37,14 @@ class UserInsertView(mixins.CreateModelMixin,
     serializer_class = UserInfoSerializers
 
     @swagger_auto_schema(
-        # request_body=openapi.Schema(
-        #     type=openapi.TYPE_OBJECT,
-        #     properties={
-        #         'code': openapi.Schema(type=openapi.TYPE_STRING, description="这是date"),
-        #         'username': openapi.Schema(type=openapi.TYPE_INTEGER),
-        #     }
-        # ),
         request_body=request_body(properties={
             'user_name': string_schema('用户名'),
             'password': string_schema('密码'),
             'phone_number': string_schema('手机号'),
-            'code': string_schema('验证码')
+            'role': integer_schema('角色(0, 老师), (1, 学生), (2, 家长)', default=1),
+            'code': string_schema('验证码'),
+            'name': string_schema('真实姓名'),
+            'invitation_code': string_schema('邀请码')
         })
     )
     # request_body=request_body(property={
@@ -56,9 +52,14 @@ class UserInsertView(mixins.CreateModelMixin,
     #         }),
     def create(self, request, *args, **kwargs):
         message = 'SUCCESS'
+        # 用户名
         user_name = request.data.get('user_name')
+        # 手机号
         phone_number = request.data.get("phone_number")
+        # 密码
         password = request.data.get("password")
+        # 真实姓名
+        name = request.data.get('name')
         # 加密
         request.data["password"] = my_encode(password)
 
@@ -85,7 +86,7 @@ class UserInsertView(mixins.CreateModelMixin,
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         # 创建用户详情
-        create_user_details(serializer.data['id'])
+        create_user_details(user_id=serializer.data['id'], name=name)
         return response_success_200(data=serializer.data, headers=headers)
 
 

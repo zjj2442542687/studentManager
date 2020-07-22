@@ -6,16 +6,12 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ModelViewSet
 
 from user_details.models import UserDetails
-from user_details.views.user_details_insert import UserDetailsInfoSerializers
-from user_details.views.user_details_select import UserDetailsInfoSerializers2
 from utils.my_response import *
 from rest_framework.parsers import MultiPartParser
 
-from utils.my_swagger_auto_schema import request_body, string_schema
-
 
 class UserDetailsInfoSerializersUpdate(ModelSerializer):
-    nickname = serializers.CharField(label='昵称', required=False)
+    name = serializers.CharField(label='昵称', required=False)
     avatar = serializers.ImageField(label='头像', required=False)
     sex = serializers.IntegerField(label='性别', required=False)
     birthday = serializers.DateTimeField(label='生日', required=False)
@@ -23,7 +19,7 @@ class UserDetailsInfoSerializersUpdate(ModelSerializer):
 
     class Meta:
         model = UserDetails
-        fields = ["nickname", "avatar", "sex", "birthday", "personal_signature"]
+        fields = ["name", "avatar", "sex", "birthday", "personal_signature"]
         depth = 1
 
 

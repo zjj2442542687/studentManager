@@ -3,11 +3,10 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 from user_details.models import UserDetails
 from user_details.views.my_limit_offset_pagination import MyLimitOffsetPagination
-from user_details.views.user_details_insert import UserDetailsInfoSerializers
 from utils.my_response import *
 
 
-class UserDetailsInfoSerializers2(ModelSerializer):
+class UserDetailsInfoSerializers(ModelSerializer):
     class Meta:
         model = UserDetails
         fields = "__all__"
@@ -35,7 +34,7 @@ class UserDetailsSelectView(mixins.ListModelMixin,
 
     """
     queryset = UserDetails.objects.all()
-    serializer_class = UserDetailsInfoSerializers2
+    serializer_class = UserDetailsInfoSerializers
     pagination_class = MyLimitOffsetPagination
 
     def list(self, request, *args, **kwargs):
