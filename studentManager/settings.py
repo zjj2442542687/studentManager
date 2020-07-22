@@ -151,6 +151,11 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with'
 )
 
-
-MEDIA_ROOT = os.path. join(BASE_DIR, 'images').replace('\\', '/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images').replace('\\', '/')
 MEDIA_URL = '/statics/'
+
+REST_FRAMEWORK = {  # 身份验证类
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'utils.authentication.my_authentication.MyAuthentication',
+    )
+}

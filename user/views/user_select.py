@@ -57,12 +57,8 @@ class UserSelectView(mixins.ListModelMixin,
     queryset = User.objects.all()
     serializer_class = UserInfoSerializers
 
-    # def list(self, request, *args, **kwargs):
-    #     return super().list(request, *args, **kwargs)
-
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
         serializer = self.get_serializer(queryset, many=True)
         return response_success_200(data=serializer.data)
 

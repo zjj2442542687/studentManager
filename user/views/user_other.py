@@ -62,9 +62,15 @@ class UserOtherView(ModelViewSet):
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(message="修改成功!", data=resp.data)
 
+    @swagger_auto_schema(
+        request_body=request_body(properties={
+            'user_name': string_schema('用户名'),
+        })
+    )
     def destroy(self, request, *args, **kwargs):
+        print(request.user)
+        print(request.auth)
         super().destroy(request, *args, **kwargs)
-
         return response_success_200(message="删除成功!!")
 
 
