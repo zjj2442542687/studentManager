@@ -40,6 +40,7 @@ class UserInsertView(mixins.CreateModelMixin,
         request_body=request_body(properties={
             'user_name': string_schema('用户名'),
             'password': string_schema('密码'),
+            'school': string_schema('学校'),
             'phone_number': string_schema('手机号'),
             'role': integer_schema('角色(0, 老师), (1, 学生), (2, 家长)', default=1),
             'code': string_schema('验证码'),

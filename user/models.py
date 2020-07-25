@@ -7,6 +7,7 @@ class User(models.Model):
     password = models.CharField("密码", max_length=255)
     phone_number = models.CharField("手机号", max_length=255, unique=True)
     role = models.SmallIntegerField('角色', choices=((0, '老师'), (1, '学生'), (2, '家长')), default=1)
+    school = models.CharField("学校", max_length=255, unique=True)
 
     class Meta:
         verbose_name = "用户表"
