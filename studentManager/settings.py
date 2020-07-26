@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'student.apps.StudentConfig',
     'teacher.apps.TeacherConfig',
     'classs.apps.ClassConfig',
+    'school.apps.SchoolConfig',
     'user_details.apps.UserDetailsConfig',
     'rest_framework',
     'drf_yasg',
