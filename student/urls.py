@@ -14,5 +14,5 @@ urlpatterns = [
     # path("getStudentByName/<str:student_name>", StudentInsertView.as_view({'get': 'retrieve_by_student_name'})),
     # path("update/<int:pk>", StudentOtherView.as_view({'patch': 'update'})),
     path("delete/<int:pk>", StudentOtherView.as_view({'delete': 'destroy'})),
-    path("addParent", Other.as_view({'post': 'add_parent'})),
+    # path("addParent", Other.as_view({'post': 'add_parent'})),
 ]
