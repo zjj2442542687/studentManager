@@ -12,9 +12,9 @@ urlpatterns = [
     # 获得所有用户详情信息
     path("getAll", UserDetailsSelectView.as_view({'get': 'list'})),
     # 根据id获得用户详情信息
-    path("getUserDetailsById/<int:pk>", UserDetailsSelectView.as_view({'get': 'retrieve'})),
+    # path("getUserDetailsById/<int:pk>", UserDetailsSelectView.as_view({'get': 'retrieve'})),
     # 根据用户id获得用户详情信息
-    path("getUserDetailsByUserId/<int:user_id>", UserDetailsSelectView.as_view({'get': 'retrieve_by_user_id'})),
+    # path("getUserDetailsByUserId/<int:user_id>", UserDetailsSelectView.as_view({'get': 'retrieve_by_user_id'})),
 
     # 根据用户id修改用户详情信息
     path("update/<int:user_id>", UserDetailsOtherView.as_view({'patch': 'partial_update'})),

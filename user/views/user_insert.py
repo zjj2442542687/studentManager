@@ -105,11 +105,11 @@ class UserInsertView(mixins.CreateModelMixin,
         create_user_details(user_id=serializer.data['id'], name=name)
         # 创建角色信息
         if role == 0:
-            create_teacher(user_id=serializer.data['id'])
+            create_teacher(user_id=serializer.data['id'], school=school)
         elif role == 1:
-            create_student(user_id=serializer.data['id'])
+            create_student(user_id=serializer.data['id'], school=school)
         elif role == 2:
-            create_parent(user_id=serializer.data['id'])
+            create_parent(user_id=serializer.data['id'], school=school)
         else:
             message = "角色不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
