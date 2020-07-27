@@ -6,24 +6,24 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status
 from rest_framework.serializers import ModelSerializer
 
-from classs.models import Class
+from course.models import Course
 from school.views.school_insert import SchoolInfoSerializers
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
 
 
-class ClassOtherView(ModelViewSet):
+class CourseOtherView(ModelViewSet):
     """
     destroy:
-    根据id删除班级信息
+    根据id删除课程信息
 
-    输入班级id删除
+    输入课程id删除
 
     """
-    queryset = Class.objects.all()
-    serializer_class = SchoolInfoSerializers
+    queryset = Course.objects.all()
+    serializer_course = SchoolInfoSerializers
 
     def destroy(self, request, *args, **kwargs):
         super().destroy(request, *args, **kwargs)
-        # print(Class.objects.all())
+        # print(Course.objects.all())
         return response_success_200(message="删除成功!!")
