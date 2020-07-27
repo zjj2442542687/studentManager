@@ -8,7 +8,11 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status, exceptions
 from rest_framework.serializers import ModelSerializer
 
+from teacher.models import Teacher
+from student.models import Student
+from parent.models import Parent
 from user.models import User
+from user_details.models import UserDetails
 from rest_framework.response import Response
 
 from user.views.urls import judge_code, check_phone_number, check_user_name
@@ -24,6 +28,14 @@ class UserInfoSerializers(ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+
+    name = serializers.SerializerMethodField(label='真实姓名')
+
+    def get_name(self, user):
+        try:
+            return UserDetails.objects.get(user=user).name
+        except UserDetails.DoesNotExist:
+            return None
 
 
 class UserInsertView(mixins.CreateModelMixin,
@@ -104,15 +116,21 @@ class UserInsertView(mixins.CreateModelMixin,
         # 创建用户详情
         create_user_details(user_id=serializer.data['id'], name=name)
         # 创建角色信息
+        user_id = User.objects.get(id=serializer.data['id'])
         if role == 0:
-            create_teacher(user_id=serializer.data['id'], school=school)
+            save_teacher = Teacher(user_info=user_id, school=school)
+            save_teacher.save()
         elif role == 1:
-            create_student(user_id=serializer.data['id'], school=school)
+            save_student = Student(user_info=user_id, school=school)
+            save_student.save()
         elif role == 2:
-            create_parent(user_id=serializer.data['id'], school=school)
+            save_parent = Parent(user_info=user_id, school=school)
+            save_parent.save()
         else:
             message = "角色不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
+        # data = serializer.data
+        print(f'数据是：{serializer.data}')
         return response_success_200(data=serializer.data, headers=headers)
 
 

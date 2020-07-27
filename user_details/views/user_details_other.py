@@ -29,6 +29,11 @@ class UserDetailsOtherView(ModelViewSet):
     根据用户id修改用户详情信息
 
     无描述
+
+    destroy:
+    根据id删除用户详情信息
+
+    输入用户详情id删除
     """
     queryset = UserDetails.objects.all()
     serializer_class = UserDetailsInfoSerializersUpdate
@@ -51,3 +56,8 @@ class UserDetailsOtherView(ModelViewSet):
             # return self.queryset.get(user=user_id)
             return get_object_or_404(self.queryset, user_id=user_id)
         return super().get_object()
+
+    def destroy(self, request, *args, **kwargs):
+        super().destroy(request, *args, **kwargs)
+        # print(School.objects.all())
+        return response_success_200(message="删除成功!!")
