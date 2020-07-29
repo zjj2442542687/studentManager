@@ -39,5 +39,5 @@ class ParentInsertView(mixins.CreateModelMixin,
         if not User.objects.filter(id=user_info):
             message = "用户ID不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
-        response = super().create(request)
-        return response_success_200(data=response.data)
+        resp = super().create(request)
+        return response_success_200(data=resp.data)
