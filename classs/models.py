@@ -5,8 +5,7 @@ from teacher.models import Teacher
 
 class Class(models.Model):
     teacher_info = models.ForeignKey(Teacher, verbose_name="老师信息", on_delete=models.SET_NULL, null=True)
-    grade_name = models.CharField("年级名", max_length=255)
-    class_name = models.CharField("班级名", max_length=255)
+    class_name = models.IntegerField("班级名")
 
     class Meta:
         verbose_name = '班级'
