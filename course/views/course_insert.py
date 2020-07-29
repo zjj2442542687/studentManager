@@ -28,7 +28,7 @@ class CourseInsertView(mixins.CreateModelMixin,
     """
 
     queryset = Course.objects.all()
-    serializer_course = CourseInfoSerializers
+    serializer_class = CourseInfoSerializers
 
     @swagger_auto_schema(
         request_body=request_body(properties={

@@ -30,7 +30,7 @@ class CourseSelectView(mixins.ListModelMixin,
     # 支持模糊查询
     """
     queryset = Course.objects.all()
-    serializer_course = SchoolInfoSerializers
+    serializer_class = SchoolInfoSerializers
 
     def retrieve_by_name(self, request, *args, **kwargs):
         # School.objects.filter(school_name__contains=kwargs.get("name"))
