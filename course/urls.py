@@ -14,6 +14,7 @@ urlpatterns = [
     path("getCourseById/<int:pk>", CourseSelectView.as_view({'get': 'retrieve'})),
     path("getCourseByName/<str:name>", CourseSelectView.as_view({'get': 'retrieve_by_name'})),
     # path("update/<int:pk>", ClassOtherView.as_view({'patch': 'update'})),
+
     path("delete/<int:pk>", CourseOtherView.as_view({'delete': 'destroy'})),
 
 ]
