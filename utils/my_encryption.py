@@ -35,7 +35,7 @@ def get_time(day=0, hour=0, minute=0, second=0):
 
 
 # token 10分钟后过期
-expiration_time = get_time(minute=10)
+expiration_time = get_time(hour=2)
 
 
 # 检测token是否过期(true没过期,false过期)
