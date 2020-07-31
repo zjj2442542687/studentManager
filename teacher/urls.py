@@ -11,7 +11,4 @@ urlpatterns = [
     path("getAll", TeacherSelectView.as_view({'get': 'list'})),
     path("getTeacherById/<int:pk>", TeacherSelectView.as_view({'get': 'retrieve'})),
     path("getUserByName/<str:name>", TeacherSelectView.as_view({'get': 'retrieve_by_name'})),
-
-    path("update/<int:pk>", UserOtherView.as_view({'patch': 'partial_update'})),
-    path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
 ]

@@ -3,6 +3,8 @@ from drf_yasg import openapi
 
 def request_body(properties, required=None):
     return openapi.Schema(
+        description="我是描述@!!!!",
+        title="我是标题",
         type=openapi.TYPE_OBJECT,
         required=required,
         properties=properties

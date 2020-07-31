@@ -150,7 +150,8 @@ CORS_ALLOW_HEADERS = (
     'origin',
     'utils-agent',
     'x-csrftoken',
-    'x-requested-with'
+    'x-requested-with',
+    "token"
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'images').replace('\\', '/')

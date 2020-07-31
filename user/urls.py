@@ -24,6 +24,8 @@ urlpatterns = [
     path("checkPhoneNumber/<str:phone_number>", UserSelectView.as_view({'get': 'check_phone_number'})),
     # 手机号登录
     path("loginPhoneNumber", UserSelectView.as_view({'post': 'login_phone_number'})),
+    # token登录
+    path("loginToken", UserSelectView.as_view({'post': 'login_token'})),
 
     # 根据id修改用户信息
     path("update/<int:pk>", UserOtherView.as_view({'patch': 'partial_update'})),

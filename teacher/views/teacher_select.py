@@ -7,13 +7,7 @@ from rest_framework.serializers import ModelSerializer
 
 from teacher.models import Teacher
 from teacher.views.teacher_insert import TeacherInfoSerializers
-from user.models import User
-from rest_framework.response import Response
-
-from user.views.urls import judge_code
-from user.views.user_insert import UserInfoSerializers
 from utils.my_response import *
-from utils.my_swagger_auto_schema import *
 
 
 class TeacherSelectView(mixins.ListModelMixin,

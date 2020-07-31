@@ -17,12 +17,27 @@ def my_decode(value):
 
 
 # 加密token
-def my_encode_token(username):
-    time.time()
-    # return signing.b64_encode(value.encode()).decode()
+def my_encode_token(pk):
+    # id+空格+时间进行加密
+    return signing.b64_encode((str(pk) + " " + str(time.time())).encode()).decode()
 
 
 # 解密token
 def my_decode_token(token):
-    return 0
+    strs = my_decode(token).split()
+    return [strs[0], strs[-1]]
     # return signing.b64_decode(value.encode()).decode()
+
+
+# 转换成秒
+def get_time(day=0, hour=0, minute=0, second=0):
+    return day * (60 * 60 * 24) + hour * (60 * 60) + minute * 60 + second
+
+
+# token 10分钟后过期
+expiration_time = get_time(minute=10)
+
+
+# 检测token是否过期(true没过期,false过期)
+def check_token(token) -> bool:
+    return time.time() - float(my_decode_token(token)[-1]) <= expiration_time

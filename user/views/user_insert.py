@@ -1,41 +1,19 @@
 import re
 
-from django.core import signing
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status, exceptions
 from rest_framework.serializers import ModelSerializer
 
-from teacher.models import Teacher
-from student.models import Student
-from parent.models import Parent
-from user.models import User
-from user_details.models import UserDetails
-from rest_framework.response import Response
-
 from user.views.urls import judge_code, check_phone_number, check_user_name
+from user.views.user_serializers import UserInfoSerializersAll, UserInfoSerializersLess
 from user_details.views.urls import *
 from school.models import School
-from utils.my_encryption import my_encode
+from utils.my_encryption import my_encode, my_encode_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
 from utils.status import *
-
-
-class UserInfoSerializers(ModelSerializer):
-    class Meta:
-        model = User
-        fields = "__all__"
-
-    name = serializers.SerializerMethodField(label='真实姓名')
-
-    def get_name(self, user):
-        try:
-            return UserDetails.objects.get(user=user).name
-        except UserDetails.DoesNotExist:
-            return None
 
 
 class UserInsertView(mixins.CreateModelMixin,
@@ -47,7 +25,7 @@ class UserInsertView(mixins.CreateModelMixin,
     无描述
     """
     queryset = User.objects.all()
-    serializer_class = UserInfoSerializers
+    serializer_class = UserInfoSerializersLess
 
     @swagger_auto_schema(
         request_body=request_body(properties={
@@ -58,7 +36,7 @@ class UserInsertView(mixins.CreateModelMixin,
             'role': integer_schema('角色(0, 老师), (1, 学生), (2, 家长)', default=1),
             'code': string_schema('验证码'),
             'name': string_schema('真实姓名'),
-            'invitation_code': string_schema('邀请码')
+            'invitation_code': integer_schema('邀请码')
         })
     )
     # request_body=request_body(property={
@@ -109,6 +87,7 @@ class UserInsertView(mixins.CreateModelMixin,
         except UserWarning:
             return response_success_200(status=STATUS_PHONE_NUMBER_ERROR, message=message)
 
+        request.data['token'] = "-1"
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

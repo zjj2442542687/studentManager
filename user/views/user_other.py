@@ -7,8 +7,8 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from user.models import User
 from user.views.urls import send_code
 from user.views.user_insert import pd_phone_number
-from user.views.user_select import UserInfoSerializers
-from utils.my_encryption import my_encode
+from user.views.user_serializers import UserInfoSerializersUpdate
+from utils.my_encryption import my_encode, my_decode_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
@@ -16,11 +16,6 @@ from utils.status import *
 
 class UserOtherView(ModelViewSet):
     """
-    partial_update:
-    根据id修改用户信息
-
-    无描述
-
     destroy:
     根据id删除用户信息
 
@@ -32,13 +27,29 @@ class UserOtherView(ModelViewSet):
     传入手机号码
     """
     queryset = User.objects.all()
-    serializer_class = UserInfoSerializers
+    serializer_class = UserInfoSerializersUpdate
 
+    @swagger_auto_schema(
+        operation_summary="根据id修改用户信息",
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ]
+    )
     def partial_update(self, request, *args, **kwargs):
         user_name = request.data.get("user_name")
         phone_number = request.data.get("phone_number")
         password = request.data.get("password")
         pk = kwargs['pk']
+        token = request.META.get("HTTP_TOKEN")
+
+        # 检测token是否过期
+        if request.user < 0:
+            return response_error_400(staus=STATUS_TOKEN_OVER, message="token已过期！")
+        # 如果传过来的token的用户是其它用户则显示没有权限
+        print(my_decode_token(token)[0])
+        if request.user != pk:
+            return response_error_400(staus=STATUS_TOKEN_NO_AUTHORITY, message=f"没有权限操作该用户(id={pk})！")
+        # 查看id是否存在
         if not User.objects.filter(pk=pk):
             return response_not_found_404(status=STATUS_NOT_FOUND_ERROR, message="id未找到")
         # 验证手机号是否正确

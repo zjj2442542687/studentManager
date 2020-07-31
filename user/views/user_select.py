@@ -1,4 +1,4 @@
-from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.utils import swagger_auto_schema, no_body
 from drf_yasg import openapi
 
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -9,8 +9,8 @@ from user.models import User
 from rest_framework.response import Response
 
 from user.views.urls import judge_code
-from user.views.user_insert import UserInfoSerializers
-from utils.my_encryption import my_encode
+from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersAll, UserInfoSerializersNoPassword
+from utils.my_encryption import my_encode, my_encode_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
 
@@ -18,50 +18,28 @@ from utils.my_swagger_auto_schema import *
 class UserSelectView(mixins.ListModelMixin,
                      mixins.RetrieveModelMixin,
                      GenericViewSet):
-    """
-    list:
-    获得所有用户信息
-
-    无描述
-
-    retrieve:
-    根据id查询用户信息
-
-    输入id
-
-    retrieve_by_username:
-    根据用户名查询用户信息！
-
-    传入用户名查询用户信息
-
-    retrieve_by_phone_number:
-    根据手机号查询用户信息！
-
-    传入手机号查询用户信息
-
-    login:
-    登录验证
-
-    用户名或手机号加密码登录，同时优先用户名
-
-    login_phone_number:
-    手机号验证码登录
-
-    wu
-
-    check_phone_number:
-    判断手机号是否注册
-
-    传入手机号(0：未被注册，1：注册过）
-    """
     queryset = User.objects.all()
-    serializer_class = UserInfoSerializers
+    serializer_class = UserInfoSerializersNoPassword
 
+    # @swagger_auto_schema(
+    #     operation_description="获得所有信息",
+    # )
+    @swagger_auto_schema(
+        operation_summary="获得所有信息",
+        operation_description="所有信息",
+        responses={200: UserInfoSerializersLess}
+    )
     def list(self, request, *args, **kwargs):
+        school = request.data.get("school")
+        print(f'学校是{kwargs.get("school", "没得")}{school}')
         queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = UserInfoSerializersLess(queryset, many=True)
         return response_success_200(data=serializer.data)
 
+    @swagger_auto_schema(
+        operation_summary="根据用户名查询",
+        operation_description="我是说明",
+    )
     def retrieve_by_username(self, request, *args, **kwargs):
         try:
             instance = self.queryset.get(user_name=kwargs.get("user_name"))
@@ -83,6 +61,8 @@ class UserSelectView(mixins.ListModelMixin,
         return response_success_200(data=serializer.data)
 
     @swagger_auto_schema(
+        operation_summary="登录验证",
+        operation_description="用户名或手机号加密码登录，同时优先用户名",
         request_body=request_body(
             required=["password"],
             properties={
@@ -90,7 +70,7 @@ class UserSelectView(mixins.ListModelMixin,
                 "password": string_schema('密码，必填'),
                 "phone_number": string_schema('手机号')
             }
-        )
+        ),
     )
     def login(self, request):
         username = request.data.get("user_name")
@@ -113,11 +93,47 @@ class UserSelectView(mixins.ListModelMixin,
             return response_error_400(message="用户名或密码错误")
         except UserWarning:
             return response_error_400(status=STATUS_PARAMETER_ERROR, message="参数错误！！！")
+        # 设置token
+        instance.token = my_encode_token(instance.pk)
+        # 保存
+        instance.save()
         serializer = self.get_serializer(instance)
         print(f'数据是：{serializer.data}')
         return response_success_200(data=serializer.data)
 
     @swagger_auto_schema(
+        operation_summary="token自动登录",
+        operation_description="传入token",
+        request_body=no_body,
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ]
+    )
+    def login_token(self, request):
+        token = request.META.get("HTTP_TOKEN")
+        print(f'token={token}')
+        # token = request.data.get("token")
+        if request.user < 0:
+            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        try:
+            if not token:
+                raise UserWarning
+                # return Response({"message": "有空参数"})
+            elif token == -1:
+                return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+            else:
+                instance = self.queryset.get(token=token)
+        except User.DoesNotExist:
+            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        except UserWarning:
+            return response_error_400(status=STATUS_PARAMETER_ERROR, message="参数错误！！！")
+        serializer = UserInfoSerializersLess(instance)
+        print(f'数据是：{serializer.data}')
+        return response_success_200(data=serializer.data)
+
+    @swagger_auto_schema(
+        operation_summary="手机号验证码登录",
+        operation_description="传入手机号",
         request_body=request_body(
             required=["phone_number", "code"],
             properties={
@@ -128,15 +144,32 @@ class UserSelectView(mixins.ListModelMixin,
     )
     def login_phone_number(self, request):
         phone_number = request.data.get("phone_number")
+        # 检测手机号是否被注册
         if not User.objects.filter(phone_number=phone_number):
             return response_not_found_404(status=STATUS_NOT_FOUND_ERROR, message=f"该手机号({phone_number})未被注册!!")
-        user = User.objects.filter(phone_number=phone_number).values()
+        # 检测验证码是否正确
         if not judge_code(phone_number, request.data.get('code')):
             message = "验证码不正确"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
+        # 获得用户信息
+        instance = self.queryset.get(phone_number=phone_number)
+        # 设置token
+        instance.token = my_encode_token(instance.pk)
+        # 保存
+        instance.save()
+        # c3RyaW5nIDE1OTYxNjM2ODcuNTM3NzE1
+        serializer = self.get_serializer(instance)
 
-        return response_success_200(message="成功!!!!", data=user[0])
+        print(serializer.data)
+        # 保存新的token
+        # user.token = my_encode_token(user.user_name)
+        # user.save()
+        return response_success_200(message="成功!!!!", data=serializer.data)
 
+    @swagger_auto_schema(
+        operation_summary="检测手机号是否被注册",
+        operation_description="传入手机号",
+    )
     def check_phone_number(self, request, *args, **kwargs):
         phone_number = kwargs.get("phone_number")
         print(phone_number)
