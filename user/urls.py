@@ -28,7 +28,7 @@ urlpatterns = [
     path("loginToken", UserSelectView.as_view({'post': 'login_token'})),
 
     # 根据id修改用户信息
-    path("update/<int:pk>", UserOtherView.as_view({'patch': 'partial_update'})),
+    path("update", UserOtherView.as_view({'patch': 'partial_update'})),
     # 根据id删除用户信息
     path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
 

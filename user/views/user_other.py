@@ -39,16 +39,12 @@ class UserOtherView(ModelViewSet):
         user_name = request.data.get("user_name")
         phone_number = request.data.get("phone_number")
         password = request.data.get("password")
-        pk = kwargs['pk']
-        token = request.META.get("HTTP_TOKEN")
 
         # 检测token是否过期
         if request.user < 0:
             return response_error_400(staus=STATUS_TOKEN_OVER, message="token已过期！")
-        # 如果传过来的token的用户是其它用户则显示没有权限
-        print(my_decode_token(token)[0])
-        if request.user != pk:
-            return response_error_400(staus=STATUS_TOKEN_NO_AUTHORITY, message=f"没有权限操作该用户(id={pk})！")
+        # 获得pk
+        pk = request.user
         # 查看id是否存在
         if not User.objects.filter(pk=pk):
             return response_not_found_404(status=STATUS_NOT_FOUND_ERROR, message="id未找到")
