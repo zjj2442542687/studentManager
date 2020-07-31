@@ -12,6 +12,7 @@ from utils.my_encryption import my_encode, my_decode_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
+from rest_framework.generics import get_object_or_404
 
 
 class UserOtherView(ModelViewSet):
@@ -45,6 +46,7 @@ class UserOtherView(ModelViewSet):
             return response_error_400(staus=STATUS_TOKEN_OVER, message="token已过期！")
         # 获得pk
         pk = request.user
+        print(pk)
         # 查看id是否存在
         if not User.objects.filter(pk=pk):
             return response_not_found_404(status=STATUS_NOT_FOUND_ERROR, message="id未找到")
@@ -79,6 +81,13 @@ class UserOtherView(ModelViewSet):
         print(request.auth)
         super().destroy(request, *args, **kwargs)
         return response_success_200(message="删除成功!!")
+
+    def get_object(self):
+        if self.action == "partial_update":
+            pk = self.request.user
+            # return self.queryset.get(user=user_id)
+            return get_object_or_404(self.queryset, pk=pk)
+        return super().get_object()
 
 
 class Other(APIView):
