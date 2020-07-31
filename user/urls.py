@@ -27,10 +27,10 @@ urlpatterns = [
     # token登录
     path("loginToken", UserSelectView.as_view({'post': 'login_token'})),
 
-    # 根据id修改用户信息
+    # 根据token修改用户信息
     path("update", UserOtherView.as_view({'patch': 'partial_update'})),
-    # 根据id删除用户信息
-    path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
+    # 根据token删除用户信息
+    path("delete", UserOtherView.as_view({'delete': 'destroy'})),
 
     path("sendCode", Other.as_view()),
 ]

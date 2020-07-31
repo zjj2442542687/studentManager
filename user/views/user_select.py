@@ -94,7 +94,7 @@ class UserSelectView(mixins.ListModelMixin,
         except UserWarning:
             return response_error_400(status=STATUS_PARAMETER_ERROR, message="参数错误！！！")
         # 设置token
-        instance.token = my_encode_token(instance.pk)
+        instance.token = my_encode_token(instance.pk, instance.password)
         # 保存
         instance.save()
         serializer = self.get_serializer(instance)
@@ -154,7 +154,7 @@ class UserSelectView(mixins.ListModelMixin,
         # 获得用户信息
         instance = self.queryset.get(phone_number=phone_number)
         # 设置token
-        instance.token = my_encode_token(instance.pk)
+        instance.token = my_encode_token(instance.pk, instance.password)
         # 保存
         instance.save()
         # c3RyaW5nIDE1OTYxNjM2ODcuNTM3NzE1

@@ -17,12 +17,12 @@ def my_decode(value):
 
 
 # 加密token
-def my_encode_token(pk):
-    # id+空格+时间进行加密
-    return signing.b64_encode((str(pk) + " " + str(time.time())).encode()).decode()
+def my_encode_token(pk, password):
+    # id+空格+password+空格+时间进行加密
+    return signing.b64_encode((str(pk) + " " + password + " " + str(time.time())).encode()).decode()
 
 
-# 解密token
+# 解密token(返回id和时间)
 def my_decode_token(token):
     strs = my_decode(token).split()
     return [strs[0], strs[-1]]

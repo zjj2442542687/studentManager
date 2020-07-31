@@ -18,9 +18,9 @@ from rest_framework.generics import get_object_or_404
 class UserOtherView(ModelViewSet):
     """
     destroy:
-    根据id删除用户信息
+    根据token删除用户信息
 
-    输入id删除
+    输入token删除
 
     partial_update_phone:
     判断手机号码是否已经注册
@@ -31,7 +31,7 @@ class UserOtherView(ModelViewSet):
     serializer_class = UserInfoSerializersUpdate
 
     @swagger_auto_schema(
-        operation_summary="根据id修改用户信息",
+        operation_summary="根据token修改用户信息",
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ]
@@ -72,9 +72,9 @@ class UserOtherView(ModelViewSet):
         return response_success_200(message="修改成功!", data=resp.data)
 
     @swagger_auto_schema(
-        request_body=request_body(properties={
-            'user_name': string_schema('用户名'),
-        })
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ]
     )
     def destroy(self, request, *args, **kwargs):
         print(request.user)
@@ -83,7 +83,7 @@ class UserOtherView(ModelViewSet):
         return response_success_200(message="删除成功!!")
 
     def get_object(self):
-        if self.action == "partial_update":
+        if self.action == "partial_update" or self.action == "destroy":
             pk = self.request.user
             # return self.queryset.get(user=user_id)
             return get_object_or_404(self.queryset, pk=pk)
