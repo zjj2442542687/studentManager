@@ -1,26 +1,12 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
-from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ModelViewSet
 
 from user_details.models import UserDetails
+from user_details.views.user_details_serializers import UserDetailsInfoSerializersUpdate
 from utils.my_response import *
 from rest_framework.parsers import MultiPartParser
-
-
-class UserDetailsInfoSerializersUpdate(ModelSerializer):
-    name = serializers.CharField(label='昵称', required=False)
-    avatar = serializers.ImageField(label='头像', required=False)
-    sex = serializers.IntegerField(label='性别', required=False)
-    birthday = serializers.DateTimeField(label='生日', required=False)
-    personal_signature = serializers.CharField(label='个性签名', required=False)
-
-    class Meta:
-        model = UserDetails
-        fields = ["name", "avatar", "sex", "birthday", "personal_signature"]
-        depth = 1
 
 
 class UserDetailsOtherView(ModelViewSet):
@@ -44,17 +30,24 @@ class UserDetailsOtherView(ModelViewSet):
         manual_parameters=[
             openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
                               description='性别((-1, 女), (0, 保密), (1, 男))'),
-        ]
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
+        # 检测token
+        if request.user == STATUS_TOKEN_OVER:
+            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        elif request.user == STATUS_PARAMETER_ERROR:
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!")
+
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)
 
     def get_object(self):
         if self.action == "partial_update":
-            user_id = self.kwargs.get("user_id")
+            print(self.request.user)
             # return self.queryset.get(user=user_id)
-            return get_object_or_404(self.queryset, user_id=user_id)
+            return get_object_or_404(self.queryset, user_id=self.request.user)
         return super().get_object()
 
     def destroy(self, request, *args, **kwargs):

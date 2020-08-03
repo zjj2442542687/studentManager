@@ -1,15 +1,12 @@
 from drf_yasg.utils import swagger_auto_schema, no_body
-from drf_yasg import openapi
 
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status, exceptions
-from rest_framework.serializers import ModelSerializer
+from rest_framework.viewsets import GenericViewSet
+from rest_framework import mixins
 
 from user.models import User
-from rest_framework.response import Response
 
 from user.views.urls import judge_code
-from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersAll, UserInfoSerializersNoPassword
+from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersNoPassword
 from utils.my_encryption import my_encode, my_encode_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
@@ -21,9 +18,6 @@ class UserSelectView(mixins.ListModelMixin,
     queryset = User.objects.all()
     serializer_class = UserInfoSerializersNoPassword
 
-    # @swagger_auto_schema(
-    #     operation_description="获得所有信息",
-    # )
     @swagger_auto_schema(
         operation_summary="获得所有信息",
         operation_description="所有信息",
@@ -113,21 +107,20 @@ class UserSelectView(mixins.ListModelMixin,
         token = request.META.get("HTTP_TOKEN")
         print(f'token={token}')
         # token = request.data.get("token")
-        if request.user < 0:
+        if request.user == STATUS_TOKEN_OVER:
             return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        try:
-            if not token:
-                raise UserWarning
-                # return Response({"message": "有空参数"})
-            elif token == -1:
-                return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-            else:
-                instance = self.queryset.get(token=token)
-        except User.DoesNotExist:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        except UserWarning:
-            return response_error_400(status=STATUS_PARAMETER_ERROR, message="参数错误！！！")
-        serializer = UserInfoSerializersLess(instance)
+        elif request.user == STATUS_PARAMETER_ERROR:
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!")
+
+        print("这里!!!")
+        # 获得用户信息
+        instance = self.queryset.get(pk=request.user)
+        print(instance)
+        # 刷新token
+        instance.token = my_encode_token(instance.pk, instance.password)
+        # 保存
+        instance.save()
+        serializer = self.get_serializer(instance)
         print(f'数据是：{serializer.data}')
         return response_success_200(data=serializer.data)
 

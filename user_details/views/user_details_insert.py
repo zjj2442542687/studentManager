@@ -3,7 +3,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 
 from user_details.models import UserDetails
-from user_details.views.user_details_select import UserDetailsInfoSerializers
+from user_details.views.user_details_serializers import UserDetailsInfoSerializersAll
 from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import *
 
@@ -17,7 +17,7 @@ class UserDetailsInsertView(mixins.CreateModelMixin,
     无描述
     """
     queryset = UserDetails.objects.all()
-    serializer_class = UserDetailsInfoSerializers
+    serializer_class = UserDetailsInfoSerializersAll
 
     @swagger_auto_schema(
         request_body=request_body(properties={

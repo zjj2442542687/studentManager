@@ -24,8 +24,11 @@ def my_encode_token(pk, password):
 
 # 解密token(返回id和时间)
 def my_decode_token(token):
-    strs = my_decode(token).split()
-    return [strs[0], strs[-1]]
+    try:
+        strs = my_decode(token).split()
+        return [strs[0], strs[-1]]
+    except UnicodeDecodeError:
+        return None
     # return signing.b64_decode(value.encode()).decode()
 
 
@@ -34,10 +37,12 @@ def get_time(day=0, hour=0, minute=0, second=0):
     return day * (60 * 60 * 24) + hour * (60 * 60) + minute * 60 + second
 
 
-# token 10分钟后过期
-expiration_time = get_time(hour=2)
+# token 3天后过期
+expiration_time = get_time(day=3)
 
 
 # 检测token是否过期(true没过期,false过期)
 def check_token(token) -> bool:
+    if not my_decode_token(token):
+        return False
     return time.time() - float(my_decode_token(token)[-1]) <= expiration_time
