@@ -6,27 +6,35 @@ from rest_framework import serializers, mixins, status
 from rest_framework.serializers import ModelSerializer
 
 from parent.models import Parent
+from utils.my_response import *
+from parent.views.parent_insert import ParentInfoSerializers
 
 from student.models import Student
 
 
-class StudentInfoSerializersUserInfo(ModelSerializer):
-    class Meta:
-        model = Student
-        fields = ['id', 'user_info']
-        depth = 1
-
+# class StudentInfoSerializersUserInfo(ModelSerializer):
+#     class Meta:
+#         model = Student
+#         fields = ['id', 'user_info']
+#         depth = 1
+#
+#
+# class ParentInfoSerializers2(ModelSerializer):
+#     student = serializers.SerializerMethodField(label='学生')
+#
+#     class Meta:
+#         model = Parent
+#         fields = "__all__"
+#         depth = 1
+#
+#     def get_student(self, parent):
+#         return StudentInfoSerializersUserInfo(Student.objects.filter(parent=parent), many=True).data
 
 class ParentInfoSerializers2(ModelSerializer):
-    student = serializers.SerializerMethodField(label='学生')
-
     class Meta:
         model = Parent
         fields = "__all__"
         depth = 1
-
-    def get_student(self, parent):
-        return StudentInfoSerializersUserInfo(Student.objects.filter(parent=parent), many=True).data
 
 
 class ParentSelectView(mixins.ListModelMixin,
@@ -46,6 +54,11 @@ class ParentSelectView(mixins.ListModelMixin,
     queryset = Parent.objects.all()
     serializer_class = ParentInfoSerializers2
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+        return response_success_200(data=serializer.data)
     # def list(self, request, *args, **kwargs):
     #     resp = super().list(request, *args, **kwargs)
     #     return response_success_200(data=resp.data)

@@ -25,7 +25,7 @@ class UserInsertView(mixins.CreateModelMixin,
     无描述
     """
     queryset = User.objects.all()
-    serializer_class = UserInfoSerializersLess
+    serializer_class = UserInfoSerializersAll
 
     @swagger_auto_schema(
         request_body=request_body(properties={

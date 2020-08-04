@@ -10,6 +10,13 @@ from teacher.views.teacher_insert import TeacherInfoSerializers
 from utils.my_response import *
 
 
+class TeacherInfoSerializers2(ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = "__all__"
+        depth = 1
+
+
 class TeacherSelectView(mixins.ListModelMixin,
                         mixins.RetrieveModelMixin,
                         GenericViewSet):
@@ -30,13 +37,13 @@ class TeacherSelectView(mixins.ListModelMixin,
     传入名字！
     """
     queryset = Teacher.objects.all()
-    serializer_class = TeacherInfoSerializers
+    serializer_class = TeacherInfoSerializers2
 
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.filter_queryset(self.get_queryset())
-    #
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return response_success_200(data=serializer.data)
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+        return response_success_200(data=serializer.data)
 
     def retrieve_by_name(self, request, *args, **kwargs):
         try:
