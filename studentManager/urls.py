@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-
+from django.views.generic import RedirectView
 from studentManager import settings
 
 schema_view = get_schema_view(
@@ -31,9 +31,11 @@ urlpatterns = [
     path('student/', include('student.urls')),
     path('teacher/', include('teacher.urls')),
     path('classs/', include('classs.urls')),
-    path('userDetails/', include('user_details.urls')),
+    # path('userDetails/', include('user_details.urls')),
     path('school/', include('school.urls')),
     path('course/', include('course.urls')),
+    path('FileInfo/', include('FileInfo.urls')),
+    path('', RedirectView.as_view(url='swagger')),
 ]
 
 # 访问静态资源

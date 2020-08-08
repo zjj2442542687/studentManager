@@ -24,8 +24,6 @@ class UserSelectView(mixins.ListModelMixin,
         responses={200: UserInfoSerializersLess}
     )
     def list(self, request, *args, **kwargs):
-        school = request.data.get("school")
-        print(f'学校是{kwargs.get("school", "没得")}{school}')
         queryset = self.filter_queryset(self.get_queryset())
         serializer = UserInfoSerializersLess(queryset, many=True)
         return response_success_200(data=serializer.data)

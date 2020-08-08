@@ -19,7 +19,7 @@ urlpatterns = [
     path("getUserDetailsByToken", UserDetailsSelectView.as_view({'get': 'retrieve_by_token'})),
 
     # 根据token修改用户详情信息
-    path("update", UserDetailsOtherView.as_view({'patch': 'partial_update'})),
+    path("FileInfo", UserDetailsOtherView.as_view({'patch': 'partial_update'})),
 
     # 根据用户id删除用户详情信息
     path("delete/<int:pk>", UserDetailsOtherView.as_view({'delete': 'destroy'})),

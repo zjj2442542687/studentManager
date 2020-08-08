@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
 from teacher.views.teacher_insert import TeacherInfoSerializers
-from user.models import User
+from teacher.models import Teacher
 
 
 class TeacherOtherView(ModelViewSet):
@@ -16,5 +16,5 @@ class TeacherOtherView(ModelViewSet):
 
     输入id删除
     """
-    queryset = User.objects.all()
+    queryset = Teacher.objects.all()
     serializer_class = TeacherInfoSerializers

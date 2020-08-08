@@ -12,7 +12,8 @@ urlpatterns = [
     path("getAll", StudentSelectView.as_view({'get': 'list'})),
     path("getStudentById/<int:pk>", StudentSelectView.as_view({'get': 'retrieve'})),
     # path("getStudentByName/<str:student_name>", StudentInsertView.as_view({'get': 'retrieve_by_student_name'})),
-    # path("update/<int:pk>", StudentOtherView.as_view({'patch': 'update'})),
+    # path("FileInfo/<int:pk>", StudentOtherView.as_view({'patch': 'FileInfo'})),
     path("delete/<int:pk>", StudentOtherView.as_view({'delete': 'destroy'})),
-    # path("addParent", Other.as_view({'post': 'add_parent'})),
+    path("insert_file", StudentInsertFileView.as_view({'post': 'Batch_import'})),
+    path("addParent", Other.as_view({'post': 'add_parent'})),
 ]

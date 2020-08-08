@@ -1,17 +1,25 @@
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework.serializers import ModelSerializer
 
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status, exceptions
 
 from classs.models import Class
-from school.views.school_insert import SchoolInfoSerializers
+from classs.views.class_insert import ClassInfoSerializers
 from utils.my_response import *
 
 
+class ClassInfoSerializers2(ModelSerializer):
+    class Meta:
+        model = Class
+        fields = "__all__"
+        depth = 1
+
+
 class ClassSelectView(mixins.ListModelMixin,
-                        mixins.RetrieveModelMixin,
-                        GenericViewSet):
+                      mixins.RetrieveModelMixin,
+                      GenericViewSet):
     """
     list:
     获得所有班级信息
@@ -30,7 +38,13 @@ class ClassSelectView(mixins.ListModelMixin,
     # 支持模糊查询
     """
     queryset = Class.objects.all()
-    serializer_class = SchoolInfoSerializers
+    serializer_class = ClassInfoSerializers2
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+        return response_success_200(data=serializer.data)
 
     def retrieve_by_name(self, request, *args, **kwargs):
         # School.objects.filter(school_name__contains=kwargs.get("name"))

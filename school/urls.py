@@ -13,6 +13,6 @@ urlpatterns = [
     path("getAll", SchoolSelectView.as_view({'get': 'list'})),
     path("getSchoolById/<int:pk>", SchoolSelectView.as_view({'get': 'retrieve'})),
     path("getSchoolByName/<str:name>", SchoolSelectView.as_view({'get': 'retrieve_by_name'})),
-    path("update/<int:pk>", SchoolOtherView.as_view({'patch': 'update'})),
+    path("FileInfo/<int:pk>", SchoolOtherView.as_view({'patch': 'FileInfo'})),
     path("delete/<int:pk>", SchoolOtherView.as_view({'delete': 'destroy'})),
 ]

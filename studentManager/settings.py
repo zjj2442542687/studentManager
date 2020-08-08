@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'school.apps.SchoolConfig',
     'user_details.apps.UserDetailsConfig',
     'course.apps.CourseConfig',
+    'FileInfo.apps.FileInfoConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
@@ -154,8 +155,9 @@ CORS_ALLOW_HEADERS = (
     "token"
 )
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'images').replace('\\', '/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 MEDIA_URL = '/statics/'
+
 
 REST_FRAMEWORK = {  # 身份验证类
     'DEFAULT_AUTHENTICATION_CLASSES': (

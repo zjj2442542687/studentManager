@@ -24,17 +24,5 @@ class ParentOtherView(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         super().destroy(request, *args, **kwargs)
-        # pk = request.data.get('pk')
-        # if not User.objects.filter(id=pk):
-        #     message = "找不到改家长ID信息"
-        #     return response_error_400(status=STATUS_CODE_ERROR, message=message)
-        # print(pk)
         # print(Parent.objects.all())
-        # print(Parent.objects.get(id=pk))
-        # Parent.objects.get(id=pk).delete()
-        # print(Parent.objects.filter(id=pk))
-        # print(Parent.objects.get(user_info_id=pk))
-        # Parent.objects.filter(user_info_id=pk).delete()
-        # Parent.objects.filter(id=pk).delete()
-        print(Parent.objects.all())
         return response_success_200(message="删除成功!!")

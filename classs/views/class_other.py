@@ -1,15 +1,6 @@
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from rest_framework.response import Response
-
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status
-from rest_framework.serializers import ModelSerializer
-
 from classs.models import Class
-from school.views.school_insert import SchoolInfoSerializers
-from utils.my_response import *
-from utils.my_swagger_auto_schema import *
+from classs.views.class_select import ClassInfoSerializers2
 
 
 class ClassOtherView(ModelViewSet):
@@ -21,9 +12,8 @@ class ClassOtherView(ModelViewSet):
 
     """
     queryset = Class.objects.all()
-    serializer_class = SchoolInfoSerializers
+    serializer_class = ClassInfoSerializers2
 
     def destroy(self, request, *args, **kwargs):
-        super().destroy(request, *args, **kwargs)
-        # print(Class.objects.all())
-        return response_success_200(message="删除成功!!")
+        # print("11111")
+        return super().destroy(request, *args, **kwargs)

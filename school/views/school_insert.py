@@ -28,12 +28,13 @@ class SchoolInsertView(mixins.CreateModelMixin,
     queryset = School.objects.all()
     serializer_class = SchoolInfoSerializers
 
-    @swagger_auto_schema(
-        request_body=request_body(properties={
-            'school_name': string_schema('学校名'),
-            'school_code': integer_schema('学校验证码')
-        })
-    )
+    # @swagger_auto_schema(
+    #     request_body=request_body(properties={
+    #         # 'school_name': string_schema('学校名'),
+    #         # 'school_info':string_schema('学校名'),
+    #         # 'school_date':('学校名'),
+    #     })
+    # )
     def create(self, request, *args, **kwargs):
         response = super().create(request)
         return response_success_200(data=response.data)

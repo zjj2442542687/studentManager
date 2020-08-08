@@ -41,16 +41,17 @@ class TeacherSelectView(mixins.ListModelMixin,
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
         serializer = self.get_serializer(queryset, many=True)
         return response_success_200(data=serializer.data)
 
     def retrieve_by_name(self, request, *args, **kwargs):
         try:
-            instance = self.queryset.get(name=kwargs.get("name"))
+            # instance = self.queryset.get(name=kwargs.get("name"))
+            # instance = self.queryset.get(name__contains=kwargs.get("name"))
+            instance = self.queryset.filter(name__contains=kwargs.get("name"))
         except Teacher.DoesNotExist:
             return response_error_500(message="没找到")
         except Teacher.MultipleObjectsReturned:
             return response_error_500(message="返回多个")
-        serializer = self.get_serializer(instance)
+        serializer = self.get_serializer(instance, many=True)
         return response_success_200(data=serializer.data)

@@ -19,7 +19,7 @@ class SchoolOtherView(ModelViewSet):
 
     输入学校id删除
 
-    update:
+    FileInfo:
     根据id修改学校信息
 
     无描述
@@ -27,7 +27,3 @@ class SchoolOtherView(ModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolInfoSerializers
 
-    def destroy(self, request, *args, **kwargs):
-        super().destroy(request, *args, **kwargs)
-        print(School.objects.all())
-        return response_success_200(message="删除成功!!")

@@ -35,6 +35,7 @@ class UserDetailsOtherView(ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         # 检测token
+        # print(request.data.get('avatar'))
         if request.user == STATUS_TOKEN_OVER:
             return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
         elif request.user == STATUS_PARAMETER_ERROR:
