@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status, exceptions
 
 from course.models import Course
-from school.views.school_insert import SchoolInfoSerializers
+from course.views.course_insert import CourseInfoSerializers
 from utils.my_response import *
 
 
@@ -30,7 +30,7 @@ class CourseSelectView(mixins.ListModelMixin,
     # 支持模糊查询
     """
     queryset = Course.objects.all()
-    serializer_class = SchoolInfoSerializers
+    serializer_class = CourseInfoSerializers
 
     def retrieve_by_name(self, request, *args, **kwargs):
         # School.objects.filter(school_name__contains=kwargs.get("name"))

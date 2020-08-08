@@ -64,7 +64,7 @@ class StudentInsertView(mixins.CreateModelMixin,
         phone_number = request.data.get('phone_number')
         user: User = User.objects.get_or_create(user_name=card, password=phone_number, phone_number=phone_number,
                                                 role=0)
-        request.data["user_info"] = user.id
+        request.data["user_info"] = User.objects.get(user_name=card).id
 
         resp = super().create(request)
         return response_success_200(data=resp.data)
@@ -134,6 +134,8 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             # 添加用户信息
             card = dt[1]['身份证']
             phone_number = dt[1]['手机号码(选填)']
+            # print(phone_number)
+            # print(dt[1]['班级'])
             if not dt[1]['学生姓名'] or not dt[1]['性别'] or not card or not dt[1]['班级'] or not dt[1]['学校名称']:
                 continue
             User.objects.get_or_create(user_name=card, password=phone_number,

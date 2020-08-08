@@ -9,7 +9,7 @@ from user.views.user_other import UserOtherView, Other
 from user.views.user_select import UserSelectView
 
 urlpatterns = [
-    path("insert", UserInsertView.as_view({'post': 'create'})),
+    # path("insert", UserInsertView.as_view({'post': 'create'})),
 
     path("getAll", UserSelectView.as_view({'get': 'list'})),
     # 根据id获得用户信息

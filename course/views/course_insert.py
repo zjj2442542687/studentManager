@@ -15,7 +15,7 @@ from utils.my_swagger_auto_schema import request_body, string_schema
 class CourseInfoSerializers(ModelSerializer):
     class Meta:
         model = Course
-        fields = ['teacher_info', 'class_info']
+        fields = "__all__"
 
 
 class CourseInsertView(mixins.CreateModelMixin,
@@ -48,7 +48,7 @@ class CourseInsertView(mixins.CreateModelMixin,
             message = "老师ID信息不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
         if not Class.objects.filter(id=class_info):
-            message = "老师ID信息不存在"
+            message = "班级ID信息不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
         response = super().create(request)
         return response_success_200(data=response.data)

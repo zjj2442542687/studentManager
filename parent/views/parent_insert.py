@@ -53,7 +53,7 @@ class ParentInsertView(mixins.CreateModelMixin,
         phone_number = request.data.get('phone_number')
         user: User = User.objects.get_or_create(user_name=card, password=phone_number, phone_number=phone_number,
                                                 role=0)
-        request.data["user_info"] = user.id
+        request.data["user_info"] = User.objects.get(user_name=card).id
         resp = super().create(request)
         return response_success_200(data=resp.data)
 
