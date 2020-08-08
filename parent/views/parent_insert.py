@@ -51,8 +51,13 @@ class ParentInsertView(mixins.CreateModelMixin,
         # 添加用户信息
         card = request.data.get('card')
         phone_number = request.data.get('phone_number')
+        # 用户检查是否存在
+        if User.objects.get(user_name=card):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+        if User.objects.get(phone_number=phone_number):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
         user: User = User.objects.get_or_create(user_name=card, password=phone_number, phone_number=phone_number,
-                                                role=0)
+                                                role=2)
         request.data["user_info"] = User.objects.get(user_name=card).id
         resp = super().create(request)
         return response_success_200(data=resp.data)
@@ -94,7 +99,7 @@ class ParentInsertView(mixins.CreateModelMixin,
 
 
 class ParentInsertFileView(mixins.CreateModelMixin,
-                            GenericViewSet):
+                           GenericViewSet):
     """
     Batch_import：
     Excel文件批量导入数据
@@ -123,6 +128,10 @@ class ParentInsertFileView(mixins.CreateModelMixin,
             phone_number = dt[1]['手机号码']
             if not dt[1]['家长姓名'] or not dt[1]['性别'] or not card:
                 continue
+            if User.objects.get(user_name=card):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+            if User.objects.get(phone_number=phone_number):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
             # print(dt[1]['班级'])
             User.objects.get_or_create(user_name=card, password=phone_number,
                                        phone_number=phone_number, role=2)

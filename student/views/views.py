@@ -53,17 +53,26 @@ class StudentInsertView(mixins.CreateModelMixin,
     def create(self, request, *args, **kwargs):
         school = request.data.get('school')
         # 学校关联
+        if not School.objects.get(school_name=school):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
         school_id = School.objects.get(school_name=school).id
         request.data["school"] = school_id
         # 班级关联
         clazz = request.data.get('clazz')
+        if not Class.objects.get(class_name=clazz):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="班级不存在")
         clazz_id = Class.objects.get(class_name=clazz).id
         request.data["clazz"] = clazz_id
         # 添加用户信息
         card = request.data.get('card')
         phone_number = request.data.get('phone_number')
+        # 用户检查是否存在
+        if User.objects.get(user_name=card):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+        if User.objects.get(phone_number=phone_number):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
         user: User = User.objects.get_or_create(user_name=card, password=phone_number, phone_number=phone_number,
-                                                role=0)
+                                                role=1)
         request.data["user_info"] = User.objects.get(user_name=card).id
 
         resp = super().create(request)
@@ -134,10 +143,18 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             # 添加用户信息
             card = dt[1]['身份证']
             phone_number = dt[1]['手机号码(选填)']
-            # print(phone_number)
-            # print(dt[1]['班级'])
+            school = dt[1]['学校名称']
+            class_name = dt[1]['班级']
             if not dt[1]['学生姓名'] or not dt[1]['性别'] or not card or not dt[1]['班级'] or not dt[1]['学校名称']:
                 continue
+            if User.objects.get(user_name=card):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+            if User.objects.get(phone_number=phone_number):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
+            if not School.objects.get(school_name=school):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
+            if not Class.objects.get(class_name=class_name):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
             User.objects.get_or_create(user_name=card, password=phone_number,
                                        phone_number=phone_number, role=1)
             Student.objects.create(

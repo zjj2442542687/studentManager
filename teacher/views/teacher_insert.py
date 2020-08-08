@@ -7,7 +7,7 @@ from rest_framework import serializers, mixins, status, exceptions
 from rest_framework.serializers import ModelSerializer
 
 from teacher.models import Teacher
-from utils.my_response import response_error_400, response_success_200
+from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
 from school.models import School
 from user.models import User
@@ -39,6 +39,8 @@ class TeacherInsertView(mixins.CreateModelMixin,
     serializer_class = TeacherInfoSerializers
 
     @swagger_auto_schema(
+        operation_summary="教师信息单独导入",
+        operation_description="说明：身份证和电话号码必须未注册过，学校必须存在",
         request_body=request_body(properties={
             'name': string_schema('老师姓名'),
             'sex': string_schema('性别'),
@@ -56,11 +58,18 @@ class TeacherInsertView(mixins.CreateModelMixin,
     def create(self, request, *args, **kwargs):
         # 学校关联
         school = request.data.get('school')
+        if not School.objects.get(school_name=school):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
         school_id = School.objects.get(school_name=school).id
         request.data["school"] = school_id
         # 添加用户信息
         card = request.data.get('card')
         phone_number = request.data.get('phone_number')
+        # 用户检查是否存在
+        if User.objects.get(user_name=card):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+        if User.objects.get(phone_number=phone_number):
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
         User.objects.get_or_create(user_name=card, password=phone_number, phone_number=phone_number,
                                    role=0)
         request.data["user_info"] = User.objects.get(user_name=card).id
@@ -104,6 +113,13 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
             # 添加用户信息
             card = dt[1]['身份证']
             phone_number = dt[1]['手机号码']
+            school = dt[1]['学校名称']
+            if User.objects.get(user_name=card):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+            if User.objects.get(phone_number=phone_number):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
+            if not School.objects.get(school_name=school):
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
             User.objects.get_or_create(user_name=card, password=phone_number,
                                        phone_number=phone_number, role=0)
             Teacher.objects.create(
@@ -114,7 +130,7 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
                 title=dt[1]['职称'],
                 identity=dt[1]['身份'],
                 phone_number=phone_number,
-                school=School.objects.get(school_name=dt[1]['学校名称']),
+                school=School.objects.get(school_name=school),
                 birthday=dt[1]['生日'],
                 qq=dt[1]['QQ(选填)'],
                 email=dt[1]['邮箱(选填)'],
