@@ -58,7 +58,7 @@ class TeacherInsertView(mixins.CreateModelMixin,
     def create(self, request, *args, **kwargs):
         # 学校关联
         school = request.data.get('school')
-        if not School.objects.get(school_name=school):
+        if not School.objects.filter(school_name=school):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
         school_id = School.objects.get(school_name=school).id
         request.data["school"] = school_id
@@ -66,9 +66,9 @@ class TeacherInsertView(mixins.CreateModelMixin,
         card = request.data.get('card')
         phone_number = request.data.get('phone_number')
         # 用户检查是否存在
-        if User.objects.get(user_name=card):
+        if User.objects.filter(user_name=card):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
-        if User.objects.get(phone_number=phone_number):
+        if User.objects.filter(phone_number=phone_number):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
         User.objects.get_or_create(user_name=card, password=phone_number, phone_number=phone_number,
                                    role=0)
@@ -114,11 +114,11 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
             card = dt[1]['身份证']
             phone_number = dt[1]['手机号码']
             school = dt[1]['学校名称']
-            if User.objects.get(user_name=card):
+            if User.objects.filter(user_name=card):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
-            if User.objects.get(phone_number=phone_number):
+            if User.objects.filter(phone_number=phone_number):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
-            if not School.objects.get(school_name=school):
+            if not School.objects.filter(school_name=school):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
             User.objects.get_or_create(user_name=card, password=phone_number,
                                        phone_number=phone_number, role=0)

@@ -67,9 +67,9 @@ class StudentInsertView(mixins.CreateModelMixin,
         card = request.data.get('card')
         phone_number = request.data.get('phone_number')
         # 用户检查是否存在
-        if User.objects.get(user_name=card):
+        if User.objects.filter(user_name=card):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
-        if User.objects.get(phone_number=phone_number):
+        if User.objects.filter(phone_number=phone_number):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
         user: User = User.objects.get_or_create(user_name=card, password=phone_number, phone_number=phone_number,
                                                 role=1)
@@ -147,13 +147,16 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             class_name = dt[1]['班级']
             if not dt[1]['学生姓名'] or not dt[1]['性别'] or not card or not dt[1]['班级'] or not dt[1]['学校名称']:
                 continue
-            if User.objects.get(user_name=card):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
-            if User.objects.get(phone_number=phone_number):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
-            if not School.objects.get(school_name=school):
+            if User.objects.filter(user_name=card):
+                message = card+"身份证已经注册存在"
+                print(message)
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message=message)
+            if User.objects.filter(phone_number=phone_number):
+                message = card + phone_number
+                return response_error_400(staus=STATUS_PARAMETER_ERROR, message=message)
+            if not School.objects.filter(school_name=school):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
-            if not Class.objects.get(class_name=class_name):
+            if not Class.objects.filter(class_name=class_name):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
             User.objects.get_or_create(user_name=card, password=phone_number,
                                        phone_number=phone_number, role=1)
