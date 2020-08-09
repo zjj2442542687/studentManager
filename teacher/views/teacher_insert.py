@@ -189,14 +189,14 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
             if not pd_card(card):
                 message += ",身份证格式错误"
             elif card in card_list:
-                message += f",身份证和{card_list.index(card)}重复"
+                message += f",身份证和{card_list.index(card) + 1}重复"
             elif User.objects.filter(user_name=card):
                 message += ",身份证已经注册存在"
 
             if not pd_phone_number(phone_number):
                 message += ",手机号格式错误"
             elif phone_number in phone_list:
-                message += f",手机号和{phone_list.index(phone_number)}重复"
+                message += f",手机号和{phone_list.index(phone_number) + 1}重复"
             elif User.objects.filter(phone_number=phone_number):
                 message += ",手机号码已经注册存在"
 
