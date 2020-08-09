@@ -169,6 +169,8 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
         excel_data = pd.read_excel(file, header=0, dtype='str')
         test = []
         i = 0
+        card_list = []
+        phone_list = []
         for dt in excel_data.iterrows():
             i = i + 1
             message = ""
@@ -183,13 +185,18 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
             phone_number = dt[1]['手机号码']
             school = dt[1]['学校名称']
 
+            # 判断身份证的格式是否存在
             if not pd_card(card):
                 message += ",身份证格式错误"
+            elif card in card_list:
+                message += f",身份证和{card_list.index(card)}重复"
             elif User.objects.filter(user_name=card):
                 message += ",身份证已经注册存在"
 
             if not pd_phone_number(phone_number):
                 message += ",手机号格式错误"
+            elif phone_number in phone_list:
+                message += f",手机号和{phone_list.index(phone_number)}重复"
             elif User.objects.filter(phone_number=phone_number):
                 message += ",手机号码已经注册存在"
 
@@ -198,6 +205,8 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
 
             if message:
                 test.append({"index": i, "message": message})
+            card_list.append(card)
+            phone_list.append(phone_number)
         return response_success_200(message="成功!!!!", err_data=test, length=len(test))
 
 
