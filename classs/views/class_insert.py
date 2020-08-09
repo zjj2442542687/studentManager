@@ -5,6 +5,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status
 from rest_framework.serializers import ModelSerializer
 
+from school.models import School
 from teacher.models import Teacher
 from classs.models import Class
 from utils.my_response import *
@@ -14,7 +15,7 @@ from utils.my_swagger_auto_schema import request_body, string_schema, integer_sc
 class ClassInfoSerializers(ModelSerializer):
     class Meta:
         model = Class
-        fields = ['teacher_info', 'class_name']
+        fields = "__all__"
 
 
 class ClassInsertView(mixins.CreateModelMixin,
@@ -32,6 +33,7 @@ class ClassInsertView(mixins.CreateModelMixin,
     @swagger_auto_schema(
         request_body=request_body(properties={
             'teacher_info': integer_schema('辅导员ID'),
+            'school_info': integer_schema('学校ID'),
             'class_name': string_schema('班级名')
         })
     )
@@ -44,6 +46,10 @@ class ClassInsertView(mixins.CreateModelMixin,
         teacher_info = request.data.get('teacher_info')
         if not Teacher.objects.filter(id=teacher_info):
             message = "老师ID信息不存在"
+            return response_error_400(status=STATUS_CODE_ERROR, message=message)
+        school_info = request.data.get('school_info')
+        if not School.objects.filter(id=school_info):
+            message = "学校ID信息不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
         resp = super().create(request)
         return response_success_200(data=resp.data)
