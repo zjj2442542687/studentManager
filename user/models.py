@@ -6,7 +6,9 @@ class User(models.Model):
     user_name = models.CharField("用户名", max_length=255, unique=True)
     password = models.CharField("密码", max_length=255, default="123456")
     phone_number = models.CharField("手机号", max_length=255, unique=True)
-    role = models.SmallIntegerField('角色', choices=((0, '老师'), (1, '学生'), (2, '家长')), default=1)
+    role = models.SmallIntegerField('角色',
+                                    choices=((-2, '学校管理员'), (-1, '超级管理员'), (0, '老师'), (1, '学生'), (2, '家长'), (3, '辅导员')),
+                                    default=1)
     # role_id = models.IntegerField('',)
     # name = models.CharField("昵称", max_length=255, null=True)
     avatar = models.ImageField("头像", upload_to="userDetails/avatar", null=True)
