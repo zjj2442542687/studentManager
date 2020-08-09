@@ -21,7 +21,6 @@ class SchoolInsertView(mixins.CreateModelMixin,
     """
     create:
     添加一条数据
-
     无描述
     """
 
@@ -36,5 +35,5 @@ class SchoolInsertView(mixins.CreateModelMixin,
     #     })
     # )
     def create(self, request, *args, **kwargs):
-        response = super().create(request)
-        return response_success_200(data=response.data)
+        resp = super().create(request)
+        return response_success_200(data=resp.data)

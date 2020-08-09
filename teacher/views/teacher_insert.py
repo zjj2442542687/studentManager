@@ -1,3 +1,5 @@
+import re
+
 import xlrd
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema, no_body
@@ -7,6 +9,7 @@ from rest_framework import serializers, mixins, status, exceptions
 from rest_framework.serializers import ModelSerializer
 
 from teacher.models import Teacher
+from user.views.user_insert import pd_phone_number
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
 from school.models import School
@@ -85,11 +88,6 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
     添加一条数据
 
     无描述
-
-    Batch_import：
-    Excel文件批量导入数据
-
-    无描述
     """
     queryset = Teacher.objects.all()
     serializer_class = TeacherInfoSerializers
@@ -104,7 +102,7 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
                               description='文件 ')
         ],
     )
-    def Batch_import(self, request, *args, **kwargs):
+    def batch_import(self, request, *args, **kwargs):
         file = request.FILES.get("file")
         excel_data = pd.read_excel(file, header=0, dtype='str')
         for dt in excel_data.iterrows():
@@ -156,3 +154,84 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
         # print(sheet.nrows)
         # print(sheet.ncols)
         return response_success_200(message="成功!!!!")
+
+    @swagger_auto_schema(
+        operation_summary="教师信息批量导入的验证",
+        operation_description="传入文件ID",
+        request_body=no_body,
+        manual_parameters=[
+            openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE,
+                              description='文件 ')
+        ],
+    )
+    def batch_import_test(self, request, *args, **kwargs):
+        file = request.FILES.get("file")
+        excel_data = pd.read_excel(file, header=0, dtype='str')
+        test = []
+        i = 0
+        for dt in excel_data.iterrows():
+            i = i + 1
+            message = ""
+            print(dt[1]['老师姓名'])
+            print(dt[1]['性别'])
+            print(dt[1]['身份证'])
+            print(dt[1]['学校名称'])
+            if not dt[1]['老师姓名'] or not dt[1]['性别'] or not dt[1]['身份证'] or not dt[1]['学校名称']:
+                message += "有空字段"
+            # 添加用户信息
+            card = dt[1]['身份证']
+            phone_number = dt[1]['手机号码']
+            school = dt[1]['学校名称']
+
+            if not pd_card(card):
+                message += ",身份证格式错误"
+            elif User.objects.filter(user_name=card):
+                message += ",身份证已经注册存在"
+
+            if not pd_phone_number(phone_number):
+                message += ",手机号格式错误"
+            elif User.objects.filter(phone_number=phone_number):
+                message += ",手机号码已经注册存在"
+
+            if not School.objects.filter(school_name=school):
+                message += ",学校不存在"
+
+            if message:
+                test.append({"index": i, "message": message})
+        return response_success_200(message="成功!!!!", err_data=test, length=len(test))
+
+
+def pd_card(card: str) -> bool:
+    if not card:
+        return False
+    regular_expression = "(^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|" + \
+                         "(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}$)"
+    # 假设18位身份证号码: 41000119910101123
+
+    matches = re.match(regular_expression, card) is not None
+
+    print(matches)
+    print(len(card))
+
+    # 判断第18位校验值
+    if matches:
+        if len(card) == 18:
+            try:
+                # 前十七位加权因子
+                id_card_wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
+                # 这是除以11后，可能产生的11位余数对应的验证码
+                id_card_y = ["1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"]
+                s = 0
+                for i in range(0, len(id_card_wi)):
+                    current = int(card[i:i + 1])
+                    s += current * id_card_wi[i]
+                id_card_last = card[-1:]
+                id_card_mod = s % 11
+                if id_card_y[id_card_mod].upper() == id_card_last.upper():
+                    return True
+                else:
+                    return False
+            except exceptions:
+                print("cwu")
+                return False
+    return matches

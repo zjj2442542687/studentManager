@@ -136,7 +136,7 @@ class StudentInsertFileView(mixins.CreateModelMixin,
                               description='文件 ')
         ],
     )
-    def Batch_import(self, request, *args, **kwargs):
+    def batch_import(self, request, *args, **kwargs):
         file = request.FILES.get("file")
         excel_data = pd.read_excel(file, header=0, dtype='str')
         for dt in excel_data.iterrows():
