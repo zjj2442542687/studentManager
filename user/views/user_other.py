@@ -13,28 +13,22 @@ from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
 from rest_framework.generics import get_object_or_404
+from rest_framework.parsers import MultiPartParser
 
 
 class UserOtherView(ModelViewSet):
-    """
-    destroy:
-    根据token删除用户信息
-
-    输入token删除
-
-    partial_update_phone:
-    判断手机号码是否已经注册
-
-    传入手机号码
-    """
     queryset = User.objects.all()
     serializer_class = UserInfoSerializersUpdate
+    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         operation_summary="根据token修改用户信息",
+        required=[],
         manual_parameters=[
+            openapi.Parameter('role', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='(-2, 学校管理员), (-1, 超级管理员), (0, 老师), (1, 学生), (2, 家长), (3, 辅导员)'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         user_name = request.data.get("user_name")
@@ -72,6 +66,7 @@ class UserOtherView(ModelViewSet):
         return response_success_200(message="修改成功!", data=resp.data)
 
     @swagger_auto_schema(
+        operation_summary="根据token删除用户",
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ]

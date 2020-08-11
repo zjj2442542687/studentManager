@@ -46,7 +46,20 @@ class UserInfoSerializersNoPassword(UserInfoSerializers):
 
 
 # 修改信息的token
-class UserInfoSerializersUpdate(UserInfoSerializers):
+# class UserInfoSerializersUpdate(UserInfoSerializers):
+#     class Meta:
+#         model = User
+#         exclude = ['token']
+
+
+# update中包含的序列化
+class UserInfoSerializersUpdate(ModelSerializer):
+    user_name = serializers.CharField(label='用户名', required=False)
+    password = serializers.CharField(label='密码', required=False)
+    phone_number = serializers.CharField(label='手机号', required=False)
+    role = serializers.IntegerField(label='角色', required=False)
+    avatar = serializers.ImageField(label='头像', required=False)
+
     class Meta:
-        model = User
-        exclude = ['token']
+        model = UserDetails
+        fields = ["user_name", "password", "phone_number", "role", "avatar"]
