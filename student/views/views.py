@@ -150,7 +150,7 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             if not dt[1]['学生姓名'] or not dt[1]['性别'] or not card or not dt[1]['班级'] or not dt[1]['学校名称']:
                 continue
             if User.objects.filter(user_name=card):
-                message = card+"身份证已经注册存在"
+                message = card + "身份证已经注册存在"
                 print(message)
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message=message)
             if User.objects.filter(phone_number=phone_number):
@@ -246,5 +246,27 @@ class StudentSelectView(mixins.ListModelMixin,
             return response_error_500(status=STATUS_NOT_FOUND_ERROR, message="没找到")
         except Student.MultipleObjectsReturned:
             return response_error_500(status=STATUS_MULTIPLE_ERROR, message="找到多个姓名相同用户")
+        serializer = self.get_serializer(instance)
+        return response_success_200(data=serializer.data)
+
+    @swagger_auto_schema(
+        operation_summary="通过用户的token获得学生信息",
+        operation_description="传入token",
+        request_body=no_body,
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ]
+    )
+    def retrieve_by_token(self, request):
+        token = request.META.get("HTTP_TOKEN")
+        # token = request.data.get("token")
+        print(token)
+        print(request.user)
+        if request.user == STATUS_TOKEN_OVER:
+            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        elif request.user == STATUS_PARAMETER_ERROR:
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!")
+
+        instance = self.queryset.get(user_info=request.user)
         serializer = self.get_serializer(instance)
         return response_success_200(data=serializer.data)

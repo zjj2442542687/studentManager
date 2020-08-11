@@ -7,14 +7,15 @@ from user_details.models import UserDetails
 
 
 class UserInfoSerializers(ModelSerializer):
-    name = serializers.SerializerMethodField(label='真实姓名')
-
-    # 把用户详情中的name返回
-    def get_name(self, user):
-        try:
-            return UserDetails.objects.get(user=user).name
-        except UserDetails.DoesNotExist:
-            return None
+    pass
+    # name = serializers.SerializerMethodField(label='真实姓名')
+    #
+    # # 把用户详情中的name返回
+    # def get_name(self, user):
+    #     try:
+    #         return UserDetails.objects.get(user=user).name
+    #     except UserDetails.DoesNotExist:
+    #         return None
 
 
 # 包括所有参数的序列化

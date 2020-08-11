@@ -11,6 +11,8 @@ from parent.views.parent_select import ParentSelectView
 urlpatterns = [
     path("insert", ParentInsertView.as_view({'post': 'create'})),
     path("getAll", ParentSelectView.as_view({'get': 'list'})),
+    # 根据token获得家长信息
+    path("getInfoByToken", ParentSelectView.as_view({'post': 'retrieve_by_token'})),
     path("getParentById/<int:pk>", ParentSelectView.as_view({'get': 'retrieve'})),
     # path("FileInfo/<int:pk>", ParentOtherView.as_view({'patch': 'FileInfo'})),
     path("delete/<int:pk>", ParentOtherView.as_view({'delete': 'destroy'})),

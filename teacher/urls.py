@@ -9,6 +9,8 @@ urlpatterns = [
     path("insert", TeacherInsertView.as_view({'post': 'create'})),
 
     path("getAll", TeacherSelectView.as_view({'get': 'list'})),
+    # 根据token获得老师信息
+    path("getInfoByToken", TeacherSelectView.as_view({'post': 'retrieve_by_token'})),
     path("getTeacherById/<int:pk>", TeacherSelectView.as_view({'get': 'retrieve'})),
     path("getUserByName/<str:name>", TeacherSelectView.as_view({'get': 'retrieve_by_name'})),
     path("insert_file", TeacherInsertFileView.as_view({'post': 'batch_import'})),

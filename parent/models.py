@@ -6,7 +6,7 @@ from user.models import User
 
 
 class Parent(models.Model):
-    user_info = models.ForeignKey(User, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
+    user_info = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
     name = models.CharField("家长姓名", max_length=255)
     sex = models.CharField('性别', max_length=255)
     card = models.CharField("身份证", max_length=255)
