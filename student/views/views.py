@@ -13,6 +13,7 @@ from rest_framework.serializers import ModelSerializer
 from school.models import School
 from student.models import Student
 from FileInfo.models import FileInfo
+from utils.my_encryption import my_encode
 from utils.my_response import *
 from classs.models import Class
 from user.models import User
@@ -71,7 +72,8 @@ class StudentInsertView(mixins.CreateModelMixin,
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
         if User.objects.filter(phone_number=phone_number):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
-        user: User = User.objects.get_or_create(user_name=card, password=phone_number, phone_number=phone_number,
+        password = my_encode(phone_number)
+        user: User = User.objects.get_or_create(user_name=card, password=password, phone_number=phone_number,
                                                 role=1)
         request.data["user_info"] = User.objects.get(user_name=card).id
 
@@ -158,7 +160,8 @@ class StudentInsertFileView(mixins.CreateModelMixin,
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
             if not Class.objects.filter(class_name=class_name):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
-            User.objects.get_or_create(user_name=card, password=phone_number,
+            password = my_encode(phone_number)
+            User.objects.get_or_create(user_name=card, password=password,
                                        phone_number=phone_number, role=1)
             Student.objects.create(
                 user_info=User.objects.get(user_name=card),

@@ -41,5 +41,6 @@ class FileInfoDownloadView(mixins.CreateModelMixin,
         # print(file_info.file)
         file = open(file_info.file.path, 'rb')
         response = FileResponse(file)
+        response['Content-Type'] = 'application/vnd.ms-excel'
         response['Content-Disposition'] = 'attachment;filename="%s"' % urlquote(file_info.file_name)
         return response
