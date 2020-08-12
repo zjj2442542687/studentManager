@@ -4,8 +4,9 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from django.contrib import admin
 
-from student.views.views import *
-from student.views.student_other import StudentOtherView as Other
+from student.views.student_insert import StudentInsertView, StudentInsertFileView
+from student.views.student_select import StudentSelectView
+from student.views.student_other import StudentOtherView
 
 urlpatterns = [
     path("insert", StudentInsertView.as_view({'post': 'create'})),
@@ -17,5 +18,5 @@ urlpatterns = [
     # path("FileInfo/<int:pk>", StudentOtherView.as_view({'patch': 'FileInfo'})),
     path("delete/<int:pk>", StudentOtherView.as_view({'delete': 'destroy'})),
     path("insert_file", StudentInsertFileView.as_view({'post': 'batch_import'})),
-    path("addParent", Other.as_view({'post': 'add_parent'})),
+    path("addParent", StudentOtherView.as_view({'post': 'add_parent'})),
 ]

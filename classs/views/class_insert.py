@@ -16,10 +16,11 @@ class ClassInfoSerializers(ModelSerializer):
     class Meta:
         model = Class
         fields = "__all__"
+        depth = 1
 
 
 class ClassInsertView(mixins.CreateModelMixin,
-                       GenericViewSet):
+                      GenericViewSet):
     """
     create:
     添加一条数据

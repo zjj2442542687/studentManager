@@ -16,6 +16,17 @@ class Parent(models.Model):
     qq = models.CharField("QQ号码", max_length=255, null=True)
     email = models.CharField("邮箱", max_length=255, null=True)
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "sex": self.sex,
+            "card": self.card,
+            "phone_number": self.phone_number,
+            "birthday": self.birthday,
+            "qq": self.qq,
+            "email": self.email,
+        }
+
     class Meta:
         verbose_name = '家长'
         verbose_name_plural = verbose_name

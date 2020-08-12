@@ -1,18 +1,14 @@
 import pandas as pd
-from django.shortcuts import render
 
-# Create your views here.
 from drf_yasg.utils import swagger_auto_schema, no_body
-from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser
 
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status
+from rest_framework.viewsets import GenericViewSet
+from rest_framework import mixins
 from rest_framework.serializers import ModelSerializer
 
 from school.models import School
 from student.models import Student
-from FileInfo.models import FileInfo
 from utils.my_encryption import my_encode
 from utils.my_response import *
 from classs.models import Class
@@ -54,13 +50,13 @@ class StudentInsertView(mixins.CreateModelMixin,
     def create(self, request, *args, **kwargs):
         school = request.data.get('school')
         # 学校关联
-        if not School.objects.get(school_name=school):
+        if not School.objects.filter(school_name=school):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
         school_id = School.objects.get(school_name=school).id
         request.data["school"] = school_id
         # 班级关联
         clazz = request.data.get('clazz')
-        if not Class.objects.get(class_name=clazz):
+        if not Class.objects.filter(class_name=clazz):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="班级不存在")
         clazz_id = Class.objects.get(class_name=clazz).id
         request.data["clazz"] = clazz_id
@@ -177,96 +173,3 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             )
 
         return response_success_200(message="成功!!!!")
-
-
-class StudentOtherView(ModelViewSet):
-    """
-
-    destroy:删除学生信息
-
-    根据id删除用户信息
-
-    输入id删除
-
-
-    FileInfo:修改学生表信息
-
-    根据id修改用户信息
-
-    输入id修改
-
-    """
-    queryset = Student.objects.all()
-    serializer_class = StudentInfoSerializers
-
-
-class StudentInfoSerializers2(ModelSerializer):
-    class Meta:
-        model = Student
-        fields = "__all__"
-        depth = 1
-
-
-class StudentSelectView(mixins.ListModelMixin,
-                        mixins.RetrieveModelMixin,
-                        GenericViewSet):
-    """
-    list:
-    获得所有学生信息
-
-    无描述
-
-    retrieve:
-    根据id查询学生信息
-
-    输入id
-
-    retrieve_by_student_name:
-    根据名字查询学生信息
-
-    输入姓名
-
-    """
-    queryset = Student.objects.all()
-    serializer_class = StudentInfoSerializers2
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        serializer = self.get_serializer(queryset, many=True)
-        return response_success_200(data=serializer.data)
-
-    def retrieve_by_student_name(self, request, *args, **kwargs):
-        try:
-            # instance = self.queryset.get(user_name=kwargs.get("student_name"))
-            # 模糊查询
-            # instance = self.queryset.get(name__contains=kwargs.get("name"))
-            instance = self.queryset.get(user_name=kwargs.get("student_name"))
-        except Student.DoesNotExist:
-            return response_error_500(status=STATUS_NOT_FOUND_ERROR, message="没找到")
-        except Student.MultipleObjectsReturned:
-            return response_error_500(status=STATUS_MULTIPLE_ERROR, message="找到多个姓名相同用户")
-        serializer = self.get_serializer(instance)
-        return response_success_200(data=serializer.data)
-
-    @swagger_auto_schema(
-        operation_summary="通过用户的token获得学生信息",
-        operation_description="传入token",
-        request_body=no_body,
-        manual_parameters=[
-            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
-        ]
-    )
-    def retrieve_by_token(self, request):
-        token = request.META.get("HTTP_TOKEN")
-        # token = request.data.get("token")
-        print(token)
-        print(request.user)
-        if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!")
-
-        instance = self.queryset.get(user_info=request.user)
-        serializer = self.get_serializer(instance)
-        return response_success_200(data=serializer.data)

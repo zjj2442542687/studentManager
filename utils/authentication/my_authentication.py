@@ -19,8 +19,10 @@ class MyAuthentication(BaseAuthentication):
                     return STATUS_TOKEN_OVER, STATUS_TOKEN_OVER
                 else:
                     if check_token(token):
-                        pk = my_decode_token(token)[0]
-                        return int(pk), 1
+                        ds = my_decode_token(token)
+                        pk = ds[0]
+                        role = ds[1]
+                        return int(pk), int(role)
                     else:
                         # token失效
                         return STATUS_TOKEN_OVER, STATUS_TOKEN_OVER

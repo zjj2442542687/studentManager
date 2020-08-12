@@ -7,6 +7,13 @@ from user.models import User
 from parent.models import Parent
 
 
+def to_parent_list(parent):
+    parents = []
+    for p in parent:
+        parents.append(p.to_json())
+    return parents
+
+
 class Student(models.Model):
     user_info = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
     name = models.CharField("学生姓名", max_length=255)
@@ -18,7 +25,22 @@ class Student(models.Model):
     birthday = models.CharField("出生日期", max_length=255, null=True)
     qq = models.CharField("QQ号码", max_length=255, null=True)
     email = models.CharField("邮箱", max_length=255, null=True)
-    parent = models.ManyToManyField(Parent, verbose_name="监护人信息")
+    parent = models.ManyToManyField(Parent, verbose_name="监护人信息", null=True)
+
+    def to_json(self):
+
+        return {
+            "name": self.name,
+            "sex": self.sex,
+            "card": self.card,
+            "clazz": self.clazz.to_json(),
+            "phone_number": self.phone_number,
+            "school": self.school.to_json(),
+            "birthday": self.birthday,
+            "qq": self.qq,
+            "email": self.email,
+            "parent": to_parent_list(self.parent.all()),
+        }
 
     class Meta:
         verbose_name = '学生'

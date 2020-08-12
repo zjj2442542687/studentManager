@@ -63,7 +63,7 @@ class ParentSelectView(mixins.ListModelMixin,
         return response_success_200(data=serializer.data)
 
     @swagger_auto_schema(
-        operation_summary="通过用户的token获得学生信息",
+        operation_summary="通过用户的token获得家长信息",
         operation_description="传入token",
         request_body=no_body,
         manual_parameters=[

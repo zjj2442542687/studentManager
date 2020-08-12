@@ -1,13 +1,18 @@
+
 from drf_yasg.utils import swagger_auto_schema, no_body
+from rest_framework.utils import json
 
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 
+from parent.models import Parent
+from student.models import Student
+from teacher.models import Teacher
 from user.models import User
 
 from user.views.urls import judge_code
 from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersNoPassword
-from utils.my_encryption import my_encode, my_encode_token
+from utils.my_encryption import my_encode, my_encode_token, my_decode_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
 
@@ -87,12 +92,14 @@ class UserSelectView(mixins.ListModelMixin,
         except UserWarning:
             return response_error_400(status=STATUS_PARAMETER_ERROR, message="参数错误！！！")
         # 设置token
-        instance.token = my_encode_token(instance.pk, instance.password)
+        instance.token = my_encode_token(instance.pk, instance.role, instance.password)
         # 保存
         instance.save()
         serializer = self.get_serializer(instance)
         print(f'数据是：{serializer.data}')
-        return response_success_200(data=serializer.data)
+        # 获得角色信息
+        role_info = get_info_by_token(instance.token).to_json()
+        return response_success_200(message="成功!!!!", data=serializer.data, role_info=role_info)
 
     @swagger_auto_schema(
         operation_summary="token自动登录",
@@ -116,12 +123,14 @@ class UserSelectView(mixins.ListModelMixin,
         instance = self.queryset.get(pk=request.user)
         print(instance)
         # 刷新token
-        instance.token = my_encode_token(instance.pk, instance.password)
+        instance.token = my_encode_token(instance.pk, instance.role, instance.password)
         # 保存
         instance.save()
         serializer = self.get_serializer(instance)
         print(f'数据是：{serializer.data}')
-        return response_success_200(data=serializer.data)
+        # 获得角色信息
+        role_info = get_info_by_token(instance.token).to_json()
+        return response_success_200(message="成功!!!!", data=serializer.data, role_info=role_info)
 
     @swagger_auto_schema(
         operation_summary="手机号验证码登录",
@@ -146,17 +155,15 @@ class UserSelectView(mixins.ListModelMixin,
         # 获得用户信息
         instance = self.queryset.get(phone_number=phone_number)
         # 设置token
-        instance.token = my_encode_token(instance.pk, instance.password)
+        instance.token = my_encode_token(instance.pk, instance.role, instance.password)
         # 保存
         instance.save()
         # c3RyaW5nIDE1OTYxNjM2ODcuNTM3NzE1
+        # instance['teacher'] = get_info_by_token(instance.token)
         serializer = self.get_serializer(instance)
-
-        print(serializer.data)
-        # 保存新的token
-        # user.token = my_encode_token(user.user_name)
-        # user.save()
-        return response_success_200(message="成功!!!!", data=serializer.data)
+        # 获得角色信息
+        role_info = get_info_by_token(instance.token).to_json()
+        return response_success_200(message="成功!!!!", data=serializer.data, role_info=role_info)
 
     @swagger_auto_schema(
         operation_summary="检测手机号是否被注册",
@@ -172,3 +179,26 @@ class UserSelectView(mixins.ListModelMixin,
         print(phone_number_status)
         return response_success_200(phone_number_status=phone_number_status,
                                     message="手机号未被注册" if phone_number_status == 0 else "手机号已被注册")
+
+
+# 根据token获得详细信息
+def get_info_by_token(token):
+    dk = my_decode_token(token)
+    if not dk:
+        return None
+    return get_info(int(dk[0]), int(dk[1]))
+
+
+# 根据用户id和role获得详细信息
+def get_info(user_id: int, role: int):
+    print(f'userId={user_id}, role={role}')
+    # 老师(0) 或 辅导员(3)
+    if role == 0 or role == 3:
+        return Teacher.objects.get(user_info_id=user_id)
+    # 学生
+    elif role == 1:
+        return Student.objects.get(user_info_id=user_id)
+    # 家长
+    elif role == 2:
+        return Parent.objects.get(user_info_id=user_id)
+    return "wu"

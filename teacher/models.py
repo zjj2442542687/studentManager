@@ -21,5 +21,19 @@ class Teacher(models.Model):
     email = models.CharField("邮箱", max_length=255, null=True)
     # school = models.CharField("学校", max_length=255)
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "sex": self.sex,
+            "card": self.card,
+            "title": self.title,
+            "identity": self.identity,
+            "phone_number": self.phone_number,
+            "school": self.school.to_json(),
+            "birthday": self.birthday,
+            "qq": self.qq,
+            "email": self.email,
+        }
+
     class Meta:
         verbose_name = '老师'
