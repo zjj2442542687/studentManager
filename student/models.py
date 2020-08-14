@@ -33,13 +33,13 @@ class Student(models.Model):
             "name": self.name,
             "sex": self.sex,
             "card": self.card,
-            "clazz": self.clazz.to_json(),
+            "clazz": self.clazz.to_json() if self.clazz else None,
             "phone_number": self.phone_number,
-            "school": self.school.to_json(),
+            "school": self.school.to_json() if self.school else None,
             "birthday": self.birthday,
             "qq": self.qq,
             "email": self.email,
-            "parent": to_parent_list(self.parent.all()),
+            "parent": to_parent_list(self.parent.all()) if self.parent else None,
         }
 
     class Meta:

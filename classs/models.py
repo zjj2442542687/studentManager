@@ -11,9 +11,9 @@ class Class(models.Model):
 
     def to_json(self):
         return {
-            "teacher_info": self.teacher_info.to_json(),
+            "teacher_info": self.teacher_info.to_json() if self.teacher_info else None,
             "class_name": self.class_name,
-            "school_name": self.school_info.to_json(),
+            "school_info": self.school_info.to_json() if self.school_info else None,
         }
 
     class Meta:

@@ -29,7 +29,7 @@ class Teacher(models.Model):
             "title": self.title,
             "identity": self.identity,
             "phone_number": self.phone_number,
-            "school": self.school.to_json(),
+            "school": self.school.to_json() if self.school else None,
             "birthday": self.birthday,
             "qq": self.qq,
             "email": self.email,
