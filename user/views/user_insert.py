@@ -1,16 +1,14 @@
-import re
-
 from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status, exceptions
-from rest_framework.serializers import ModelSerializer
 
 from user.views.urls import judge_code, check_phone_number, check_user_name
 from user.views.user_serializers import UserInfoSerializersAll, UserInfoSerializersLess
 from user_details.views.urls import *
 from school.models import School
 from utils.my_encryption import my_encode, my_encode_token
+from utils.my_info_judge import pd_phone_number
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
 from utils.status import *
@@ -113,5 +111,4 @@ class UserInsertView(mixins.CreateModelMixin,
         return response_success_200(data=serializer.data, headers=headers)
 
 
-def pd_phone_number(phone) -> bool:
-    return re.match(r'^1[345678]\d{9}$', phone) is not None
+

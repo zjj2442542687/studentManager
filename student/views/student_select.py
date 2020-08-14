@@ -5,15 +5,9 @@ from rest_framework import mixins
 from rest_framework.serializers import ModelSerializer
 
 from student.models import Student
+from student.views.student_serializers import StudentInfoSerializersSelect
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
-
-
-class StudentInfoSerializers2(ModelSerializer):
-    class Meta:
-        model = Student
-        fields = "__all__"
-        depth = 1
 
 
 class StudentSelectView(mixins.ListModelMixin,
@@ -37,7 +31,7 @@ class StudentSelectView(mixins.ListModelMixin,
 
     """
     queryset = Student.objects.all()
-    serializer_class = StudentInfoSerializers2
+    serializer_class = StudentInfoSerializersSelect
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

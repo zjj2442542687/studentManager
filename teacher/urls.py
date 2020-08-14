@@ -16,4 +16,6 @@ urlpatterns = [
     path("insert_file", TeacherInsertFileView.as_view({'post': 'batch_import'})),
     path("insert_file_test", TeacherInsertFileView.as_view({'post': 'batch_import_test'})),
     path("delete/<int:pk>", TeacherOtherView.as_view({'delete': 'destroy'})),
+    # 根据token修改老师信息
+    path("update", TeacherOtherView.as_view({'patch': 'partial_update'})),
 ]

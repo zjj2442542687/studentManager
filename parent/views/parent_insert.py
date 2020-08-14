@@ -5,20 +5,14 @@ from rest_framework.parsers import MultiPartParser
 
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status
-from rest_framework.serializers import ModelSerializer
 
 from parent.models import Parent
 from FileInfo.models import FileInfo
+from parent.views.parent_serializers import ParentInfoSerializersAll
 from user.models import User
 from utils.my_encryption import my_encode
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
-
-
-class ParentInfoSerializers(ModelSerializer):
-    class Meta:
-        model = Parent
-        fields = "__all__"
 
 
 class ParentInsertView(mixins.CreateModelMixin,
@@ -31,7 +25,7 @@ class ParentInsertView(mixins.CreateModelMixin,
     """
 
     queryset = Parent.objects.all()
-    serializer_class = ParentInfoSerializers
+    serializer_class = ParentInfoSerializersAll
 
     @swagger_auto_schema(
         request_body=request_body(properties={
@@ -109,7 +103,7 @@ class ParentInsertFileView(mixins.CreateModelMixin,
     无描述
     """
     queryset = Parent.objects.all()
-    serializer_class = ParentInfoSerializers
+    serializer_class = ParentInfoSerializersAll
     parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(

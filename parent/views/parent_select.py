@@ -6,37 +6,10 @@ from rest_framework import serializers, mixins, status
 from rest_framework.serializers import ModelSerializer
 
 from parent.models import Parent
+from parent.views.parent_serializers import ParentInfoSerializersSelect
 from utils.my_response import *
-from parent.views.parent_insert import ParentInfoSerializers
 
 from student.models import Student
-
-
-class StudentInfoSerializersUserInfo(ModelSerializer):
-    class Meta:
-        model = Student
-        # fields = ['id', 'user_info']
-        # fields = "__all__"
-        exclude = ["parent"]
-        depth = 1
-
-
-class ParentInfoSerializers2(ModelSerializer):
-    student = serializers.SerializerMethodField(label='学生')
-
-    class Meta:
-        model = Parent
-        fields = "__all__"
-        depth = 1
-
-    def get_student(self, parent):
-        return StudentInfoSerializersUserInfo(Student.objects.filter(parent=parent), many=True).data
-
-# class ParentInfoSerializers2(ModelSerializer):
-#     class Meta:
-#         model = Parent
-#         fields = "__all__"
-#         depth = 1
 
 
 class ParentSelectView(mixins.ListModelMixin,
@@ -54,7 +27,7 @@ class ParentSelectView(mixins.ListModelMixin,
     。。
     """
     queryset = Parent.objects.all()
-    serializer_class = ParentInfoSerializers2
+    serializer_class = ParentInfoSerializersSelect
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

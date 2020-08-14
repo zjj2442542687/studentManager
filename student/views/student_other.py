@@ -1,42 +1,41 @@
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import mixins
-from rest_framework.serializers import ModelSerializer
+from drf_yasg import openapi
+from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
+from rest_framework.generics import get_object_or_404
 
 from student.models import Student
-from utils.my_response import response_success_200
-from utils.my_swagger_auto_schema import request_body, integer_schema
-
-
-class StudentInfoSerializersOther(ModelSerializer):
-    class Meta:
-        model = Student
-        fields = ('user_info', 'parent')
+from student.views.student_serializers import StudentInfoSerializersUpdate
+from utils.my_response import response_success_200, response_error_400
+from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR
 
 
 class StudentOtherView(ModelViewSet):
-    """
-    create:
-    添加一条学生信息数据
-
-    无描述
-    """
-
     queryset = Student.objects.all()
-    serializer_class = StudentInfoSerializersOther
+    serializer_class = StudentInfoSerializersUpdate
+    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
-        request_body=request_body(properties={
-            'student_id': integer_schema('学生id'),
-            'parent_id': integer_schema('家长id'),
-        })
+        operation_summary="修改",
+        required=[],
+        manual_parameters=[
+            openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='性别((-1, 女), (0, 保密), (1, 男))'),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ],
     )
-    def add_parent(self, request):
-        student_id = request.data.get('student_id')
-        parent_id = request.data.get('parent_id')
+    def partial_update(self, request, *args, **kwargs):
+        if request.user == STATUS_TOKEN_OVER:
+            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        elif request.user == STATUS_PARAMETER_ERROR:
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
 
-        self.queryset.get(pk=student_id).parent.add(parent_id)
+        resp = super().partial_update(request, *args, **kwargs)
+        return response_success_200(data=resp.data)
 
-        print(student_id)
-        print(parent_id)
-        return response_success_200(message="成功")
+    def get_object(self):
+        if self.action == "partial_update":
+            print(self.request.user)
+            # return self.queryset.get(user=user_id)
+            return get_object_or_404(self.queryset, user_info_id=self.request.user)
+        return super().get_object()

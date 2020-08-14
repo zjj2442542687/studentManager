@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from user.models import User
-from user.views.urls import send_code
+from user.views.urls import send_code, judge_code
 from user.views.user_insert import pd_phone_number
 from user.views.user_serializers import UserInfoSerializersUpdate
 from utils.my_encryption import my_encode, my_decode_token
@@ -33,11 +33,13 @@ class UserOtherView(ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         user_name = request.data.get("user_name")
         phone_number = request.data.get("phone_number")
-        password = request.data.get("password")
 
         # 检测token是否过期
-        if request.user < 0:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token已过期！")
+        if request.user == STATUS_TOKEN_OVER:
+            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        elif request.user == STATUS_PARAMETER_ERROR:
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+
         # 获得pk
         pk = request.user
         print(pk)
@@ -59,9 +61,6 @@ class UserOtherView(ModelViewSet):
             if User.objects.filter(phone_number=phone_number):
                 return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已经被绑定")
 
-        # 如果密码不为空就给密码加密
-        if password:
-            request.data['password'] = my_encode(password)
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(message="修改成功!", data=resp.data)
 
@@ -72,8 +71,11 @@ class UserOtherView(ModelViewSet):
         ]
     )
     def destroy(self, request, *args, **kwargs):
-        print(request.user)
-        print(request.auth)
+        if request.user == STATUS_TOKEN_OVER:
+            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        elif request.user == STATUS_PARAMETER_ERROR:
+            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+
         super().destroy(request, *args, **kwargs)
         return response_success_200(message="删除成功!!")
 

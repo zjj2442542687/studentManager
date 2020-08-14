@@ -9,6 +9,7 @@ from rest_framework.serializers import ModelSerializer
 
 from school.models import School
 from student.models import Student
+from student.views.student_serializers import StudentInfoSerializersInsert
 from utils.my_encryption import my_encode
 from utils.my_response import *
 from classs.models import Class
@@ -16,25 +17,13 @@ from user.models import User
 from utils.my_swagger_auto_schema import *
 
 
-class StudentInfoSerializers(ModelSerializer):
-    class Meta:
-        model = Student
-        fields = "__all__"
-
-
 class StudentInsertView(mixins.CreateModelMixin,
                         GenericViewSet):
-    """
-    create:
-    添加一条学生信息数据
-
-    无描述
-    """
-
     queryset = Student.objects.all()
-    serializer_class = StudentInfoSerializers
+    serializer_class = StudentInfoSerializersInsert
 
     @swagger_auto_schema(
+        operation_summary="添加一条数据",
         request_body=request_body(properties={
             'name': string_schema('学生姓名'),
             'sex': string_schema('性别'),
@@ -76,41 +65,23 @@ class StudentInsertView(mixins.CreateModelMixin,
         resp = super().create(request)
         return response_success_200(data=resp.data)
 
-    # @swagger_auto_schema(
-    #     operation_summary="学生信息批量导入",
-    #     operation_description="传入文件ID",
-    #     request_body=request_body(
-    #         properties={
-    #             "id": integer_schema('文件ID'),
-    #         }
-    #     )
-    # )
-    # def Batch_import(self, request, *args, **kwargs):
-    #     file_id = request.data.get('id')
-    #     file_name = Update.objects.get(id=file_id).file
-    #     excel_data = pd.read_excel(file_name, header=0, dtype='str')
-    #     for dt in excel_data.iterrows():
-    #         # 添加用户信息
-    #         card = dt[1]['身份证']
-    #         phone_number = dt[1]['手机号码(选填)']
-    #         if not dt[1]['学生姓名'] or not dt[1]['性别'] or not card or not dt[1]['班级'] or not dt[1]['学校名称']:
-    #             continue
-    #         User.objects.get_or_create(user_name=card, password=phone_number,
-    #                                                 phone_number=phone_number, role=1)
-    #         Student.objects.create(
-    #             user_info=User.objects.get(user_name=card),
-    #             name=dt[1]['学生姓名'],
-    #             sex=dt[1]['性别'],
-    #             card=dt[1]['身份证'],
-    #             phone_number=phone_number,
-    #             clazz=Class.objects.get(class_name=dt[1]['班级']),
-    #             school=School.objects.get(school_name=dt[1]['学校名称']),
-    #             birthday=dt[1]['生日'],
-    #             qq=dt[1]['QQ(选填)'],
-    #             email=dt[1]['邮箱(选填)'],
-    #         )
-    #
-    #     return response_success_200(message="成功!!!!")
+    @swagger_auto_schema(
+        operation_description="传入学生id和家长id",
+        operation_summary="学生添加家长",
+        request_body=request_body(properties={
+            'student_id': integer_schema('学生id'),
+            'parent_id': integer_schema('家长id'),
+        })
+    )
+    def add_parent(self, request):
+        student_id = request.data.get('student_id')
+        parent_id = request.data.get('parent_id')
+
+        self.queryset.get(pk=student_id).parent.add(parent_id)
+
+        print(student_id)
+        print(parent_id)
+        return response_success_200(message="成功")
 
 
 class StudentInsertFileView(mixins.CreateModelMixin,
@@ -122,7 +93,7 @@ class StudentInsertFileView(mixins.CreateModelMixin,
     无描述
     """
     queryset = Student.objects.all()
-    serializer_class = StudentInfoSerializers
+    serializer_class = StudentInfoSerializersInsert
     parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(

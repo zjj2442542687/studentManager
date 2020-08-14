@@ -7,6 +7,7 @@ from django.contrib import admin
 from user.views.user_insert import UserInsertView
 from user.views.user_other import UserOtherView, Other
 from user.views.user_select import UserSelectView
+from user.views.user_update_password import UserUpdatePassword
 
 urlpatterns = [
     # path("insert", UserInsertView.as_view({'post': 'create'})),
@@ -29,6 +30,10 @@ urlpatterns = [
 
     # 根据token修改用户信息
     path("update", UserOtherView.as_view({'patch': 'partial_update'})),
+    # 根据手机号修改用户密码
+    path("updatePasswordByPhone", UserUpdatePassword.as_view({'patch': 'update_password_by_phone'})),
+    # 根据原密码修改用户密码
+    path("updatePasswordByPassword", UserUpdatePassword.as_view({'patch': 'update_password_by_password'})),
     # 根据token删除用户信息
     path("delete", UserOtherView.as_view({'delete': 'destroy'})),
 

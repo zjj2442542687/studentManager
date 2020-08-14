@@ -6,15 +6,11 @@ from rest_framework import serializers, mixins, status, exceptions
 from rest_framework.serializers import ModelSerializer
 
 from teacher.models import Teacher
-from teacher.views.teacher_insert import TeacherInfoSerializers
+from teacher.views.teacher_serializers import TeacherInfoSerializersDepth
 from utils.my_response import *
 
 
-class TeacherInfoSerializers2(ModelSerializer):
-    class Meta:
-        model = Teacher
-        fields = "__all__"
-        depth = 1
+
 
 
 class TeacherSelectView(mixins.ListModelMixin,
@@ -37,7 +33,7 @@ class TeacherSelectView(mixins.ListModelMixin,
     传入名字！
     """
     queryset = Teacher.objects.all()
-    serializer_class = TeacherInfoSerializers2
+    serializer_class = TeacherInfoSerializersDepth
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
