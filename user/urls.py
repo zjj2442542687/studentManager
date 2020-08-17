@@ -12,7 +12,7 @@ from user.views.user_update_password import UserUpdatePassword
 urlpatterns = [
     # path("insert", UserInsertView.as_view({'post': 'create'})),
 
-    path("getAll", UserSelectView.as_view({'get': 'list'})),
+    # path("getAll", UserSelectView.as_view({'get': 'list'})),
     # 根据id获得用户信息
     # path("getUserById/<int:pk>", UserSelectView.as_view({'get': 'retrieve'})),
     # 根据用户名获得用户信息

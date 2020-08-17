@@ -98,6 +98,9 @@ class UserSelectView(mixins.ListModelMixin,
         serializer = self.get_serializer(instance)
         print(f'数据是：{serializer.data}')
         # 获得角色信息
+        print(123132123)
+        print(get_info_by_token(instance.token))
+        print(132131321)
         role_info = get_info_by_token(instance.token).to_json()
         return response_success_200(message="成功!!!!", data=serializer.data, role_info=role_info)
 
@@ -201,4 +204,6 @@ def get_info(user_id: int, role: int):
     # 家长
     elif role == 2:
         return Parent.objects.get(user_info_id=user_id)
+    elif role == -1:
+        return User.objects.get(id=user_id)
     return "wu"

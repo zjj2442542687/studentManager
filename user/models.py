@@ -16,6 +16,14 @@ class User(models.Model):
 
     # personal_signature = models.CharField("个性签名", max_length=255, default="这个人很神秘，什么都没写")
 
+    def to_json(self):
+        return {
+            "user_name": self.user_name,
+            "password": self.password,
+            "phone_number": self.phone_number,
+            "role": self.role,
+        }
+
     class Meta:
         verbose_name = "用户表"
         verbose_name_plural = verbose_name
