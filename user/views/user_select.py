@@ -12,7 +12,8 @@ from user.models import User
 
 from user.views.urls import judge_code
 from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersNoPassword
-from utils.my_encryption import my_encode, my_encode_token, my_decode_token
+from utils.my_encryption import my_encode, my_encode_token, my_decode_token, my_decode
+from utils.my_info_judge import pd_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import *
 
@@ -92,7 +93,7 @@ class UserSelectView(mixins.ListModelMixin,
         except UserWarning:
             return response_error_400(status=STATUS_PARAMETER_ERROR, message="参数错误！！！")
         # 设置token
-        instance.token = my_encode_token(instance.pk, instance.role, instance.password)
+        instance.token = my_encode_token(instance.pk, instance.role, my_encode(instance.user_name))
         # 保存
         instance.save()
         serializer = self.get_serializer(instance)
@@ -116,17 +117,16 @@ class UserSelectView(mixins.ListModelMixin,
         token = request.META.get("HTTP_TOKEN")
         print(f'token={token}')
         # token = request.data.get("token")
-        if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!")
-
+        # 判断token
+        check_token = pd_token(request, token)
+        if check_token:
+            return check_token
         print("这里!!!")
         # 获得用户信息
         instance = self.queryset.get(pk=request.user)
         print(instance)
         # 刷新token
-        instance.token = my_encode_token(instance.pk, instance.role, instance.password)
+        instance.token = my_encode_token(instance.pk, instance.role, my_encode(instance.user_name))
         # 保存
         instance.save()
         serializer = self.get_serializer(instance)
@@ -158,7 +158,7 @@ class UserSelectView(mixins.ListModelMixin,
         # 获得用户信息
         instance = self.queryset.get(phone_number=phone_number)
         # 设置token
-        instance.token = my_encode_token(instance.pk, instance.role, instance.password)
+        instance.token = my_encode_token(instance.pk, instance.role, my_encode(instance.user_name))
         # 保存
         instance.save()
         # c3RyaW5nIDE1OTYxNjM2ODcuNTM3NzE1

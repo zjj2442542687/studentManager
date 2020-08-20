@@ -1,9 +1,14 @@
 import re
 
 from coreapi import exceptions
-
+from rest_framework.response import Response
 
 # 判断身份证的合法性
+from user.models import User
+from utils.my_response import response_error_400
+from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR
+
+
 def pd_card(card: str) -> bool:
     if not card:
         return False
@@ -49,3 +54,14 @@ def pd_phone_number(phone) -> bool:
 def pd_password(password: str) -> str:
     # 去掉首尾空格后判断密码长度,
     return None if len(password.strip()) >= 6 else "密码长度需要大于等于6位"
+
+
+# token是否还有效果
+def pd_token(request, token):
+    if request.user == STATUS_TOKEN_OVER:
+        return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+    elif request.user == STATUS_PARAMETER_ERROR:
+        return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+    elif not User.objects.filter(token=token):
+        return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+    return None

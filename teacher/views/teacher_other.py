@@ -6,20 +6,40 @@ from teacher.views.teacher_serializers import TeacherInfoSerializersAll, Teacher
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser
 
+from user.views.urls import del_user
+from utils.my_encryption import my_decode_token
+from utils.my_info_judge import pd_token
 from utils.my_response import response_success_200, response_error_400
-from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR
+from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
 
 
 class TeacherOtherView(ModelViewSet):
-    """
-    destroy:
-    根据id删除老师信息
-
-    输入id删除
-    """
     queryset = Teacher.objects.all()
     serializer_class = TeacherInfoSerializersUpdate
     parser_classes = [MultiPartParser]
+
+    @swagger_auto_schema(
+        operation_summary="根据id删除老师信息及用户信息",
+        required=[],
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ],
+    )
+    def destroy(self, request, *args, **kwargs):
+        token = request.META.get("HTTP_TOKEN")
+        check_token = pd_token(request, token)
+        if check_token:
+            return check_token
+        role = my_decode_token(token)[1]
+        if role >= 0:
+            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+        # 先删除用户
+        check_del = del_user(0, kwargs.get("pk"))
+        if check_del:
+            return check_del
+        # 删除老师
+        super().destroy(request, *args, **kwargs)
+        return response_success_200(message="成功")
 
     @swagger_auto_schema(
         operation_summary="修改",
@@ -33,10 +53,10 @@ class TeacherOtherView(ModelViewSet):
         ],
     )
     def partial_update(self, request, *args, **kwargs):
-        if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+        token = request.META.get("HTTP_TOKEN")
+        check_token = pd_token(request, token)
+        if check_token:
+            return check_token
 
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)
