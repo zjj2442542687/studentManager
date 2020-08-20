@@ -11,6 +11,7 @@ from school.models import School
 from student.models import Student
 from student.views.student_serializers import StudentInfoSerializersInsert
 from utils.my_encryption import my_encode
+from utils.my_info_judge import pd_card, pd_phone_number
 from utils.my_response import *
 from classs.models import Class
 from user.models import User
@@ -107,6 +108,10 @@ class StudentInsertFileView(mixins.CreateModelMixin,
     )
     def batch_import(self, request, *args, **kwargs):
         file = request.FILES.get("file")
+        check_file = batch_import_test(file)
+        if check_file:
+            return check_file
+
         excel_data = pd.read_excel(file, header=0, dtype='str')
         for dt in excel_data.iterrows():
             # 添加用户信息
@@ -144,3 +149,54 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             )
 
         return response_success_200(message="成功!!!!")
+
+
+def batch_import_test(file):
+    excel_data = pd.read_excel(file, header=0, dtype='str')
+    test = []
+    i = 0
+    card_list = []
+    phone_list = []
+    for dt in excel_data.iterrows():
+        i = i + 1
+        message = ""
+        # 添加用户信息
+        card = dt[1]['身份证']
+        phone_number = dt[1]['手机号码(选填)']
+        school = dt[1]['学校名称']
+        class_name = dt[1]['班级']
+        birthday = dt[1]['生日']
+
+        if not dt[1]['学生姓名'] or not dt[1]['性别'] or not card or not class_name or not school or not birthday:
+            message += "有空字段"
+
+        # 判断身份证的格式是否存在
+        if not pd_card(card):
+            message += ",身份证格式错误"
+        elif card in card_list:
+            message += f",身份证和{card_list.index(card) + 1}重复"
+        elif User.objects.filter(user_name=card):
+            message += ",身份证已经注册存在"
+
+        if phone_number:
+            if not pd_phone_number(phone_number):
+                message += ",手机号格式错误"
+            elif phone_number in phone_list:
+                message += f",手机号和{phone_list.index(phone_number) + 1}重复"
+            elif User.objects.filter(phone_number=phone_number):
+                message += ",手机号码已经注册存在"
+
+        if not School.objects.filter(school_name=school):
+            message += ",学校不存在"
+        elif not Class.objects.filter(class_name=class_name, school_info_id=School.objects.get(school_name=school).id):
+            message += ",学校中班级名不存在"
+
+        if message:
+            test.append({"index": i, "message": message})
+        card_list.append(card)
+        if phone_number:
+            phone_list.append(phone_number)
+
+    if len(test) > 0:
+        return response_error_400(status=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
+    return None

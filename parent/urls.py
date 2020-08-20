@@ -18,5 +18,5 @@ urlpatterns = [
     path("delete/<int:pk>", ParentOtherView.as_view({'delete': 'destroy'})),
     # 根据token修改家长信息
     path("update", ParentOtherView.as_view({'patch': 'partial_update'})),
-    path("insert_file", ParentInsertFileView.as_view({'post': 'Batch_import'})),
+    path("insert_file", ParentInsertFileView.as_view({'post': 'batch_import'})),
 ]

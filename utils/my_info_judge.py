@@ -3,12 +3,16 @@ import re
 from coreapi import exceptions
 from rest_framework.response import Response
 
-# 判断身份证的合法性
 from user.models import User
 from utils.my_response import response_error_400
 from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR
 
+"""
+一些信息的验证
+"""
 
+
+# 判断身份证的合法性
 def pd_card(card: str) -> bool:
     if not card:
         return False
@@ -54,6 +58,18 @@ def pd_phone_number(phone) -> bool:
 def pd_password(password: str) -> str:
     # 去掉首尾空格后判断密码长度,
     return None if len(password.strip()) >= 6 else "密码长度需要大于等于6位"
+
+
+# 判断邮箱
+def pd_email(email: str) -> bool:
+    s = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
+    return re.match(s, email) is not None
+
+
+# 判断qq号
+def pd_qq(qq: str) -> bool:
+    s = r'[1-9][0-9]{5,9}'
+    return re.match(s, qq) is not None
 
 
 # token是否还有效果

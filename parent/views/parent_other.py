@@ -33,7 +33,7 @@ class ParentOtherView(ModelViewSet):
         check_token = pd_token(request, token)
         if check_token:
             return check_token
-        role = my_decode_token(token)[1]
+        role = int(my_decode_token(token)[1])
         if role >= 0:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
         # 先删除用户

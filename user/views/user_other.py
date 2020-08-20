@@ -9,6 +9,7 @@ from user.views.urls import send_code, judge_code
 from user.views.user_insert import pd_phone_number
 from user.views.user_serializers import UserInfoSerializersUpdate
 from utils.my_encryption import my_encode, my_decode_token
+from utils.my_info_judge import pd_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
@@ -34,11 +35,11 @@ class UserOtherView(ModelViewSet):
         user_name = request.data.get("user_name")
         phone_number = request.data.get("phone_number")
 
-        # 检测token是否过期
-        if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+        # 判断token
+        token = request.META.get("HTTP_TOKEN")
+        check_token = pd_token(request, token)
+        if check_token:
+            return check_token
 
         # 获得pk
         pk = request.user
