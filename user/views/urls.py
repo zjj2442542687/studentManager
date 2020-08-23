@@ -36,19 +36,19 @@ def del_user(role, pk):
     user_id = -1
     # 老师或辅导员
     if role == 0 or role == 3:
-        teacher = Teacher.objects.filter(pk=pk)
+        teacher = Teacher.objects.get(pk=pk)
         if not teacher:
             return response_error_400(status=STATUS_NOT_FOUND_ERROR, message=f"id({pk})未找到")
         user_id = teacher.user_info_id
     # 学生
     elif role == 1:
-        student = Student.objects.filter(pk=pk)
+        student = Student.objects.get(pk=pk)
         if not student:
             return response_error_400(status=STATUS_NOT_FOUND_ERROR, message=f"id({pk})未找到")
         user_id = student.user_info_id
     # 家长
     elif role == 2:
-        parent = Parent.objects.filter(pk=pk)
+        parent = Parent.objects.get(pk=pk)
         if not parent:
             return response_error_400(status=STATUS_NOT_FOUND_ERROR, message=f"id({pk})未找到")
         user_id = parent.user_info_id
