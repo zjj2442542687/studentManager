@@ -28,7 +28,6 @@ class Student(models.Model):
     parent = models.ManyToManyField(Parent, verbose_name="监护人信息", null=True)
 
     def to_json(self):
-
         return {
             "name": self.name,
             "sex": self.sex,
@@ -40,6 +39,17 @@ class Student(models.Model):
             "qq": self.qq,
             "email": self.email,
             "parent": to_parent_list(self.parent.all()) if self.parent else None,
+        }
+
+    def search(self):
+        return {
+            "name": self.name,
+            "sex": self.sex,
+            "card": self.card,
+            "phone_number": self.phone_number,
+            "birthday": self.birthday,
+            "qq": self.qq,
+            "email": self.email,
         }
 
     class Meta:

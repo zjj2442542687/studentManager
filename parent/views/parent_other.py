@@ -25,7 +25,7 @@ class ParentOtherView(ModelViewSet):
         operation_summary="根据id删除家长信息及用户信息",
         required=[],
         manual_parameters=[
-            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN')
         ],
     )
     def destroy(self, request, *args, **kwargs):

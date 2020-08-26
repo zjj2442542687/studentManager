@@ -6,6 +6,7 @@ from django.contrib import admin
 
 from user.views.user_insert import UserInsertView
 from user.views.user_other import UserOtherView, Other
+from user.views.user_search import UserPaginationSelectView
 from user.views.user_select import UserSelectView
 from user.views.user_update_password import UserUpdatePassword
 
@@ -38,4 +39,7 @@ urlpatterns = [
     path("delete", UserOtherView.as_view({'delete': 'destroy'})),
 
     path("sendCode", Other.as_view()),
+
+    # 分页查询
+    path("search", UserPaginationSelectView.as_view({'get': 'search'})),
 ]

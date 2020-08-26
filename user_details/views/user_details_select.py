@@ -8,6 +8,7 @@ from user.models import User
 from user_details.models import UserDetails
 from user_details.views.my_limit_offset_pagination import MyLimitOffsetPagination
 from user_details.views.user_details_serializers import UserDetailsInfoSerializersAll
+from utils.my_info_judge import pd_token
 from utils.my_response import *
 
 
@@ -44,12 +45,9 @@ class UserDetailsSelectView(mixins.ListModelMixin,
     )
     def retrieve_by_token(self, request, *args, **kwargs):
         token = request.META.get("HTTP_TOKEN")
-        print(f'token={token}')
-        # token = request.data.get("token")
-        if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!")
+        check_token = pd_token(request, token)
+        if check_token:
+            return check_token
 
         # 根据用户id查询用户详情
         instance = self.queryset.get(user_id=request.user)

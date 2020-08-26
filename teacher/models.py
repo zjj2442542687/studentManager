@@ -35,5 +35,18 @@ class Teacher(models.Model):
             "email": self.email,
         }
 
+    def search(self):
+        return {
+            "name": self.name,
+            "sex": self.sex,
+            "card": self.card,
+            "title": self.title,
+            "identity": self.identity,
+            "phone_number": self.phone_number,
+            "birthday": self.birthday,
+            "qq": self.qq,
+            "email": self.email,
+        }
+
     class Meta:
         verbose_name = '老师'

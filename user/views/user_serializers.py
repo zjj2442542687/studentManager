@@ -2,9 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from user.models import User
-
-from user_details.models import UserDetails
-
+from user.views.urls import get_info
 
 class UserInfoSerializers(ModelSerializer):
     pass
@@ -61,7 +59,7 @@ class UserInfoSerializersUpdate(ModelSerializer):
     avatar = serializers.ImageField(label='头像', required=False)
 
     class Meta:
-        model = UserDetails
+        model = User
         fields = ["user_name", "phone_number", "role", "avatar"]
 
 
@@ -71,5 +69,17 @@ class UserInfoSerializersUpdatePasswordByPhone(ModelSerializer):
     password = serializers.CharField(label='密码', required=False)
 
     class Meta:
-        model = UserDetails
+        model = User
         fields = ["phone_number", "password"]
+
+
+class UserSerializersSearch(ModelSerializer):
+    role_info = serializers.SerializerMethodField(label='角色信息')
+
+    class Meta:
+        model = User
+        fields = ["user_name", "phone_number", "role", "avatar", "role_info"]
+
+    def get_role_info(self, user: User):
+        info = get_info(user.id, user.role)
+        return info.search() if info else None

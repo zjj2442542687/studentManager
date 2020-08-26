@@ -11,7 +11,7 @@ class User(models.Model):
                                     default=1)
     # role_id = models.IntegerField('',)
     # name = models.CharField("昵称", max_length=255, null=True)
-    avatar = models.ImageField("头像", upload_to="userDetails/avatar", null=True)
+    avatar = models.ImageField("头像", upload_to="user/avatar", null=True)
     token = models.CharField("token", max_length=255)
 
     # personal_signature = models.CharField("个性签名", max_length=255, default="这个人很神秘，什么都没写")

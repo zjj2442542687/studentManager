@@ -10,7 +10,7 @@ from student.models import Student
 from teacher.models import Teacher
 from user.models import User
 
-from user.views.urls import judge_code
+from user.views.urls import judge_code, get_info_by_token
 from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersNoPassword
 from utils.my_encryption import my_encode, my_encode_token, my_decode_token, my_decode
 from utils.my_info_judge import pd_token
@@ -102,7 +102,8 @@ class UserSelectView(mixins.ListModelMixin,
         print(123132123)
         print(get_info_by_token(instance.token))
         print(132131321)
-        role_info = get_info_by_token(instance.token).to_json()
+        role_info = get_info_by_token(instance.token)
+        role_info = role_info.to_json() if role_info else None
         return response_success_200(message="成功!!!!", data=serializer.data, role_info=role_info)
 
     @swagger_auto_schema(
@@ -132,7 +133,8 @@ class UserSelectView(mixins.ListModelMixin,
         serializer = self.get_serializer(instance)
         print(f'数据是：{serializer.data}')
         # 获得角色信息
-        role_info = get_info_by_token(instance.token).to_json()
+        role_info = get_info_by_token(instance.token)
+        role_info = role_info.to_json() if role_info else None
         return response_success_200(message="成功!!!!", data=serializer.data, role_info=role_info)
 
     @swagger_auto_schema(
@@ -165,7 +167,8 @@ class UserSelectView(mixins.ListModelMixin,
         # instance['teacher'] = get_info_by_token(instance.token)
         serializer = self.get_serializer(instance)
         # 获得角色信息
-        role_info = get_info_by_token(instance.token).to_json()
+        role_info = get_info_by_token(instance.token)
+        role_info = role_info.to_json() if role_info else None
         return response_success_200(message="成功!!!!", data=serializer.data, role_info=role_info)
 
     @swagger_auto_schema(
@@ -184,26 +187,4 @@ class UserSelectView(mixins.ListModelMixin,
                                     message="手机号未被注册" if phone_number_status == 0 else "手机号已被注册")
 
 
-# 根据token获得详细信息
-def get_info_by_token(token):
-    dk = my_decode_token(token)
-    if not dk:
-        return None
-    return get_info(int(dk[0]), int(dk[1]))
 
-
-# 根据用户id和role获得详细信息
-def get_info(user_id: int, role: int):
-    print(f'userId={user_id}, role={role}')
-    # 老师(0) 或 辅导员(3)
-    if role == 0 or role == 3:
-        return Teacher.objects.get(user_info_id=user_id)
-    # 学生
-    elif role == 1:
-        return Student.objects.get(user_info_id=user_id)
-    # 家长
-    elif role == 2:
-        return Parent.objects.get(user_info_id=user_id)
-    elif role == -1:
-        return User.objects.get(id=user_id)
-    return "wu"
