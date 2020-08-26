@@ -1,18 +1,14 @@
 # 分页查询
-from django.db.models import Q
 from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema, no_body
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
-from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import GenericViewSet
 
 from user.models import User
-from user.views.my_limit_offset_pagination import MyLimitOffsetPagination
+from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from user.views.user_serializers import UserSerializersSearch
-from utils.my_encryption import my_decode_token
-from utils.my_info_judge import pd_token
-from utils.my_response import response_success_200, response_error_400
-from utils.status import STATUS_TOKEN_NO_AUTHORITY, STATUS_PARAMETER_ERROR
+from utils.my_response import response_error_400
+from utils.status import STATUS_PARAMETER_ERROR
 
 
 class UserPaginationSelectView(mixins.ListModelMixin,
@@ -28,7 +24,7 @@ class UserPaginationSelectView(mixins.ListModelMixin,
         manual_parameters=[
             openapi.Parameter('role', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
                               description='(0, 老师), (1, 学生), (2, 家长), (3, 辅导员)'),
-            openapi.Parameter('user_name', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+            openapi.Parameter('user_name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='用户名'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
         ]

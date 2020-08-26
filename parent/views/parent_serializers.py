@@ -44,3 +44,9 @@ class ParentInfoSerializersSelect(ModelSerializer):
 
     def get_student(self, parent):
         return StudentInfoSerializersUserInfo(Student.objects.filter(parent=parent), many=True).data
+
+
+class ParentSerializersSearch(ModelSerializer):
+    class Meta:
+        model = Parent
+        fields = ["name", "sex", "card", "phone_number", "birthday", "qq", "email"]

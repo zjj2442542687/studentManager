@@ -31,3 +31,10 @@ class StudentInfoSerializersSelect(ModelSerializer):
         model = Student
         fields = "__all__"
         depth = 1
+
+
+class StudentSerializersSearch(ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["name", "sex", "card", "phone_number", "birthday", "qq", "email", "clazz", "school"]
+
