@@ -5,7 +5,10 @@ from teacher.models import Teacher
 
 
 class Class(models.Model):
-    teacher_info = models.ForeignKey(Teacher, verbose_name="老师信息", on_delete=models.SET_NULL, null=True)
+    # 辅导员和班级有且只有一个相对应
+    teacher_info = models.OneToOneField(Teacher, verbose_name="老师信息", on_delete=models.SET_NULL, null=True,
+                                        error_messages={
+                                            'unique': "老师信息唯一"})
     class_name = models.CharField('班级名', max_length=255)
     school_info = models.ForeignKey(School, verbose_name="学校ID", on_delete=models.SET_NULL, null=True)
 

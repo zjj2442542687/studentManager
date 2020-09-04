@@ -27,7 +27,7 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
         manual_parameters=[
             openapi.Parameter('name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='名字'),
-            openapi.Parameter('school', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+            openapi.Parameter('school_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
                               description='学校id'),
             openapi.Parameter('clazz_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
                               description='班级id'),
@@ -50,7 +50,7 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
 
         # 学校
         school_id = request.GET.get("school_id")
-        student = search_clazz(school_id, student)
+        student = search_school(school_id, student)
 
         # 班级
         clazz_id = request.GET.get("clazz_id")

@@ -3,6 +3,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 
+from classs.models import Class
 from teacher.models import Teacher
 from teacher.views.teacher_serializers import TeacherSerializersSearch
 from utils.my_encryption import my_decode_token
@@ -52,22 +53,28 @@ class TeacherPaginationSelectView(mixins.ListModelMixin,
 
         # 学校
         school_id = request.GET.get("school_id")
-        teacher = search_clazz(school_id, teacher)
+        teacher = search_school(school_id, teacher)
 
         # 班级
         clazz_id = request.GET.get("clazz_id")
-        teacher = search_clazz(clazz_id, teacher)
+        clazz_result = search_clazz(clazz_id)
+        # 因为查询的结果可能为空集合，所以用这个（为空集合也赋值）
+        if clazz_result is not None:
+            teacher = clazz_result
 
         # 昵称
         title = request.GET.get("title")
-        teacher = search_clazz(title, teacher)
+        teacher = search_title(title, teacher)
 
         # 身份
         identity = request.GET.get("identity")
-        teacher = search_clazz(identity, teacher)
+        teacher = search_identity(identity, teacher)
+
+        print(teacher)
 
         page = self.paginate_queryset(teacher)
         serializer = self.serializer_class(page, many=True, context=self.get_serializer_context())
+
         return self.get_paginated_response(serializer.data)
 
 
@@ -79,20 +86,31 @@ def search_name(name):
 
 
 def search_school(school_id, teacher):
+    if not teacher:
+        return teacher
     if school_id:
         return teacher.filter(school_id=school_id)
     else:
         return teacher
 
 
-def search_clazz(clazz_id, teacher):
+def search_clazz(clazz_id):
     if clazz_id:
-        return teacher.filter(clazz_id=clazz_id)
+        try:
+            teacher = Class.objects.get(id=clazz_id).teacher_info
+            if not teacher:
+                return Teacher.objects.none()
+            return Teacher.objects.filter(pk=teacher.pk)
+        except Class.DoesNotExist:
+            print("没找到")
+            return Teacher.objects.none()
     else:
-        return teacher
+        return None
 
 
 def search_title(title, teacher):
+    if not teacher:
+        return teacher
     if title:
         return teacher.filter(title__contains=title)
     else:
@@ -100,6 +118,8 @@ def search_title(title, teacher):
 
 
 def search_identity(identity, teacher):
+    if not teacher:
+        return teacher
     if identity:
         return teacher.filter(identity__contains=identity)
     else:
