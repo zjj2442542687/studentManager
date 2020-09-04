@@ -49,4 +49,4 @@ class ParentInfoSerializersSelect(ModelSerializer):
 class ParentSerializersSearch(ModelSerializer):
     class Meta:
         model = Parent
-        fields = ["name", "sex", "card", "phone_number", "birthday", "qq", "email"]
+        fields = ["id", "name", "sex", "card", "phone_number", "birthday", "qq", "email"]

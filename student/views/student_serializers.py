@@ -36,6 +36,6 @@ class StudentInfoSerializersSelect(ModelSerializer):
 class StudentSerializersSearch(ModelSerializer):
     class Meta:
         model = Student
-        fields = ["pk", "name", "sex", "card", "phone_number", "birthday", "qq", "email", "clazz"]
+        fields = ["id", "name", "sex", "card", "phone_number", "birthday", "qq", "email", "clazz"]
         depth = 2
 

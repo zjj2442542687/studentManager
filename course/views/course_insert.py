@@ -8,6 +8,7 @@ from rest_framework.serializers import ModelSerializer
 from teacher.models import Teacher
 from classs.models import Class
 from course.models import Course
+from user.models import User
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 
@@ -47,6 +48,11 @@ class CourseInsertView(mixins.CreateModelMixin,
         if not Teacher.objects.filter(id=teacher_info):
             message = "老师ID信息不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)
+        # 修改老师的信息为管理员
+        teacher = Teacher.objects.get(id=teacher_info)
+        teacher.identity = "辅导员"
+        User.objects.get(id=teacher.user_info_id).role = 3
+        teacher.save()
         if not Class.objects.filter(id=class_info):
             message = "班级ID信息不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)

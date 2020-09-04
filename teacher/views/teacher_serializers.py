@@ -37,4 +37,5 @@ class TeacherInfoSerializersUpdate(ModelSerializer):
 class TeacherSerializersSearch(ModelSerializer):
     class Meta:
         model = Teacher
-        fields = ["name", "sex", "card", "title", "identity", "phone_number", "birthday", "qq", "email", "school"]
+        fields = ["id", "name", "sex", "card", "title", "identity", "phone_number", "birthday", "qq", "email", "school"]
+        depth = 1

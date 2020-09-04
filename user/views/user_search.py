@@ -5,10 +5,12 @@ from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 
 from user.models import User
+from utils.my_encryption import my_decode_token
+from utils.my_info_judge import pd_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from user.views.user_serializers import UserSerializersSearch
 from utils.my_response import response_error_400
-from utils.status import STATUS_PARAMETER_ERROR
+from utils.status import STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
 
 
 class UserPaginationSelectView(mixins.ListModelMixin,
@@ -30,14 +32,14 @@ class UserPaginationSelectView(mixins.ListModelMixin,
         ]
     )
     def search(self, request, *args, **kwargs):
-        # token = request.META.get("HTTP_TOKEN")
-        # check_token = pd_token(request, token)
-        # if check_token:
-        #     return check_token
-        #
-        # role = int(my_decode_token(token)[1])
-        # if role >= 0:
-        #     return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+        token = request.META.get("HTTP_TOKEN")
+        check_token = pd_token(request, token)
+        if check_token:
+            return check_token
+
+        role = int(my_decode_token(token)[1])
+        if role >= 0:
+            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
         # role
         role = request.GET.get("role")
