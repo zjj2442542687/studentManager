@@ -35,7 +35,11 @@ class TeacherInfoSerializersUpdate(ModelSerializer):
 
 
 class TeacherSerializersSearch(ModelSerializer):
+    clazz = serializers.SerializerMethodField(label='班级信息')
     class Meta:
         model = Teacher
-        fields = ["id", "name", "sex", "card", "title", "identity", "phone_number", "birthday", "qq", "email", "school"]
+        fields = ["id", "name", "sex", "card", "title", "identity", "phone_number", "birthday", "qq", "email", "school", "clazz"]
         depth = 1
+
+    def get_clazz(self, teacher: Teacher):
+        return None
