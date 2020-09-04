@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
+from classs.models import Class
 from teacher.models import Teacher
 from rest_framework import serializers
 
@@ -36,10 +37,19 @@ class TeacherInfoSerializersUpdate(ModelSerializer):
 
 class TeacherSerializersSearch(ModelSerializer):
     clazz = serializers.SerializerMethodField(label='班级信息')
+
     class Meta:
         model = Teacher
-        fields = ["id", "name", "sex", "card", "title", "identity", "phone_number", "birthday", "qq", "email", "school", "clazz"]
+        fields = ["id", "name", "sex", "card", "title", "identity", "phone_number", "birthday", "qq", "email", "school",
+                  "clazz"]
         depth = 1
 
     def get_clazz(self, teacher: Teacher):
-        return None
+        try:
+            return Class.objects.get(teacher_info_id=teacher.id)
+        except Class.DoesNotExist:
+            print("没找到")
+            return None
+        except Class.MultipleObjectsReturned:
+            print("返回多个!!!!!!")
+            return None
