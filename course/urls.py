@@ -11,10 +11,6 @@ from course.views.course_select import CourseSelectView
 urlpatterns = [
     path("insert", CourseInsertView.as_view({'post': 'create'})),
     path("getAll", CourseSelectView.as_view({'get': 'list'})),
-    path("getCourseById/<int:pk>", CourseSelectView.as_view({'get': 'retrieve'})),
-    path("getCourseByName/<str:name>", CourseSelectView.as_view({'get': 'retrieve_by_name'})),
-    # path("FileInfo/<int:pk>", ClassOtherView.as_view({'patch': 'FileInfo'})),
-
     path("delete/<int:pk>", CourseOtherView.as_view({'delete': 'destroy'})),
 
 ]

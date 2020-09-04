@@ -1,15 +1,9 @@
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from rest_framework.response import Response
 
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status
-from rest_framework.serializers import ModelSerializer
+from rest_framework.viewsets import ModelViewSet
 
 from course.models import Course
 from school.views.school_insert import SchoolInfoSerializers
 from utils.my_response import *
-from utils.my_swagger_auto_schema import *
 
 
 class CourseOtherView(ModelViewSet):

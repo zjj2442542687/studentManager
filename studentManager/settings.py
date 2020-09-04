@@ -35,15 +35,26 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 用户
     'user.apps.UserConfig',
+    # 家长
     'parent.apps.ParentConfig',
+    # 学生
     'student.apps.StudentConfig',
+    # 老师
     'teacher.apps.TeacherConfig',
+    # 班级
     'classs.apps.ClassConfig',
+    # 学校
     'school.apps.SchoolConfig',
+    # 用户详情(过时)
     'user_details.apps.UserDetailsConfig',
+    # 课程
     'course.apps.CourseConfig',
+    # 文件
     'FileInfo.apps.FileInfoConfig',
+    # 课程表
+    'timetable.apps.TimetableConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
