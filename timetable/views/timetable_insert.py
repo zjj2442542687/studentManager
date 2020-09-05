@@ -29,3 +29,4 @@ class TimetableInsertView(mixins.CreateModelMixin,
 
         result = views.add_course(timetable_id, course_id)
         return result if result else response_success_200(message="添加成功")
+

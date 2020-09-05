@@ -9,7 +9,7 @@ from rest_framework.parsers import MultiPartParser
 
 from user.views.urls import del_user
 from utils.my_encryption import my_decode_token
-from utils.my_info_judge import pd_token
+from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_response import response_success_200, response_error_400
 from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
 
@@ -87,5 +87,12 @@ class TeacherAmdView(ModelViewSet):
         ],
     )
     def partial_update_adm(self, request, *args, **kwargs):
+        token = request.META.get("HTTP_TOKEN")
+        check_token = pd_token(request, token)
+        if check_token:
+            return check_token
+        if pd_adm_token(request, token) >= 0:
+            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)

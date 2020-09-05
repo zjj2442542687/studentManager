@@ -50,7 +50,7 @@ class ClassSelectView(mixins.ListModelMixin,
         # School.objects.filter(school_name__contains=kwargs.get("name"))
         try:
             # instance = self.queryset.filter(school_name__contains=kwargs.get("name"))
-            instance = Class.objects.filter(class_name__contains=kwargs.get("name"))
+            instance = Class.objects.filter(class_name=kwargs.get("name"))
         except Class.DoesNotExist:
             return response_error_500(message="没找到")
         except Class.MultipleObjectsReturned:
