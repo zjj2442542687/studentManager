@@ -1,6 +1,6 @@
 from course.models import Course
 from timetable.models import Timetable
-from utils.my_response import response_error_400
+from utils.my_response import response_error_400, response_success_200
 
 
 def add_course(timetable_id: int, course_id: int):
@@ -15,3 +15,14 @@ def add_course(timetable_id: int, course_id: int):
     print(timetable_id)
     print(course_id)
     return None
+
+
+def select_class(self, class_id):
+    print(class_id)
+
+    timetable = self.queryset.filter(class_info_id=class_id)
+    print(timetable)
+    if not timetable:
+        return response_error_400(message="该班级没有课表")
+    serializer = self.get_serializer(timetable, many=True)
+    return response_success_200(data=serializer.data)

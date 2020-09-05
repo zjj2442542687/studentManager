@@ -5,9 +5,6 @@ from rest_framework.utils import json
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 
-from parent.models import Parent
-from student.models import Student
-from teacher.models import Teacher
 from user.models import User
 
 from user.views.urls import judge_code, get_info_by_token
@@ -115,11 +112,8 @@ class UserSelectView(mixins.ListModelMixin,
         ]
     )
     def login_token(self, request):
-        token = request.META.get("HTTP_TOKEN")
-        print(f'token={token}')
-        # token = request.data.get("token")
         # 判断token
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
         print("这里!!!")

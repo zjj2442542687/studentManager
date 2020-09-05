@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from user.models import User
 from utils.my_response import response_error_400
-from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR
+from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR, STATUS_TOKEN_PARAMETER_ERROR
 
 """
 一些信息的验证
@@ -73,11 +73,12 @@ def pd_qq(qq: str) -> bool:
 
 
 # token是否还有效果
-def pd_token(request, token):
+def pd_token(request):
+    token = request.META.get("HTTP_TOKEN")
     if request.user == STATUS_TOKEN_OVER:
         return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-    elif request.user == STATUS_PARAMETER_ERROR:
-        return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+    elif request.user == STATUS_TOKEN_PARAMETER_ERROR:
+        return response_error_400(staus=STATUS_TOKEN_PARAMETER_ERROR, message="token参数错误!!!!!")
     elif not User.objects.filter(token=token):
         return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
     return None

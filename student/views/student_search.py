@@ -35,12 +35,11 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
         ]
     )
     def search(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
 
-        role = int(my_decode_token(token)[1])
+        role = request.auth
         if role >= 0:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 

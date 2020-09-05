@@ -3,7 +3,7 @@ from rest_framework.authentication import BaseAuthentication
 
 from user.models import User
 from utils.my_encryption import check_token, my_decode_token
-from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR
+from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR, STATUS_TOKEN_PARAMETER_ERROR
 
 
 class MyAuthentication(BaseAuthentication):
@@ -18,14 +18,19 @@ class MyAuthentication(BaseAuthentication):
                     # token失效
                     return STATUS_TOKEN_OVER, STATUS_TOKEN_OVER
                 else:
-                    if check_token(token):
-                        ds = my_decode_token(token)
-                        pk = ds[0]
-                        role = ds[1]
-                        return int(pk), int(role)
-                    else:
-                        # token失效
-                        return STATUS_TOKEN_OVER, STATUS_TOKEN_OVER
+                    try:
+                        if check_token(token):
+                            ds = my_decode_token(token)
+                            pk = ds[0]
+                            role = ds[1]
+                            # request.user 和 request.auth
+                            return int(pk), int(role)
+                        else:
+                            # token失效
+                            return STATUS_TOKEN_OVER, STATUS_TOKEN_OVER
+                    except:
+                        # 参数错误！！！
+                        return STATUS_TOKEN_PARAMETER_ERROR, STATUS_TOKEN_PARAMETER_ERROR
             except User.DoesNotExist:
                 # token失效
                 return STATUS_TOKEN_OVER, STATUS_TOKEN_OVER
@@ -35,4 +40,4 @@ class MyAuthentication(BaseAuthentication):
         # if user_name != 'hhh':
         #     return -1, 0
         # 参数错误！！！
-        return STATUS_PARAMETER_ERROR, STATUS_PARAMETER_ERROR
+        return STATUS_TOKEN_PARAMETER_ERROR, STATUS_TOKEN_PARAMETER_ERROR

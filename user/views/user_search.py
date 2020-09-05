@@ -33,7 +33,7 @@ class UserPaginationSelectView(mixins.ListModelMixin,
     )
     def search(self, request, *args, **kwargs):
         token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
 

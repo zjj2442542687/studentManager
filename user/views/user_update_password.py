@@ -7,7 +7,7 @@ from user.models import User
 from user.views.urls import judge_code
 from user.views.user_serializers import UserInfoSerializersUpdate
 from utils.my_encryption import my_encode, my_decode
-from utils.my_info_judge import pd_password
+from utils.my_info_judge import pd_password, pd_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
@@ -34,10 +34,9 @@ class UserUpdatePassword(ModelViewSet):
         ]
     )
     def update_password_by_phone(self, request):
-        if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
 
         phone_number = request.data.get("phone_number")
         password = request.data.get("password")
@@ -81,10 +80,9 @@ class UserUpdatePassword(ModelViewSet):
         ]
     )
     def update_password_by_password(self, request):
-        if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
 
         old_password = request.data.get("old_password")
         new_password = request.data.get("new_password")

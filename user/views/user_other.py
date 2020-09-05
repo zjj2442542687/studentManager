@@ -37,7 +37,7 @@ class UserOtherView(ModelViewSet):
 
         # 判断token
         token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
 
