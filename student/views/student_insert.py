@@ -11,7 +11,7 @@ from school.models import School
 from student.models import Student
 from student.views.student_serializers import StudentInfoSerializersInsert
 from utils.my_encryption import my_encode
-from utils.my_info_judge import pd_card, pd_phone_number
+from utils.my_info_judge import pd_card, pd_phone_number, pd_token
 from utils.my_response import *
 from classs.models import Class
 from user.models import User
@@ -35,9 +35,20 @@ class StudentInsertView(mixins.CreateModelMixin,
             'birthday': string_schema('生日'),
             'qq': string_schema('QQ'),
             'email': string_schema('邮件'),
-        })
+        }),
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
+        ]
     )
     def create(self, request, *args, **kwargs):
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
+
+        role = request.auth
+        if role >= 0:
+            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+
         school = request.data.get('school')
         # 学校关联
         if not School.objects.filter(id=school):
