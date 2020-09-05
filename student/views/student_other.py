@@ -28,11 +28,10 @@ class StudentOtherView(ModelViewSet):
         ],
     )
     def destroy(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
-        role = int(my_decode_token(token)[1])
+        role = request.auth
         if role >= 0:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
         # 先删除用户
@@ -53,8 +52,7 @@ class StudentOtherView(ModelViewSet):
         ],
     )
     def partial_update(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
 
@@ -86,11 +84,10 @@ class StudentAdmView(ModelViewSet):
         ],
     )
     def partial_update_adm(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
-        if pd_adm_token(request, token) >= 0:
+        if pd_adm_token(request) >= 0:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         resp = super().partial_update(request, *args, **kwargs)
