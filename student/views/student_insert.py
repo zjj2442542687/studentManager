@@ -29,9 +29,9 @@ class StudentInsertView(mixins.CreateModelMixin,
             'name': string_schema('学生姓名'),
             'sex': string_schema('性别'),
             'card': string_schema('身份证'),
-            'clazz': string_schema('班级名称'),
+            'clazz': integer_schema('班级id'),
             'phone_number': string_schema('电话号码'),
-            'school': string_schema('学校名字'),
+            'school': integer_schema('学校id'),
             'birthday': string_schema('生日'),
             'qq': string_schema('QQ'),
             'email': string_schema('邮件'),
@@ -40,16 +40,12 @@ class StudentInsertView(mixins.CreateModelMixin,
     def create(self, request, *args, **kwargs):
         school = request.data.get('school')
         # 学校关联
-        if not School.objects.filter(school_name=school):
+        if not School.objects.filter(id=school):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
-        school_id = School.objects.get(school_name=school).id
-        request.data["school"] = school_id
         # 班级关联
         clazz = request.data.get('clazz')
-        if not Class.objects.filter(class_name=clazz):
+        if not Class.objects.filter(id=clazz):
             return response_error_400(staus=STATUS_PARAMETER_ERROR, message="班级不存在")
-        clazz_id = Class.objects.get(class_name=clazz).id
-        request.data["clazz"] = clazz_id
         # 添加用户信息
         card = request.data.get('card')
         phone_number = request.data.get('phone_number')
