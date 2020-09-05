@@ -47,10 +47,23 @@ class ClassSelectView(mixins.ListModelMixin,
         return response_success_200(data=serializer.data)
 
     def retrieve_by_name(self, request, *args, **kwargs):
-        # School.objects.filter(school_name__contains=kwargs.get("name"))
         try:
             # instance = self.queryset.filter(school_name__contains=kwargs.get("name"))
             instance = Class.objects.filter(class_name=kwargs.get("name"))
+        except Class.DoesNotExist:
+            return response_error_500(message="没找到")
+        except Class.MultipleObjectsReturned:
+            return response_error_500(message="返回多个")
+        serializer = self.get_serializer(instance, many=True)
+        return response_success_200(data=serializer.data)
+
+    @swagger_auto_schema(
+        operation_summary="根据学校id查询班级",
+        operation_description="学校id",
+    )
+    def retrieve_by_school_id(self, request, *args, **kwargs):
+        try:
+            instance = Class.objects.filter(school_info_id=kwargs.get("school_id"))
         except Class.DoesNotExist:
             return response_error_500(message="没找到")
         except Class.MultipleObjectsReturned:
