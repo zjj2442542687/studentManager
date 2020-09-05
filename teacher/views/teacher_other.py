@@ -2,7 +2,8 @@ from rest_framework.viewsets import ModelViewSet
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from teacher.models import Teacher
-from teacher.views.teacher_serializers import TeacherInfoSerializersAll, TeacherInfoSerializersUpdate
+from teacher.views.teacher_serializers import TeacherInfoSerializersAll, TeacherInfoSerializersUpdate, \
+    TeacherInfoSerializersAdmUpdate
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser
 
@@ -67,3 +68,24 @@ class TeacherOtherView(ModelViewSet):
             # return self.queryset.get(user=user_id)
             return get_object_or_404(self.queryset, user_info_id=self.request.user)
         return super().get_object()
+
+
+class TeacherAmdView(ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherInfoSerializersAdmUpdate
+    parser_classes = [MultiPartParser]
+
+    @swagger_auto_schema(
+        operation_summary="管理员修改",
+        required=[],
+        manual_parameters=[
+            openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='性别((-1, 女), (0, 保密), (1, 男))'),
+            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='身份'),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ],
+    )
+    def partial_update_adm(self, request, *args, **kwargs):
+        resp = super().partial_update(request, *args, **kwargs)
+        return response_success_200(data=resp.data)

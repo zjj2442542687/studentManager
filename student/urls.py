@@ -7,7 +7,7 @@ from django.contrib import admin
 from student.views.student_insert import StudentInsertView, StudentInsertFileView
 from student.views.student_search import StudentPaginationSelectView
 from student.views.student_select import StudentSelectView
-from student.views.student_other import StudentOtherView
+from student.views.student_other import StudentOtherView, StudentAdmView
 
 urlpatterns = [
     path("insert", StudentInsertView.as_view({'post': 'create'})),
@@ -15,6 +15,8 @@ urlpatterns = [
     # path("getAll", StudentSelectView.as_view({'get': 'list'})),
     # 根据token修改学生信息
     path("update", StudentOtherView.as_view({'patch': 'partial_update'})),
+    # 管理员根据token修改学生信息
+    path("amdupdate/<int:pk>", StudentAdmView.as_view({'post': 'partial_update_adm'})),
     # 根据token获得学生信息
     path("getInfoByToken", StudentSelectView.as_view({'post': 'retrieve_by_token'})),
     # 工具id查询

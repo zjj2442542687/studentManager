@@ -5,11 +5,13 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.generics import get_object_or_404
 
 from student.models import Student
-from student.views.student_serializers import StudentInfoSerializersUpdate
+from student.views.student_serializers import StudentInfoSerializersUpdate, StudentInfoSerializersInsert, \
+    StudentInfoSerializersAdmUpdate
 from user.views.urls import del_user
 from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token
 from utils.my_response import response_success_200, response_error_400
+from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
 
 
@@ -65,3 +67,24 @@ class StudentOtherView(ModelViewSet):
             # return self.queryset.get(user=user_id)
             return get_object_or_404(self.queryset, user_info_id=self.request.user)
         return super().get_object()
+
+
+class StudentAdmView(ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentInfoSerializersAdmUpdate
+    parser_classes = [MultiPartParser]
+
+    @swagger_auto_schema(
+        operation_summary="管理员修改",
+        required=[],
+        manual_parameters=[
+            openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='性别((-1, 女), (0, 保密), (1, 男))'),
+            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='身份'),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ],
+    )
+    def partial_update_adm(self, request, *args, **kwargs):
+        resp = super().partial_update(request, *args, **kwargs)
+        return response_success_200(data=resp.data)

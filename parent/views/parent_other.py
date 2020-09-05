@@ -8,7 +8,8 @@ from rest_framework import serializers, mixins, status
 from rest_framework.serializers import ModelSerializer
 
 from parent.models import Parent
-from parent.views.parent_serializers import ParentInfoSerializersUpdate
+from parent.views.parent_serializers import ParentInfoSerializersUpdate, ParentInfoSerializersAll, \
+    ParentInfoSerializersAdmUpdate
 from user.views.urls import del_user
 from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token
@@ -68,3 +69,24 @@ class ParentOtherView(ModelViewSet):
             # return self.queryset.get(user=user_id)
             return get_object_or_404(self.queryset, user_info_id=self.request.user)
         return super().get_object()
+
+
+class ParentAdmView(ModelViewSet):
+    queryset = Parent.objects.all()
+    serializer_class = ParentInfoSerializersAdmUpdate
+    parser_classes = [MultiPartParser]
+
+    @swagger_auto_schema(
+        operation_summary="管理员修改",
+        required=[],
+        manual_parameters=[
+            openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='性别((-1, 女), (0, 保密), (1, 男))'),
+            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='身份'),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ],
+    )
+    def partial_update_adm(self, request, *args, **kwargs):
+        resp = super().partial_update(request, *args, **kwargs)
+        return response_success_200(data=resp.data)

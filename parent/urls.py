@@ -1,7 +1,7 @@
 from django.urls import path
 
 from parent.views.parent_insert import ParentInsertView, ParentInsertFileView
-from parent.views.parent_other import ParentOtherView
+from parent.views.parent_other import ParentOtherView, ParentAdmView
 from parent.views.parent_search import ParentPaginationSelectView
 from parent.views.parent_select import ParentSelectView
 
@@ -17,6 +17,9 @@ urlpatterns = [
     path("delete/<int:pk>", ParentOtherView.as_view({'delete': 'destroy'})),
     # 根据token修改家长信息
     path("update", ParentOtherView.as_view({'patch': 'partial_update'})),
+    # 根据token修改家长信息
+    path("admupdate/<int:pk>", ParentAdmView.as_view({'patch': 'partial_update_adm'})),
+    # 信息的批量导入
     path("insert_file", ParentInsertFileView.as_view({'post': 'batch_import'})),
 
     # 分页查询

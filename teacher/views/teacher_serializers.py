@@ -20,6 +20,19 @@ class TeacherInfoSerializersDepth(ModelSerializer):
         depth = 1
 
 
+# 管理员修改的序列化
+class TeacherInfoSerializersAdmUpdate(ModelSerializer):
+    class Meta:
+        model = Teacher
+        # fields = "__all__"
+        exclude = ['user_info']
+
+    name = serializers.CharField(label='姓名', required=False)
+    card = serializers.CharField(label='身份证', required=False)
+    identity = serializers.CharField(label='身份', required=False)
+    phone_number = serializers.CharField(label='手机号码', required=False)
+
+
 # 修改操作的序列化
 class TeacherInfoSerializersUpdate(ModelSerializer):
     sex = serializers.IntegerField(label='性别', required=False)
