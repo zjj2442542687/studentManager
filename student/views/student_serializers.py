@@ -31,11 +31,13 @@ class StudentInfoSerializersAdmUpdate(ModelSerializer):
         model = Student
         # fields = "__all__"
         exclude = ['user_info']
+        # depth = 2
 
     name = serializers.CharField(label='姓名', required=False)
     card = serializers.CharField(label='身份证', required=False)
-    identity = serializers.CharField(label='身份', required=False)
+    # identity = serializers.CharField(label='身份', required=False)
     phone_number = serializers.CharField(label='手机号码', required=False)
+    # id = serializers.IntegerField(label='学号')
 
 
 # 查询操作的序列化

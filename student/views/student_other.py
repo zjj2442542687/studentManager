@@ -4,9 +4,10 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.generics import get_object_or_404
 
+from school.models import School
 from student.models import Student
 from student.views.student_serializers import StudentInfoSerializersUpdate, StudentInfoSerializersInsert, \
-    StudentInfoSerializersAdmUpdate
+    StudentInfoSerializersAdmUpdate, StudentInfoSerializersSelect
 from user.views.urls import del_user
 from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token, pd_adm_token
@@ -78,9 +79,11 @@ class StudentAdmView(ModelViewSet):
         manual_parameters=[
             openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
                               description='性别((-1, 女), (0, 保密), (1, 男))'),
-            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
-                              description='身份'),
+            # openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+            #                   description='身份'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+            # ,
+            # openapi.Parameter('id', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='学号')
         ],
     )
     def partial_update_adm(self, request, *args, **kwargs):
@@ -91,4 +94,16 @@ class StudentAdmView(ModelViewSet):
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         resp = super().partial_update(request, *args, **kwargs)
+
+        # instance = self.get_object()
+        # serializer = self.get_serializer(instance, data=request.data, partial=True)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
+        #
+        # instance = self.get_object()
+        # serializer = StudentInfoSerializersSelect(instance, context=self.get_serializer_context())
+        # print(serializer.data)
+        # return response_success_200(data=serializer.data)
+
+
         return response_success_200(data=resp.data)
