@@ -8,7 +8,7 @@ from user.models import User
 from user_details.models import UserDetails
 from user_details.views.my_limit_offset_pagination import MyLimitOffsetPagination
 from user_details.views.user_details_serializers import UserDetailsInfoSerializersAll
-from utils.my_info_judge import pd_token
+from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_response import *
 
 
@@ -22,8 +22,16 @@ class UserDetailsPaginationSelectView(mixins.ListModelMixin,
 
     @swagger_auto_schema(
         operation_summary="获得所有用户详情信息",
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
+        ],
+        deprecated=True
     )
     def list(self, request, *args, **kwargs):
+        check_token = pd_adm_token(request)
+        if check_token:
+            return check_token
+
         resp = super().list(request, *args, **kwargs)
         return response_success_200(data=resp.data)
 
@@ -41,11 +49,12 @@ class UserDetailsSelectView(mixins.ListModelMixin,
         request_body=no_body,
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
-        ]
+        ],
+        deprecated=True
+
     )
     def retrieve_by_token(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
 

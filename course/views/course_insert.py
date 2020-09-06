@@ -1,3 +1,4 @@
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework.viewsets import GenericViewSet
@@ -14,13 +15,6 @@ from utils.my_swagger_auto_schema import request_body, string_schema, integer_sc
 
 class CourseInsertView(mixins.CreateModelMixin,
                        GenericViewSet):
-    """
-    create:
-    添加一条数据
-
-    无描述
-    """
-
     queryset = Course.objects.all()
     serializer_class = CourseALlSerializers
 
@@ -30,7 +24,10 @@ class CourseInsertView(mixins.CreateModelMixin,
             'teacher_info': integer_schema('老师ID'),
             'course_name': string_schema('课程名'),
             'index': string_schema('第几节课'),
-        })
+        }),
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
+        ]
     )
     def create(self, request, *args, **kwargs):
         teacher_info = request.data.get('teacher_info')

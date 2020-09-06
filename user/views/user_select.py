@@ -22,40 +22,6 @@ class UserSelectView(mixins.ListModelMixin,
     serializer_class = UserInfoSerializersNoPassword
 
     @swagger_auto_schema(
-        operation_summary="获得所有信息",
-        operation_description="所有信息",
-        responses={200: UserInfoSerializersLess}
-    )
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = UserInfoSerializersLess(queryset, many=True)
-        return response_success_200(data=serializer.data)
-
-    @swagger_auto_schema(
-        operation_summary="根据用户名查询",
-        operation_description="我是说明",
-    )
-    def retrieve_by_username(self, request, *args, **kwargs):
-        try:
-            instance = self.queryset.get(user_name=kwargs.get("user_name"))
-        except User.DoesNotExist:
-            return response_error_500(status=STATUS_NOT_FOUND_ERROR, message="没找到")
-        except User.MultipleObjectsReturned:
-            return response_error_500(status=STATUS_MULTIPLE_ERROR, message="返回多个")
-        serializer = self.get_serializer(instance)
-        return response_success_200(data=serializer.data)
-
-    def retrieve_by_phone_number(self, request, *args, **kwargs):
-        try:
-            instance = self.queryset.get(phone_number=kwargs.get("phone_number"))
-        except User.DoesNotExist:
-            return response_error_500(status=STATUS_NOT_FOUND_ERROR, message="没找到")
-        except User.MultipleObjectsReturned:
-            return response_error_500(status=STATUS_MULTIPLE_ERROR, message="返回多个")
-        serializer = self.get_serializer(instance)
-        return response_success_200(data=serializer.data)
-
-    @swagger_auto_schema(
         operation_summary="登录验证",
         operation_description="用户名或手机号加密码登录，同时优先用户名",
         request_body=request_body(
@@ -116,6 +82,7 @@ class UserSelectView(mixins.ListModelMixin,
         check_token = pd_token(request)
         if check_token:
             return check_token
+
         print("这里!!!")
         # 获得用户信息
         instance = self.queryset.get(pk=request.user)

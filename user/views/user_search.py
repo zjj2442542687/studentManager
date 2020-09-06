@@ -6,7 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from user.models import User
 from utils.my_encryption import my_decode_token
-from utils.my_info_judge import pd_token
+from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from user.views.user_serializers import UserSerializersSearch
 from utils.my_response import response_error_400
@@ -21,7 +21,7 @@ class UserPaginationSelectView(mixins.ListModelMixin,
     pagination_class = MyLimitOffsetPagination
 
     @swagger_auto_schema(
-        operation_summary="获得所有用户详情信息",
+        operation_summary="查询",
         pagination_class=None,
         manual_parameters=[
             openapi.Parameter('role', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
@@ -32,13 +32,9 @@ class UserPaginationSelectView(mixins.ListModelMixin,
         ]
     )
     def search(self, request, *args, **kwargs):
-        check_token = pd_token(request)
+        check_token = pd_adm_token(request)
         if check_token:
             return check_token
-
-        role = request.auth
-        if role >= 0:
-            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
         # role
         role = request.GET.get("role")

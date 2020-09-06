@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'classs.apps.ClassConfig',
     # 学校
     'school.apps.SchoolConfig',
-    # 用户详情(过时)
+    # 用户详情
     'user_details.apps.UserDetailsConfig',
     # 课程
     'course.apps.CourseConfig',

@@ -11,15 +11,8 @@ from user.views.user_select import UserSelectView
 from user.views.user_update_password import UserUpdatePassword
 
 urlpatterns = [
-    # path("insert", UserInsertView.as_view({'post': 'create'})),
+    path("insert", UserInsertView.as_view({'post': 'create'})),
 
-    # path("getAll", UserSelectView.as_view({'get': 'list'})),
-    # 根据id获得用户信息
-    # path("getUserById/<int:pk>", UserSelectView.as_view({'get': 'retrieve'})),
-    # 根据用户名获得用户信息
-    # path("getUserByUserName/<str:user_name>", UserSelectView.as_view({'get': 'retrieve_by_username'})),
-    # 根据手机号获得用户信息
-    # path("getUserByPhoneNumber/<str:phone_number>", UserSelectView.as_view({'get': 'retrieve_by_phone_number'})),
     # 用户名密码登录
     path("login", UserSelectView.as_view({'post': 'login'})),
     # 判断手机号是否存在
@@ -31,6 +24,7 @@ urlpatterns = [
 
     # 根据token修改用户信息
     path("update", UserOtherView.as_view({'patch': 'partial_update'})),
+
     # 根据手机号修改用户密码
     path("updatePasswordByPhone", UserUpdatePassword.as_view({'patch': 'update_password_by_phone'})),
     # 根据原密码修改用户密码

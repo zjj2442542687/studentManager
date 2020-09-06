@@ -9,7 +9,7 @@ from user.views.urls import send_code, judge_code
 from user.views.user_insert import pd_phone_number
 from user.views.user_serializers import UserInfoSerializersUpdate
 from utils.my_encryption import my_encode, my_decode_token
-from utils.my_info_judge import pd_token
+from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
@@ -26,17 +26,15 @@ class UserOtherView(ModelViewSet):
         operation_summary="根据token修改用户信息",
         required=[],
         manual_parameters=[
-            openapi.Parameter('role', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
-                              description='(-2, 学校管理员), (-1, 超级管理员), (0, 老师), (1, 学生), (2, 家长), (3, 辅导员)'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ],
+        deprecated=True
     )
     def partial_update(self, request, *args, **kwargs):
         user_name = request.data.get("user_name")
         phone_number = request.data.get("phone_number")
 
         # 判断token
-        token = request.META.get("HTTP_TOKEN")
         check_token = pd_token(request)
         if check_token:
             return check_token
@@ -69,13 +67,13 @@ class UserOtherView(ModelViewSet):
         operation_summary="根据token删除用户",
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
-        ]
+        ],
+        deprecated=True
     )
     def destroy(self, request, *args, **kwargs):
-        if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-        elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="token参数错误!!!!!")
+        check_token = pd_adm_token(request)
+        if check_token:
+            return check_token
 
         super().destroy(request, *args, **kwargs)
         return response_success_200(message="删除成功!!")

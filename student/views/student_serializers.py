@@ -6,6 +6,9 @@ from student.models import Student
 
 
 # 添加操作的序列化
+from user.views.user_serializers import UserSerializersSearch
+
+
 class StudentInfoSerializersInsert(ModelSerializer):
     class Meta:
         model = Student
@@ -14,15 +17,10 @@ class StudentInfoSerializersInsert(ModelSerializer):
 
 # 修改操作的序列化
 class StudentInfoSerializersUpdate(ModelSerializer):
-    sex = serializers.IntegerField(label='性别', required=False)
-    phone_number = serializers.CharField(label='手机号', required=False)
-    birthday = serializers.CharField(label='生日', required=False)
-    qq = serializers.CharField(label='qq', required=False)
-    email = serializers.CharField(label='邮箱', required=False)
 
     class Meta:
         model = Student
-        fields = ['sex', 'phone_number', 'birthday', 'qq', 'email']
+        fields = []
 
 
 # 管理员修改的序列化
@@ -30,7 +28,7 @@ class StudentInfoSerializersAdmUpdate(ModelSerializer):
     class Meta:
         model = Student
         # fields = "__all__"
-        exclude = ['user_info']
+        exclude = ['user']
         # depth = 2
 
     name = serializers.CharField(label='姓名', required=False)
@@ -49,7 +47,15 @@ class StudentInfoSerializersSelect(ModelSerializer):
 
 
 class StudentSerializersSearch(ModelSerializer):
+    user = serializers.SerializerMethodField(label="用户信息")
+
     class Meta:
         model = Student
-        fields = ["id", "name", "sex", "card", "phone_number", "birthday", "qq", "email", "clazz", "school"]
+        fields = ["id", "user", "clazz", "school"]
         depth = 2
+
+    def get_user(self, student: Student):
+        # instance = User.objects.all().filter()
+        instance = student.user
+        serializer = UserSerializersSearch(instance)
+        return serializer.data

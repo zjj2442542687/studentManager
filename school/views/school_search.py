@@ -5,6 +5,8 @@ from rest_framework.viewsets import GenericViewSet
 
 from parent.models import Parent
 from parent.views.parent_serializers import ParentSerializersSearch
+from school.models import School
+from school.views.school_serializers import SchoolSerializersSearch
 from user.models import User
 from user_details.models import UserDetails
 from utils.my_encryption import my_decode_token
@@ -14,18 +16,18 @@ from utils.my_response import response_error_400
 from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
 
-class ParentPaginationSelectView(mixins.ListModelMixin,
+class SchoolPaginationSelectView(mixins.ListModelMixin,
                                  mixins.RetrieveModelMixin,
                                  GenericViewSet):
-    queryset = Parent.objects.all()
-    serializer_class = ParentSerializersSearch
+    queryset = School.objects.all()
+    serializer_class = SchoolSerializersSearch
     pagination_class = MyLimitOffsetPagination
 
     @swagger_auto_schema(
-        operation_summary="家长信息查询",
+        operation_summary="学校信息查询",
         pagination_class=None,
         manual_parameters=[
-            openapi.Parameter('name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
+            openapi.Parameter('school_name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='名字'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
         ]
@@ -36,20 +38,16 @@ class ParentPaginationSelectView(mixins.ListModelMixin,
             return check_token
 
         # 名字
-        name = request.GET.get("name")
-        parent = search_name(name)
+        school_name = request.GET.get("school_name")
+        school = search_name(school_name)
 
-        page = self.paginate_queryset(parent)
+        page = self.paginate_queryset(school)
         serializer = self.serializer_class(page, many=True, context=self.get_serializer_context())
         return self.get_paginated_response(serializer.data)
 
 
-def search_name(name):
-    if name:
-        user_details = UserDetails.objects.filter(name__contains=name)
-        # 查询用户对应的用户详情id   以及role=0或role=3 的信息
-        user = User.objects.filter(user_details_id__in=[x.pk for x in user_details]).filter(role=2)
-        print(user)
-        return Parent.objects.filter(user_id__in=[x.pk for x in user])
+def search_name(school_name):
+    if school_name:
+        return School.objects.filter(school_name=school_name)
     else:
-        return Parent.objects.all()
+        return School.objects.all()

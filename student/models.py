@@ -15,41 +15,45 @@ def to_parent_list(parent):
 
 
 class Student(models.Model):
-    user_info = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
-    name = models.CharField("学生姓名", max_length=255)
-    sex = models.CharField('性别', max_length=255)
-    card = models.CharField("身份证", max_length=255)
+    user = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
     clazz = models.ForeignKey(Class, verbose_name="班级信息", on_delete=models.SET_NULL, null=True)
-    phone_number = models.CharField("手机号码", max_length=255, null=True)
     school = models.ForeignKey(School, verbose_name="学校信息", on_delete=models.SET_NULL, null=True)
-    birthday = models.CharField("出生日期", max_length=255, null=True)
-    qq = models.CharField("QQ号码", max_length=255, null=True)
-    email = models.CharField("邮箱", max_length=255, null=True)
-    parent = models.ManyToManyField(Parent, verbose_name="监护人信息", null=True)
+    parent = models.ManyToManyField(Parent, verbose_name="监护人信息")
+
+    # 以下全部改到user_details中
+    # name = models.CharField("学生姓名", max_length=255)
+    # sex = models.CharField('性别', max_length=255)
+    # card = models.CharField("身份证", max_length=255)
+    # phone_number = models.CharField("手机号码", max_length=255, null=True)
+    # birthday = models.CharField("出生日期", max_length=255, null=True)
+    # qq = models.CharField("QQ号码", max_length=255, null=True)
+    # email = models.CharField("邮箱", max_length=255, null=True)
 
     def to_json(self):
+        user_details = self.user.user_details
         return {
-            "name": self.name,
-            "sex": self.sex,
-            "card": self.card,
+            "name": user_details.name,
+            "sex": user_details.sex,
+            "card": user_details.card,
             "clazz": self.clazz.to_json() if self.clazz else None,
-            "phone_number": self.phone_number,
+            "phone_number": self.user.phone_number,
             "school": self.school.to_json() if self.school else None,
-            "birthday": self.birthday,
-            "qq": self.qq,
-            "email": self.email,
+            "birthday": user_details.birthday,
+            "qq": user_details.qq,
+            "email": user_details.email,
             "parent": to_parent_list(self.parent.all()) if self.parent else None,
         }
 
     def search(self):
+        user_details = self.user.user_details
         return {
-            "name": self.name,
-            "sex": self.sex,
-            "card": self.card,
-            "phone_number": self.phone_number,
-            "birthday": self.birthday,
-            "qq": self.qq,
-            "email": self.email,
+            "name": user_details.name,
+            "sex": user_details.sex,
+            "card": user_details.card,
+            "phone_number": self.user.phone_number,
+            "birthday": user_details.birthday,
+            "qq": user_details.qq,
+            "email": user_details.email,
         }
 
     class Meta:

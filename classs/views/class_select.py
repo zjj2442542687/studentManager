@@ -31,10 +31,6 @@ class ClassSelectView(mixins.ListModelMixin,
 
     输入id
 
-    retrieve_by_name:
-    根据名字查询班级信息！
-
-    传入班级名字！
     # 支持模糊查询
     """
     queryset = Class.objects.all()
@@ -46,6 +42,11 @@ class ClassSelectView(mixins.ListModelMixin,
         serializer = self.get_serializer(queryset, many=True)
         return response_success_200(data=serializer.data)
 
+    @swagger_auto_schema(
+        operation_summary="根据名字查询班级信息",
+        operation_description="名字",
+        deprecated=True
+    )
     def retrieve_by_name(self, request, *args, **kwargs):
         try:
             # instance = self.queryset.filter(school_name__contains=kwargs.get("name"))
@@ -60,6 +61,7 @@ class ClassSelectView(mixins.ListModelMixin,
     @swagger_auto_schema(
         operation_summary="根据学校id查询班级",
         operation_description="学校id",
+        deprecated=True
     )
     def retrieve_by_school_id(self, request, *args, **kwargs):
         try:

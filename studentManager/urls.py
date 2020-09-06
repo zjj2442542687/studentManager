@@ -32,7 +32,7 @@ urlpatterns = [
     path('teacher/', include('teacher.urls')),
     path('classs/', include('classs.urls')),
     path('timetable/', include('timetable.urls')),
-    # path('userDetails/', include('user_details.urls')),
+    path('userDetails/', include('user_details.urls')),
     path('school/', include('school.urls')),
     path('course/', include('course.urls')),
     path('FileInfo/', include('FileInfo.urls')),

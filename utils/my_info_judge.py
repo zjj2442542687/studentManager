@@ -68,7 +68,8 @@ def pd_email(email: str) -> bool:
 
 # 判断qq号
 def pd_qq(qq: str) -> bool:
-    s = r'[1-9][0-9]{5,9}'
+    # s = r'[1-9][0-9]{5,9}'
+    s = '[1-9]\d{4,10}$'
     return re.match(s, qq) is not None
 
 
@@ -84,14 +85,12 @@ def pd_token(request):
     return None
 
 
-# 检查权限
+# 检查权限(管理员)
 def pd_adm_token(request):
-    token = request.META.get("HTTP_TOKEN")
-    if request.user == STATUS_TOKEN_OVER:
-        return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
-    elif request.user == STATUS_TOKEN_PARAMETER_ERROR:
-        return response_error_400(staus=STATUS_TOKEN_PARAMETER_ERROR, message="token参数错误!!!!!")
-    elif not User.objects.filter(token=token):
-        return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+    check_token = pd_token(request)
+    if check_token:
+        return check_token
+    elif request.auth >= 0:
+        return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
-    return User.objects.get(token=token).role
+    return None

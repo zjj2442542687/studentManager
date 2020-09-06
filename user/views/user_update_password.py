@@ -63,7 +63,7 @@ class UserUpdatePassword(ModelViewSet):
         # 保存
         instance.save()
         serializer = self.get_serializer(instance)
-        return response_success_200(message="成功!!!!", data=serializer.data)
+        return response_success_200(message="成功!!!!")
 
     @swagger_auto_schema(
         operation_summary="根据旧密码修改密码",
@@ -102,7 +102,7 @@ class UserUpdatePassword(ModelViewSet):
         # 保存
         instance.save()
         serializer = self.get_serializer(instance)
-        return response_success_200(message="成功!!!!", data=serializer.data)
+        return response_success_200(message="成功!!!!")
 
     def get_object(self):
         if self.action == "update_password_by_phone" or self.action == "update_password_by_password":

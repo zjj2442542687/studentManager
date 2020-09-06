@@ -10,7 +10,7 @@ from rest_framework.serializers import ModelSerializer
 from parent.models import Parent
 from parent.views.parent_serializers import ParentInfoSerializersUpdate, ParentInfoSerializersAll, \
     ParentInfoSerializersAdmUpdate
-from user.views.urls import del_user
+from user.views.urls import del_user_and_user_details
 from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_response import *
@@ -30,15 +30,14 @@ class ParentOtherView(ModelViewSet):
         ],
     )
     def destroy(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_TOKEN")
         check_token = pd_token(request)
         if check_token:
             return check_token
-        role = int(my_decode_token(token)[1])
-        if role >= 0:
+        if request.auth >= 0:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+
         # 先删除用户
-        check_del = del_user(2, kwargs.get("pk"))
+        check_del = del_user_and_user_details(2, kwargs.get("pk"))
         if check_del:
             return check_del
         # 删除家长
@@ -53,10 +52,10 @@ class ParentOtherView(ModelViewSet):
                               description='性别((-1, 女), (0, 保密), (1, 男))'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ],
+        deprecated=True
     )
     def partial_update(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+        check_token = pd_token(request)
         if check_token:
             return check_token
 
@@ -86,13 +85,13 @@ class ParentAdmView(ModelViewSet):
                               description='身份'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ],
+        deprecated=True
     )
-    def partial_update_adm(self, request, *args, **kwargs):
-        token = request.META.get("HTTP_TOKEN")
-        check_token = pd_token(request, token)
+    def partial_update(self, request, *args, **kwargs):
+        check_token = pd_token(request)
         if check_token:
             return check_token
-        if pd_adm_token(request, token) >= 0:
+        if request.auth >= 0:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         resp = super().partial_update(request, *args, **kwargs)

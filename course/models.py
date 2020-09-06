@@ -1,12 +1,13 @@
 from django.db import models
 
 from teacher.models import Teacher
-from classs.models import Class
+from timetable.models import Timetable
 
 
 class Course(models.Model):
+    timetable = models.ForeignKey(Timetable, verbose_name="课表", on_delete=models.SET_NULL, null=True)
+    teacher = models.ForeignKey(Teacher, verbose_name="老师信息", on_delete=models.SET_NULL, null=True)
     course_name = models.CharField("课程名称", max_length=255)
-    teacher_info = models.ForeignKey(Teacher, verbose_name="老师信息", on_delete=models.SET_NULL, null=True)
     index = models.CharField("第几节课", max_length=10)
 
     class Meta:

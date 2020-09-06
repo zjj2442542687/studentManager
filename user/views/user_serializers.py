@@ -4,6 +4,7 @@ from rest_framework.serializers import ModelSerializer
 from user.models import User
 from user.views.urls import get_info
 
+
 class UserInfoSerializers(ModelSerializer):
     pass
     # name = serializers.SerializerMethodField(label='真实姓名')
@@ -30,11 +31,11 @@ class UserInfoSerializersNoToken(UserInfoSerializers):
         exclude = ["token"]
 
 
-# 不显示password和token的
+# 不显示token的
 class UserInfoSerializersLess(UserInfoSerializers):
     class Meta:
         model = User
-        exclude = ['password', 'token']
+        exclude = ['token']
 
 
 # 不显示password
@@ -55,12 +56,10 @@ class UserInfoSerializersNoPassword(UserInfoSerializers):
 class UserInfoSerializersUpdate(ModelSerializer):
     user_name = serializers.CharField(label='用户名', required=False)
     phone_number = serializers.CharField(label='手机号', required=False)
-    role = serializers.IntegerField(label='角色', required=False)
-    avatar = serializers.ImageField(label='头像', required=False)
 
     class Meta:
         model = User
-        fields = ["user_name", "phone_number", "role", "avatar"]
+        fields = ["user_name", "phone_number"]
 
 
 # 手机号验证码修改密码
@@ -78,8 +77,9 @@ class UserSerializersSearch(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["user_name", "phone_number", "role", "avatar", "role_info"]
+        fields = ["id", "user_name", "role", "role_info"]
 
     def get_role_info(self, user: User):
         info = get_info(user.id, user.role)
+
         return info.search() if info else None

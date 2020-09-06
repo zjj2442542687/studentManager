@@ -1,3 +1,4 @@
+from django.db.models import Q
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
@@ -6,8 +7,10 @@ from rest_framework.viewsets import GenericViewSet
 from classs.models import Class
 from teacher.models import Teacher
 from teacher.views.teacher_serializers import TeacherSerializersSearch
+from user.models import User
+from user_details.models import UserDetails
 from utils.my_encryption import my_decode_token
-from utils.my_info_judge import pd_token
+from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from utils.my_response import response_error_400
 from utils.status import STATUS_TOKEN_NO_AUTHORITY
@@ -28,7 +31,7 @@ class TeacherPaginationSelectView(mixins.ListModelMixin,
                               description='名字'),
             openapi.Parameter('school', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
                               description='学校id'),
-            openapi.Parameter('clazz_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+            openapi.Parameter('clazz', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
                               description='班级id'),
             openapi.Parameter('title', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='昵称'),
@@ -38,25 +41,21 @@ class TeacherPaginationSelectView(mixins.ListModelMixin,
         ]
     )
     def search(self, request, *args, **kwargs):
-        check_token = pd_token(request)
+        check_token = pd_adm_token(request)
         if check_token:
             return check_token
-
-        role = request.auth
-        if role >= 0:
-            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
         # 名字
         name = request.GET.get("name")
         teacher = search_name(name)
 
         # 学校
-        school_id = request.GET.get("school_id")
-        teacher = search_school(school_id, teacher)
+        school = request.GET.get("school")
+        teacher = search_school(school, teacher)
 
         # 班级
-        clazz_id = request.GET.get("clazz_id")
-        clazz_result = search_clazz(clazz_id)
+        clazz = request.GET.get("clazz")
+        clazz_result = search_clazz(clazz)
         # 因为查询的结果可能为空集合，所以用这个（为空集合也赋值）
         if clazz_result is not None:
             teacher = clazz_result
@@ -79,7 +78,12 @@ class TeacherPaginationSelectView(mixins.ListModelMixin,
 
 def search_name(name):
     if name:
-        return Teacher.objects.filter(name__contains=name)
+        user_details = UserDetails.objects.filter(name__contains=name)
+        print(user_details)
+        # 查询用户对应的用户详情id   以及role=0或role=3 的信息
+        user = User.objects.filter(user_details_id__in=[x.pk for x in user_details]).filter(Q(role=0) | Q(role=3))
+        print(user)
+        return Teacher.objects.filter(user_id__in=[x.pk for x in user])
     else:
         return Teacher.objects.all()
 

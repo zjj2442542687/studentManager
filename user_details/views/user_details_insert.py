@@ -10,19 +10,16 @@ from utils.my_swagger_auto_schema import *
 
 class UserDetailsInsertView(mixins.CreateModelMixin,
                             GenericViewSet):
-    """
-    create:
-    添加一条数据
-
-    无描述
-    """
     queryset = UserDetails.objects.all()
     serializer_class = UserDetailsInfoSerializersAll
 
     @swagger_auto_schema(
+        operation_summary="添加一条数据",
+        required=[],
         request_body=request_body(properties={
             'user': integer_schema('用户id'),
-        })
+        }),
+        deprecated=True
     )
     def create(self, request, *args, **kwargs):
         resp = super().create(request, *args, **kwargs)

@@ -10,8 +10,9 @@ from parent.models import Parent
 from FileInfo.models import FileInfo
 from parent.views.parent_serializers import ParentInfoSerializersAll
 from user.models import User
+from user_details.models import UserDetails
 from utils.my_encryption import my_encode
-from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email
+from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email, pd_adm_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
 
@@ -37,7 +38,8 @@ class ParentInsertView(mixins.CreateModelMixin,
             'birthday': string_schema('生日'),
             'qq': string_schema('QQ'),
             # 'email': string_schema('邮件'),
-        })
+        }),
+        deprecated=True
     )
     def create(self, request, *args, **kwargs):
         # user_info = request.data.get('user_info')
@@ -113,10 +115,15 @@ class ParentInsertFileView(mixins.CreateModelMixin,
         request_body=no_body,
         manual_parameters=[
             openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE,
-                              description='文件 ')
+                              description='文件 '),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
         ],
     )
     def batch_import(self, request, *args, **kwargs):
+        # check_token = pd_adm_token(request)
+        # if check_token:
+        #     return check_token
+
         file = request.FILES.get("file")
         check_file = batch_import_test(file)
         if check_file:
@@ -134,18 +141,24 @@ class ParentInsertFileView(mixins.CreateModelMixin,
             if User.objects.filter(phone_number=phone_number):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
             # print(dt[1]['班级'])
+            print(phone_number)
             password = my_encode(phone_number)
-            User.objects.get_or_create(user_name=card, password=password,
-                                       phone_number=phone_number, role=2)
-            Parent.objects.create(
-                user_info=User.objects.get(user_name=card),
+            # 创建用户详情
+            user_details_id = UserDetails.objects.create(
                 name=dt[1]['家长姓名'],
-                sex=dt[1]['性别'],
+                sex=-1 if dt[1]['性别'] == '女' else (1 if dt[1]['性别'] == '男' else 0),
                 card=card,
-                phone_number=phone_number,
                 birthday=dt[1]['生日'],
                 qq=dt[1]['QQ(选填)'],
                 email=dt[1]['邮箱(选填)'],
+            ).id
+            # 创建user
+            user_id = User.objects.create(
+                user_name=card, password=password,
+                phone_number=phone_number, role=2, user_details_id=user_details_id
+            ).id
+            Parent.objects.create(
+                user_id=user_id,
             )
 
         return response_success_200(message="成功!!!!")

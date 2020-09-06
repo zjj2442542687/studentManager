@@ -11,22 +11,16 @@ from student.views.student_other import StudentOtherView, StudentAdmView
 
 urlpatterns = [
     path("insert", StudentInsertView.as_view({'post': 'create'})),
-    # 获得全部
-    # path("getAll", StudentSelectView.as_view({'get': 'list'})),
     # 根据token修改学生信息
     path("update", StudentOtherView.as_view({'patch': 'partial_update'})),
     # 管理员根据token修改学生信息
-    path("amdupdate/<int:pk>", StudentAdmView.as_view({'patch': 'partial_update_adm'})),
+    path("amdupdate/<int:pk>", StudentAdmView.as_view({'patch': 'partial_update'})),
     # 根据token获得学生信息
     path("getInfoByToken", StudentSelectView.as_view({'post': 'retrieve_by_token'})),
-    # 工具id查询
-    # path("getStudentById/<int:pk>", StudentSelectView.as_view({'get': 'retrieve'})),
-    # path("getStudentByName/<str:student_name>", StudentInsertView.as_view({'get': 'retrieve_by_student_name'})),
-    # path("FileInfo/<int:pk>", StudentOtherView.as_view({'patch': 'FileInfo'})),
     # 根据id删除学生
     path("delete/<int:pk>", StudentOtherView.as_view({'delete': 'destroy'})),
     # 学生的批量导入
-    path("insert_file", StudentInsertFileView.as_view({'post': 'batch_import'})),
+    path("insertFile", StudentInsertFileView.as_view({'post': 'batch_import'})),
     # 添加家长
     path("addParent", StudentInsertView.as_view({'post': 'add_parent'})),
 

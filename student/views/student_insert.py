@@ -7,11 +7,13 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 from rest_framework.serializers import ModelSerializer
 
+from parent.models import Parent
 from school.models import School
 from student.models import Student
 from student.views.student_serializers import StudentInfoSerializersInsert
+from user_details.models import UserDetails
 from utils.my_encryption import my_encode
-from utils.my_info_judge import pd_card, pd_phone_number, pd_token
+from utils.my_info_judge import pd_card, pd_phone_number, pd_token, pd_adm_token
 from utils.my_response import *
 from classs.models import Class
 from user.models import User
@@ -38,7 +40,8 @@ class StudentInsertView(mixins.CreateModelMixin,
         }),
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
-        ]
+        ],
+        deprecated=True
     )
     def create(self, request, *args, **kwargs):
         check_token = pd_token(request)
@@ -77,18 +80,29 @@ class StudentInsertView(mixins.CreateModelMixin,
         operation_description="传入学生id和家长id",
         operation_summary="学生添加家长",
         request_body=request_body(properties={
-            'student_id': integer_schema('学生id'),
             'parent_id': integer_schema('家长id'),
-        })
+        }),
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='student的TOKEN'),
+        ]
     )
     def add_parent(self, request):
-        student_id = request.data.get('student_id')
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
+
+        if request.auth != 1:
+            return response_error_400(message="没有权限")
+
+        student_id = Student.objects.get(user_id=request.user)
         parent_id = request.data.get('parent_id')
 
-        self.queryset.get(pk=student_id).parent.add(parent_id)
-
+        if not Parent.objects.filter(id=parent_id).exists():
+            return response_error_400(message="未找到该信息")
         print(student_id)
         print(parent_id)
+        self.queryset.get(pk=student_id).parent.add(parent_id)
+
         return response_success_200(message="成功")
 
 
@@ -110,10 +124,15 @@ class StudentInsertFileView(mixins.CreateModelMixin,
         request_body=no_body,
         manual_parameters=[
             openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE,
-                              description='文件 ')
+                              description='文件 '),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
         ],
     )
     def batch_import(self, request, *args, **kwargs):
+        check_token = pd_adm_token(request)
+        if check_token:
+            return check_token
+
         file = request.FILES.get("file")
         check_file = batch_import_test(file)
         if check_file:
@@ -140,19 +159,24 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             if not Class.objects.filter(class_name=class_name):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
             password = my_encode(phone_number)
-            User.objects.get_or_create(user_name=card, password=password,
-                                       phone_number=phone_number, role=1)
-            Student.objects.create(
-                user_info=User.objects.get(user_name=card),
+            # 创建用户详情
+            user_details_id = UserDetails.objects.create(
                 name=dt[1]['学生姓名'],
-                sex=dt[1]['性别'],
-                card=dt[1]['身份证'],
-                phone_number=phone_number,
-                clazz=Class.objects.get(class_name=dt[1]['班级']),
-                school=School.objects.get(school_name=dt[1]['学校名称']),
+                sex=-1 if dt[1]['性别'] == '女' else (1 if dt[1]['性别'] == '男' else 0),
+                card=card,
                 birthday=dt[1]['生日'],
                 qq=dt[1]['QQ(选填)'],
                 email=dt[1]['邮箱(选填)'],
+            ).id
+            # 创建user
+            user_id = User.objects.create(
+                user_name=card, password=password,
+                phone_number=phone_number, role=1, user_details_id=user_details_id
+            ).id
+            Student.objects.create(
+                user_id=user_id,
+                clazz=Class.objects.get(class_name=dt[1]['班级']),
+                school=School.objects.get(school_name=school)
             )
 
         return response_success_200(message="成功!!!!")
@@ -182,7 +206,7 @@ def batch_import_test(file):
             message += ",身份证格式错误"
         elif card in card_list:
             message += f",身份证和{card_list.index(card) + 1}重复"
-        elif User.objects.filter(user_name=card):
+        elif UserDetails.objects.filter(card=card):
             message += ",身份证已经注册存在"
 
         if phone_number:
@@ -195,7 +219,7 @@ def batch_import_test(file):
 
         if not School.objects.filter(school_name=school):
             message += ",学校不存在"
-        elif not Class.objects.filter(class_name=class_name, school_info_id=School.objects.get(school_name=school).id):
+        elif not Class.objects.filter(class_name=class_name, school_id=School.objects.get(school_name=school).id):
             message += ",学校中班级名不存在"
 
         if message:

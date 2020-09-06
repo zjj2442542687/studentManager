@@ -3,6 +3,7 @@ from rest_framework.serializers import ModelSerializer
 
 from parent.models import Parent
 from student.models import Student
+from user.views.user_serializers import UserSerializersSearch
 
 
 class ParentInfoSerializersAll(ModelSerializer):
@@ -37,7 +38,7 @@ class ParentInfoSerializersAdmUpdate(ModelSerializer):
 
     class Meta:
         model = Parent
-        exclude = ['user_info']
+        exclude = ['user']
 
 
 # 查询需要的用户序列化
@@ -63,6 +64,14 @@ class ParentInfoSerializersSelect(ModelSerializer):
 
 
 class ParentSerializersSearch(ModelSerializer):
+    user = serializers.SerializerMethodField(label="用户信息")
+
     class Meta:
         model = Parent
-        fields = ["id", "name", "sex", "card", "phone_number", "birthday", "qq", "email"]
+        fields = ["id", "user"]
+
+    def get_user(self, parent: Parent):
+        # instance = User.objects.all().filter()
+        instance = parent.user
+        serializer = UserSerializersSearch(instance)
+        return serializer.data

@@ -28,12 +28,13 @@ class UserInfoSerializersUserInfo(ModelSerializer):
 
 # update中包含的序列化
 class UserDetailsInfoSerializersUpdate(ModelSerializer):
-    name = serializers.CharField(label='昵称', required=False)
     avatar = serializers.ImageField(label='头像', required=False)
     sex = serializers.IntegerField(label='性别', required=False)
     birthday = serializers.DateTimeField(label='生日', required=False)
+    qq = serializers.CharField(label='qq', required=False)
+    email = serializers.CharField(label='邮箱', required=False)
     personal_signature = serializers.CharField(label='个性签名', required=False)
 
     class Meta:
         model = UserDetails
-        fields = ["name", "avatar", "sex", "birthday", "personal_signature"]
+        fields = ["avatar", "sex", "birthday", "qq", "email", "personal_signature"]

@@ -5,14 +5,13 @@ from rest_framework import permissions
 from django.contrib import admin
 
 from school.views.school_insert import SchoolInsertView
+from school.views.school_search import SchoolPaginationSelectView
 from school.views.school_select import SchoolSelectView
 from school.views.school_other import SchoolOtherView
 
 urlpatterns = [
     path("insert", SchoolInsertView.as_view({'post': 'create'})),
-    path("getAll", SchoolSelectView.as_view({'get': 'list'})),
-    path("getSchoolById/<int:pk>", SchoolSelectView.as_view({'get': 'retrieve'})),
-    path("getSchoolByName/<str:name>", SchoolSelectView.as_view({'get': 'retrieve_by_name'})),
-    path("FileInfo/<int:pk>", SchoolOtherView.as_view({'patch': 'FileInfo'})),
+    path("partialUpdate/<int:pk>", SchoolOtherView.as_view({'patch': 'partial_update'})),
     path("delete/<int:pk>", SchoolOtherView.as_view({'delete': 'destroy'})),
+    path("search", SchoolPaginationSelectView.as_view({'get': 'search'})),
 ]

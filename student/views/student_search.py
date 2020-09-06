@@ -1,3 +1,4 @@
+from django.db.models import Q
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
@@ -6,6 +7,7 @@ from rest_framework.viewsets import GenericViewSet
 from student.models import Student
 from student.views.student_serializers import StudentSerializersSearch
 from user.models import User
+from user_details.models import UserDetails
 from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
@@ -39,8 +41,7 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
         if check_token:
             return check_token
 
-        role = request.auth
-        if role >= 0:
+        if request.auth >= 0:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
         # 名字
@@ -62,7 +63,11 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
 
 def search_name(name):
     if name:
-        return Student.objects.filter(name__contains=name)
+        user_details = UserDetails.objects.filter(name__contains=name)
+        # 查询用户对应的用户详情id   以及role=0或role=3 的信息
+        user = User.objects.filter(user_details_id__in=[x.pk for x in user_details]).filter(role=1)
+        print(user)
+        return Student.objects.filter(user_id__in=[x.pk for x in user])
     else:
         return Student.objects.all()
 

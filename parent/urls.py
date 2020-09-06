@@ -18,9 +18,9 @@ urlpatterns = [
     # 根据token修改家长信息
     path("update", ParentOtherView.as_view({'patch': 'partial_update'})),
     # 根据token修改家长信息
-    path("admupdate/<int:pk>", ParentAdmView.as_view({'patch': 'partial_update_adm'})),
+    path("admupdate/<int:pk>", ParentAdmView.as_view({'patch': 'partial_update'})),
     # 信息的批量导入
-    path("insert_file", ParentInsertFileView.as_view({'post': 'batch_import'})),
+    path("insertFile", ParentInsertFileView.as_view({'post': 'batch_import'})),
 
     # 分页查询
     path("search", ParentPaginationSelectView.as_view({'get': 'search'})),
