@@ -8,7 +8,7 @@ from rest_framework import mixins
 from user.models import User
 
 from user.views.urls import judge_code, get_info_by_token
-from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersNoPassword
+from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersLogin
 from utils.my_encryption import my_encode, my_encode_token, my_decode_token, my_decode
 from utils.my_info_judge import pd_token
 from utils.my_response import *
@@ -19,7 +19,7 @@ class UserSelectView(mixins.ListModelMixin,
                      mixins.RetrieveModelMixin,
                      GenericViewSet):
     queryset = User.objects.all()
-    serializer_class = UserInfoSerializersNoPassword
+    serializer_class = UserInfoSerializersLogin
 
     @swagger_auto_schema(
         operation_summary="登录验证",

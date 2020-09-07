@@ -39,10 +39,11 @@ class UserInfoSerializersLess(UserInfoSerializers):
 
 
 # 不显示password
-class UserInfoSerializersNoPassword(UserInfoSerializers):
+class UserInfoSerializersLogin(UserInfoSerializers):
     class Meta:
         model = User
         exclude = ['password']
+        depth = 1
 
 
 # 修改信息的token

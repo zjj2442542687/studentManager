@@ -21,18 +21,10 @@ class Teacher(models.Model):
     # email = models.CharField("邮箱", max_length=255, null=True)
 
     def to_json(self):
-        user_details = self.user.user_details
         return {
-            "name": user_details.name,
-            "sex": user_details.sex,
-            "card": user_details.card,
             "title": self.title,
             "identity": self.identity,
-            "phone_number": self.user.phone_number,
             "school": self.school.to_json() if self.school else None,
-            "birthday": user_details.birthday,
-            "qq": user_details.qq,
-            "email": user_details.email,
         }
 
     def search(self):
