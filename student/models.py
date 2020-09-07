@@ -49,4 +49,5 @@ class Student(models.Model):
         }
 
     class Meta:
-        verbose_name = '学生'
+        verbose_name = "学生"
+        verbose_name_plural = verbose_name

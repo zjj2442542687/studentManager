@@ -30,9 +30,11 @@ class ParentOtherView(ModelViewSet):
         ],
     )
     def destroy(self, request, *args, **kwargs):
-        check_token = pd_adm_token(request)
+        check_token = pd_token(request)
         if check_token:
             return check_token
+        if request.auth >= 0:
+            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
         # 先删除用户
         check_del = del_user_and_user_details(2, kwargs.get("pk"))
@@ -86,9 +88,11 @@ class ParentAdmView(ModelViewSet):
         deprecated=True
     )
     def partial_update(self, request, *args, **kwargs):
-        check_token = pd_adm_token(request)
+        check_token = pd_token(request)
         if check_token:
             return check_token
+        if request.auth >= 0:
+            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)

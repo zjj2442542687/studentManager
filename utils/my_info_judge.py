@@ -94,3 +94,14 @@ def pd_adm_token(request):
         return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
     return None
+
+
+# 检查权限（超级管理员才有的权限）
+def pd_super_adm_token(request):
+    check_token = pd_token(request)
+    if check_token:
+        return check_token
+    elif request.auth != -1:
+        return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+
+    return None

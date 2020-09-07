@@ -29,7 +29,6 @@ class UserInfoSerializersUserInfo(ModelSerializer):
 # update中包含的序列化
 class UserDetailsInfoSerializersUpdate(ModelSerializer):
     avatar = serializers.ImageField(label='头像', required=False)
-    sex = serializers.IntegerField(label='性别', required=False)
     birthday = serializers.CharField(label='生日', required=False)
     qq = serializers.CharField(label='qq', required=False)
     email = serializers.CharField(label='邮箱', required=False)
