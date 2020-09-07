@@ -29,7 +29,6 @@ class TeacherInsertView(mixins.CreateModelMixin,
             'sex': string_schema('性别'),
             'card': string_schema('身份证'),
             'title': string_schema('职称'),
-            'identity': string_schema('身份'),
             # 'clazz': integer_schema('班级'),
             'phone_number': string_schema('电话号码'),
             'school': string_schema('学校名字'),
@@ -125,7 +124,6 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
             Teacher.objects.create(
                 user_id=user_id,
                 title=dt[1]['职称'],
-                identity=dt[1]['身份'],
                 school=School.objects.get(school_name=school),
             )
         return response_success_200(message="成功!!!!")

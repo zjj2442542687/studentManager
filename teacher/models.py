@@ -8,7 +8,6 @@ from user.models import User
 class Teacher(models.Model):
     user = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
     title = models.CharField("职称", max_length=255)
-    identity = models.CharField("身份", max_length=255)
     school = models.ForeignKey(School, verbose_name="学校信息", on_delete=models.SET_NULL, null=True)
 
     # 以下全部改到user_details中
@@ -21,9 +20,10 @@ class Teacher(models.Model):
     # email = models.CharField("邮箱", max_length=255, null=True)
 
     def to_json(self):
+        role = self.user.role
         return {
             "title": self.title,
-            "identity": self.identity,
+            "identity": "辅导员" if role == 3 else ("普通教师" if role == 0 else "未知"),
             "school": self.school.to_json() if self.school else None,
         }
 
