@@ -14,7 +14,7 @@ urlpatterns = [
     # 根据token修改学生信息
     path("update", StudentOtherView.as_view({'patch': 'partial_update'})),
     # 管理员根据token修改学生信息
-    path("amdupdate/<int:pk>", StudentAdmView.as_view({'patch': 'partial_update'})),
+    path("amdupdate/<int:pk>", StudentAdmView.as_view({'patch': 'partial_update_adm'})),
     # 根据token获得学生信息
     path("getInfoByToken", StudentSelectView.as_view({'post': 'retrieve_by_token'})),
     # 根据id删除学生
