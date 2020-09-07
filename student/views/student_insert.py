@@ -94,7 +94,7 @@ class StudentInsertView(mixins.CreateModelMixin,
         if request.auth != 1:
             return response_error_400(message="没有权限")
 
-        student_id = Student.objects.get(user_id=request.user)
+        student_id = Student.objects.get(user_id=request.user).id
         parent_id = request.data.get('parent_id')
 
         if not Parent.objects.filter(id=parent_id).exists():

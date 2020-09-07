@@ -5,7 +5,7 @@ from user_details.models import UserDetails
 
 class User(models.Model):
     user_name = models.CharField("用户名", max_length=255, unique=True)
-    password = models.CharField("密码", max_length=255, default="1234=56")
+    password = models.CharField("密码", max_length=255, default="123456")
     phone_number = models.CharField("手机号", max_length=255, unique=True)
     role = models.SmallIntegerField('角色',
                                     choices=((-2, '学校管理员'), (-1, '超级管理员'), (0, '老师'), (1, '学生'), (2, '家长'), (3, '辅导员')),
