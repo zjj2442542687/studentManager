@@ -9,7 +9,7 @@ class Timetable(models.Model):
                                     choices=((1, '星期一'), (2, '星期二'), (3, '星期三'), (4, '星期四'), (5, '星期五'), (6, '星期六'),
                                              (7, '星期天')),
                                     default=1)
-    Date = models.DateField("日期")
+    # Date = models.DateField("日期", null=True)
 
     class Meta:
         verbose_name = '课表'
