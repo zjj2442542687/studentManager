@@ -45,7 +45,7 @@ class TimetableSelectView(mixins.ListModelMixin,
             return check_token
 
         if request.auth != 1:
-            return response_error_400(message="需要出入学生token")
+            return response_error_400(message="需要传入学生token")
 
         try:
             clazz = Student.objects.get(user_info_id=request.user).clazz

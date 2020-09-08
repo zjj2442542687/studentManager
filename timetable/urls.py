@@ -3,6 +3,7 @@ from timetable.views.timetable_insert import TimetableInsertView, TimetableInser
 from timetable.views.timetable_select import TimetableSelectView
 
 urlpatterns = [
+    # 导入课表
     path("insert", TimetableInsertView.as_view({'post': 'create'})),
     path("addCourse", TimetableInsertView.as_view({'post': 'add_course'})),
     path("insert_file", TimetableInsertFileView.as_view({'post': 'batch_import'})),

@@ -15,7 +15,7 @@ urlpatterns = [
     # 根据token修改老师信息
     path("update", TeacherOtherView.as_view({'patch': 'partial_update'})),
     # 管理员根据token修改老师信息
-    path("admUpdate/<int:pk>", TeacherAmdView.as_view({'patch': 'partial_update'})),
+    path("admUpdate/<int:pk>", TeacherAmdView.as_view({'patch': 'partial_update_adm'})),
 
     # 分页查询
     path("search", TeacherPaginationSelectView.as_view({'get': 'search'})),

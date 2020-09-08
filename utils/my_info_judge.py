@@ -69,7 +69,7 @@ def pd_email(email: str) -> bool:
 # 判断qq号
 def pd_qq(qq: str) -> bool:
     # s = r'[1-9][0-9]{5,9}'
-    s = '[1-9]\d{4,10}$'
+    s = '[1-9]\d{4,11}$'
     return re.match(s, qq) is not None
 
 
@@ -96,12 +96,11 @@ def pd_adm_token(request):
     return None
 
 
-# 检查权限（超级管理员才有的权限）
-def pd_super_adm_token(request):
+# 查看权限
+def lookup_token(request):
+    token = request.META.get("HTTP_TOKEN")
     check_token = pd_token(request)
     if check_token:
         return check_token
-    elif request.auth != -1:
-        return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
-    return None
+    return User.objects.get(token=token).role

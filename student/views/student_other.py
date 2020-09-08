@@ -49,7 +49,7 @@ class StudentOtherView(ModelViewSet):
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ],
-        deprecated=True
+        # deprecated=True
     )
     def partial_update(self, request, *args, **kwargs):
         check_token = pd_token(request)
@@ -84,12 +84,13 @@ class StudentAdmView(ModelViewSet):
             # ,
             # openapi.Parameter('id', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='学号')
         ],
-        deprecated=True
     )
-    def partial_update(self, request, *args, **kwargs):
-        check_token = pd_adm_token(request)
+    def partial_update_adm(self, request, *args, **kwargs):
+        check_token = pd_token(request)
         if check_token:
             return check_token
+        if pd_adm_token(request) >= 0:
+            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         resp = super().partial_update(request, *args, **kwargs)
 

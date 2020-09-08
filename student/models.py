@@ -18,7 +18,7 @@ class Student(models.Model):
     user = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.CASCADE, null=True)
     clazz = models.ForeignKey(Class, verbose_name="班级信息", on_delete=models.SET_NULL, null=True)
     school = models.ForeignKey(School, verbose_name="学校信息", on_delete=models.SET_NULL, null=True)
-    parent = models.ManyToManyField(Parent, verbose_name="监护人信息")
+    parent = models.ManyToManyField(Parent, verbose_name="监护人信息", null=True)
 
     # 以下全部改到user_details中
     # name = models.CharField("学生姓名", max_length=255)
