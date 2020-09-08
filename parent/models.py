@@ -6,7 +6,7 @@ from user.models import User
 
 
 class Parent(models.Model):
-    user = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.CASCADE, null=True)
 
     # 以下全部改到user_details中
     # name = models.CharField("家长姓名", max_length=255)

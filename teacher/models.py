@@ -6,7 +6,7 @@ from user.models import User
 
 
 class Teacher(models.Model):
-    user = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField(User, verbose_name="用户信息", on_delete=models.CASCADE, null=True)
     title = models.CharField("职称", max_length=255)
     school = models.ForeignKey(School, verbose_name="学校信息", on_delete=models.SET_NULL, null=True)
 

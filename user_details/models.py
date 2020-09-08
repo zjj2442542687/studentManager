@@ -8,7 +8,7 @@ class UserDetails(models.Model):
     sex = models.SmallIntegerField('性别', choices=((-1, '女'), (0, '保密'), (1, '男')), default=0)
     birthday = models.CharField("出生日期", max_length=255, null=True)
     qq = models.CharField("QQ号码", max_length=255, null=True)
-    email = models.CharField("邮箱", max_length=255, null=True)
+    email = models.EmailField("邮箱", max_length=255, null=True)
     personal_signature = models.CharField("个性签名", max_length=255, default="这个人很神秘，什么都没写")
 
     def to_json(self):
