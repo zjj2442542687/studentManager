@@ -16,6 +16,7 @@ from timetable.views.timetable_serializers import TimetableAllSerializersInsert
 from utils.my_info_judge import pd_adm_token
 from utils.my_response import response_success_200, response_error_400, STATUS_PARAMETER_ERROR
 from utils.my_swagger_auto_schema import request_body, integer_schema, string_schema
+from week.models import Week
 
 
 class TimetableInsertView(mixins.CreateModelMixin,
@@ -102,7 +103,7 @@ class TimetableInsertFileView(mixins.CreateModelMixin,
             # week = dt[1]['星期']
             teacher = ['课程老师工号']
             allweek = ['星期', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
-            week = allweek.index(dt[1]['星期'])
+            week = Week.objects.create(index=allweek.index(dt[1]['星期']))
             course = ['课程', ' 第一节课', ' 第二节课', ' 第三节课', ' 第四节课', ' 第五节课', ' 第六节课', ' 第七节课', ' 第八节课']
             for j in range(1, 9):
                 s = dt[1]['课程老师工号' + str(j)]
