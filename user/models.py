@@ -11,7 +11,7 @@ class User(models.Model):
                                     choices=((-2, '学校管理员'), (-1, '超级管理员'), (0, '老师'), (1, '学生'), (2, '家长'), (3, '辅导员')),
                                     default=1)
     token = models.CharField("token", max_length=255, default="-1")
-    user_details = models.OneToOneField(UserDetails, verbose_name="用户信息", on_delete=models.SET_NULL, null=True)
+    user_details = models.OneToOneField(UserDetails, verbose_name="用户信息", on_delete=models.CASCADE, null=True)
     # 改到user_details中
     # avatar = models.ImageField("头像", upload_to="user/avatar", null=True)
 
