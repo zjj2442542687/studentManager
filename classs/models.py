@@ -11,7 +11,7 @@ class Class(models.Model):
                                       error_messages={
                                           'unique': "老师信息唯一"})
     class_name = models.CharField('班级名', max_length=255)
-    school = models.ForeignKey(School, verbose_name="学校ID", on_delete=models.SET_NULL, null=True)
+    school = models.ForeignKey(School, verbose_name="学校ID", on_delete=models.CASCADE, null=True)
     teachers = models.ManyToManyField(Teacher, verbose_name="老师")
 
     def to_json(self):
