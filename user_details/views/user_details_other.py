@@ -21,7 +21,7 @@ class UserDetailsOtherView(ModelViewSet):
         required=[],
         manual_parameters=[
             openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
-                              description='性别((-1, 女), (0, 保密), (1, 男))'),
+                              description='性别((-1, 女), (0, 保密), (1, 男))', enum=[-1, 0, 1]),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ]
     )

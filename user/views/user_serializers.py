@@ -38,11 +38,13 @@ class UserInfoSerializersLess(UserInfoSerializers):
         exclude = ['token']
 
 
-# 不显示password
+# 不显示password(只写，不显示)
 class UserInfoSerializersLogin(UserInfoSerializers):
+    password = serializers.CharField(write_only=True, label="密码")
+
     class Meta:
         model = User
-        exclude = ['password']
+        fields = "__all__"
         depth = 1
 
 

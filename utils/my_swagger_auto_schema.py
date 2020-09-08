@@ -1,4 +1,5 @@
 from drf_yasg import openapi
+from drf_yasg.openapi import Schema
 
 
 def request_body(properties, required=None):
@@ -11,12 +12,18 @@ def request_body(properties, required=None):
     )
 
 
-def string_schema(description=None, default=None):
-    return openapi.Schema(type=openapi.TYPE_STRING, description=description, default=default)
+def string_schema(description=None, default=None, title=None):
+    return openapi.Schema(type=openapi.TYPE_STRING, description=description, default=default, title=title)
 
 
-def integer_schema(description=None, default=None):
-    return openapi.Schema(type=openapi.TYPE_INTEGER, description=description, default=default)
+def integer_schema(description=None, default=None, title=None):
+    return openapi.Schema(type=openapi.TYPE_INTEGER, description=description, default=default, title=title)
+
+
+def array_schema(description=None, default=None, it=None):
+    if not it:
+        it = openapi.Schema(type=openapi.TYPE_INTEGER)
+    return openapi.Schema(type=openapi.TYPE_ARRAY, description=description, default=default, items=it)
 
 
 def schema(type=openapi.TYPE_STRING, description=None, default=None):

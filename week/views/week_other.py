@@ -37,7 +37,7 @@ class WeekOtherView(ModelViewSet):
         operation_summary="修改",
         required=[],
         manual_parameters=[
-            openapi.Parameter('index', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+            openapi.Parameter('index', openapi.IN_FORM, type=openapi.TYPE_INTEGER,enum=[1, 2, 3, 4, 5, 6, 7],
                               description='(1, 周一), (2, 周二), (3, 周三), (4, 周四), (5, 周五), (6, 周六),(7, 周日)'),
             openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING,
                               description='描述'),
