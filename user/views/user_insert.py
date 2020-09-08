@@ -1,3 +1,4 @@
+from drf_yasg.openapi import FORMAT_PASSWORD
 from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -23,7 +24,7 @@ class UserInsertView(mixins.CreateModelMixin,
         operation_description="添加一条数据",
         request_body=request_body(properties={
             'user_name': string_schema('用户名'),
-            'password': string_schema('密码'),
+            'password': string_schema('密码', f=FORMAT_PASSWORD),
             'phone_number': string_schema('手机号'),
             'role': integer_schema('角色(0, 老师), (1, 学生), (2, 家长)', default=1),
             'name': string_schema('真实姓名'),

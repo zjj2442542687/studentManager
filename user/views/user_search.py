@@ -25,7 +25,7 @@ class UserPaginationSelectView(mixins.ListModelMixin,
         pagination_class=None,
         manual_parameters=[
             openapi.Parameter('role', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description='(0, 老师), (1, 学生), (2, 家长), (3, 辅导员)'),
+                              description='(0, 老师), (1, 学生), (2, 家长), (3, 辅导员)', enum=[0, 1, 2, 3]),
             openapi.Parameter('user_name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='用户名'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),

@@ -13,6 +13,7 @@ from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from utils.my_response import response_error_400
+from utils.my_utils import get_school_all_id, get_class_all_id
 from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
 
@@ -30,9 +31,9 @@ class TeacherPaginationSelectView(mixins.ListModelMixin,
             openapi.Parameter('name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='名字'),
             openapi.Parameter('school', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description='学校id'),
+                              description='学校id', enum=get_school_all_id()),
             openapi.Parameter('clazz', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description='班级id'),
+                              description='班级id', enum=get_class_all_id()),
             openapi.Parameter('title', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='昵称'),
             openapi.Parameter('identity', openapi.IN_QUERY, type=openapi.TYPE_STRING,

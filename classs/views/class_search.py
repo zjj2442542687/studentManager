@@ -6,6 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 from classs.models import Class
 from classs.views.class_serializers import ClassSerializersSearch
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
+from utils.my_utils import get_school_all_id
 
 
 class ClassPaginationSelectView(mixins.ListModelMixin,
@@ -22,7 +23,7 @@ class ClassPaginationSelectView(mixins.ListModelMixin,
             openapi.Parameter('class_name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='名字'),
             openapi.Parameter('school_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description='学校的id'),
+                              description='学校的id', enum=get_school_all_id()),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
         ]
     )

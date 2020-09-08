@@ -12,8 +12,8 @@ def request_body(properties, required=None):
     )
 
 
-def string_schema(description=None, default=None, title=None):
-    return openapi.Schema(type=openapi.TYPE_STRING, description=description, default=default, title=title)
+def string_schema(description=None, default=None, title=None, f=None):
+    return openapi.Schema(type=openapi.TYPE_STRING, description=description, default=default, title=title, format=f)
 
 
 def integer_schema(description=None, default=None, title=None):

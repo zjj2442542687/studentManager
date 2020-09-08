@@ -1,3 +1,4 @@
+from drf_yasg.openapi import FORMAT_PASSWORD
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -26,7 +27,7 @@ class UserUpdatePassword(ModelViewSet):
             properties={
                 "phone_number": string_schema('手机号，必填'),
                 "code": string_schema('验证码'),
-                "password": string_schema('密码'),
+                'password': string_schema('密码', f=FORMAT_PASSWORD),
             }
         ),
         manual_parameters=[
@@ -71,8 +72,8 @@ class UserUpdatePassword(ModelViewSet):
         request_body=request_body(
             required=["old_password", 'new_password'],
             properties={
-                "old_password": string_schema('旧的密码'),
-                "new_password": string_schema('新密码'),
+                "old_password": string_schema('旧的密码', f=FORMAT_PASSWORD),
+                "new_password": string_schema('新密码', f=FORMAT_PASSWORD),
             }
         ),
         manual_parameters=[

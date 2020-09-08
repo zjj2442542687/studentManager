@@ -10,6 +10,8 @@ from utils.my_info_judge import pd_super_adm_token
 from utils.my_response import *
 from rest_framework.parsers import MultiPartParser
 
+from utils.my_utils import get_regular_category_all_id
+
 
 class RegularOtherView(ModelViewSet):
     queryset = Regular.objects.all()
@@ -43,7 +45,8 @@ class RegularOtherView(ModelViewSet):
         manual_parameters=[
             openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_STRING, description='标题'),
             openapi.Parameter('describe', openapi.IN_FORM, type=openapi.TYPE_STRING, description='描述'),
-            openapi.Parameter('regular_category', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='习惯类别的id'),
+            openapi.Parameter('regular_category', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='习惯类别的id',
+                              enum=get_regular_category_all_id()),
             openapi.Parameter('user', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='user的id'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='超级管理员的TOKEN')
         ]
