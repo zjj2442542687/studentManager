@@ -20,7 +20,7 @@ def add_course(timetable_id: int, course_id: int):
 def select_class(self, class_id):
     print(class_id)
 
-    timetable = self.queryset.filter(class_info_id=class_id)
+    timetable = self.queryset.filter(clazz=class_id)
     print(timetable)
     if not timetable:
         return response_error_400(message="该班级没有课表")

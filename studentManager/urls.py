@@ -24,6 +24,7 @@ urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('', RedirectView.as_view(url='swagger')),
 
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')),
@@ -35,8 +36,15 @@ urlpatterns = [
     path('userDetails/', include('user_details.urls')),
     path('school/', include('school.urls')),
     path('course/', include('course.urls')),
+    # 周
+    path('week/', include('week.urls')),
+    # 习惯养成类别
+    path('regularCategory/', include('regular_category.urls')),
+    # 习惯养成
+    path('regular/', include('regular.urls')),
+    # 习惯养成用户的添加
+    path('regularAddRecord/', include('regular_add_record.urls')),
     path('FileInfo/', include('FileInfo.urls')),
-    path('', RedirectView.as_view(url='swagger')),
 ]
 
 # 访问静态资源

@@ -55,6 +55,16 @@ INSTALLED_APPS = [
     'FileInfo.apps.FileInfoConfig',
     # 课程表
     'timetable.apps.TimetableConfig',
+    # 周
+    'week.apps.WeekConfig',
+    # 习惯养成
+    'regular.apps.RegularConfig',
+    # 习惯养成的类别
+    'regular_category.apps.RegularCategoryConfig',
+    # 习惯养成的添加
+    'regular_add_record.apps.RegularAddRecordConfig',
+    # 习惯养成的打卡
+    'regular_clock.apps.RegularClockConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
@@ -168,7 +178,6 @@ CORS_ALLOW_HEADERS = (
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 MEDIA_URL = '/statics/'
-
 
 REST_FRAMEWORK = {  # 身份验证类
     'DEFAULT_AUTHENTICATION_CLASSES': (

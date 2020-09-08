@@ -2,13 +2,12 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.views import APIView
 
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.viewsets import ModelViewSet
 
 from user.models import User
-from user.views.urls import send_code, judge_code
+from user.views.urls import send_code
 from user.views.user_insert import pd_phone_number
 from user.views.user_serializers import UserInfoSerializersUpdate
-from utils.my_encryption import my_encode, my_decode_token
 from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
