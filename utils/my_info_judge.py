@@ -96,6 +96,17 @@ def pd_adm_token(request):
     return None
 
 
+# 超级管理员
+def pd_super_adm_token(request):
+    check_token = pd_token(request)
+    if check_token:
+        return check_token
+    elif request.auth != -1:
+        return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+
+    return None
+
+
 # 查看权限
 def lookup_token(request):
     token = request.META.get("HTTP_TOKEN")
@@ -104,3 +115,4 @@ def lookup_token(request):
         return check_token
 
     return User.objects.get(token=token).role
+    # return request.auth
