@@ -11,7 +11,7 @@ from regular.views.views import check_insert_info
 from regular_category.models import RegularCategory
 from utils.my_info_judge import pd_super_adm_token
 from utils.my_response import response_success_200, response_error_400
-from utils.my_utils import get_regular_category_all_id, get_user_all_id
+from utils.my_utils import get_regular_category_all_id, get_user_all_id, get_class_all_id
 
 
 class RegularInsertView(mixins.CreateModelMixin,
@@ -29,6 +29,8 @@ class RegularInsertView(mixins.CreateModelMixin,
                               enum=get_regular_category_all_id()),
             openapi.Parameter('user', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='user的id',
                               enum=get_user_all_id()),
+            openapi.Parameter('clazz', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='class的id, 传表示它为该班级的regular',
+                              enum=get_class_all_id()),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='超级管理员的token'),
         ]
     )
@@ -40,8 +42,9 @@ class RegularInsertView(mixins.CreateModelMixin,
         title = request.data.get("title")
         regular_category_id = request.data.get("regular_category")
         user_id = request.data.get("user")
+        class_id = request.data.get("clazz")
 
-        check = check_insert_info(title, regular_category_id, user_id)
+        check = check_insert_info(title, regular_category_id, user_id, class_id)
         if check:
             return check
 

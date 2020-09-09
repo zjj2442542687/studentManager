@@ -65,7 +65,7 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
 def search_name(name):
     if name:
         user_details = UserDetails.objects.filter(name__contains=name)
-        # 查询用户对应的用户详情id   以及role=0或role=3 的信息
+        # 查询用户对应的用户详情id   以及role=1 的信息
         user = User.objects.filter(user_details_id__in=[x.pk for x in user_details]).filter(role=1)
         print(user)
         return Student.objects.filter(user_id__in=[x.pk for x in user])

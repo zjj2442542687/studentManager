@@ -1,3 +1,4 @@
+from drf_yasg.openapi import FORMAT_DATE, FORMAT_DATETIME
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -13,13 +14,13 @@ from utils.my_info_judge import pd_super_adm_token, pd_token
 from utils.my_response import *
 from rest_framework.parsers import MultiPartParser
 
+from utils.my_swagger_auto_schema import request_body, string_schema, array_schema, integer_schema
 from utils.my_utils import get_regular_all_id
 
 
 class RegularAddRecordOtherView(ModelViewSet):
     queryset = RegularAddRecord.objects.all()
     serializer_class = RegularAddRecordInfoSerializersInsert
-    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         operation_summary="根据id删除RegularAddRecord的信息",
@@ -44,26 +45,22 @@ class RegularAddRecordOtherView(ModelViewSet):
 
     @swagger_auto_schema(
         operation_summary="修改!!",
-        required=[],
+        request_body=request_body(properties={
+            'describe': string_schema(description="我是描述", default="默认值", title="标题"),
+            'regular': integer_schema('描述', default=1),
+            'reminder_time': string_schema('提醒时间', default="12:00"),
+            'start_time': string_schema('每天开始的时间', default="12:00"),
+            'end_time': string_schema('每天结束的时间', default="12:00"),
+            'start_date': string_schema('开始日期时间', default="2020-09-08 12:00", f=FORMAT_DATETIME),
+            'end_date': string_schema('结束日期时间', default="2020-09-08 12:00", f=FORMAT_DATETIME),
+            'week': array_schema('周'),
+        }),
         manual_parameters=[
-            openapi.Parameter('describe', openapi.IN_FORM, type=openapi.TYPE_STRING, description='标题'),
-            openapi.Parameter('regular', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='习惯的id',
-                              enum=get_regular_all_id()),
-            openapi.Parameter('reminder_time', openapi.IN_FORM, type=openapi.TYPE_STRING, description='提醒时间'),
-            openapi.Parameter('start_time', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='每天开始的时间'),
-            openapi.Parameter('end_time', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='每天结束的时间'),
-            openapi.Parameter('start_date', openapi.IN_FORM, type=openapi.TYPE_STRING, description='开始日期时间',
-                              format=openapi.FORMAT_DATETIME),
-            openapi.Parameter('end_date', openapi.IN_FORM, type=openapi.TYPE_STRING, description='结束日期时间',
-                              format=openapi.FORMAT_DATETIME),
-            openapi.Parameter('week', openapi.IN_FORM, type=openapi.TYPE_ARRAY, description='周',
-                              items=openapi.Items(type=openapi.TYPE_INTEGER)),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='用户的TOKEN')
         ]
     )
     def partial_update(self, request, *args, **kwargs):
         check_info(request)
-
         check_token = pd_token(request)
         if check_token:
             return check_token
@@ -74,6 +71,7 @@ class RegularAddRecordOtherView(ModelViewSet):
             return check
 
         resp = super().partial_update(request, *args, **kwargs)
+
         return response_success_200(data=resp.data)
 
 

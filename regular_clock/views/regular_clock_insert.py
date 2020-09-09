@@ -11,6 +11,7 @@ from regular_clock.views.regular_clock_serializers import RegularClockInfoSerial
 from utils.my_info_judge import pd_super_adm_token, pd_token
 from utils.my_response import response_success_200, response_error_400
 from utils.my_swagger_auto_schema import request_body, string_schema
+from utils.my_utils import get_regular_add_record_all_id
 
 
 class RegularClockInsertView(mixins.CreateModelMixin,
@@ -23,7 +24,7 @@ class RegularClockInsertView(mixins.CreateModelMixin,
         operation_summary="添加数据 ",
         manual_parameters=[
             openapi.Parameter('regular_add_record', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
-                              description='regular_add_record的id，你要给哪个打卡', required=True),
+                              description='regular_add_record的id，你要给哪个打卡', required=True, enum=get_regular_add_record_all_id()),
             openapi.Parameter('mood', openapi.IN_FORM, type=openapi.TYPE_STRING, description='心情'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='用户的token'),
         ]

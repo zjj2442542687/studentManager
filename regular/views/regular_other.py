@@ -5,12 +5,12 @@ from rest_framework.viewsets import ModelViewSet
 
 from regular.models import Regular
 from regular.views.regular_serializers import RegularInfoSerializersAll
-from regular.views.views import check_update_info
-from utils.my_info_judge import pd_super_adm_token
+from regular.views.views import check_update_info, check_pk_and_permission
+from utils.my_info_judge import pd_super_adm_token, pd_token
 from utils.my_response import *
 from rest_framework.parsers import MultiPartParser
 
-from utils.my_utils import get_regular_category_all_id
+from utils.my_utils import get_regular_category_all_id, get_user_all_id, get_class_all_id
 
 
 class RegularOtherView(ModelViewSet):
@@ -47,20 +47,27 @@ class RegularOtherView(ModelViewSet):
             openapi.Parameter('describe', openapi.IN_FORM, type=openapi.TYPE_STRING, description='描述'),
             openapi.Parameter('regular_category', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='习惯类别的id',
                               enum=get_regular_category_all_id()),
-            openapi.Parameter('user', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='user的id'),
-            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='超级管理员的TOKEN')
+            openapi.Parameter('user', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='user的id',
+                              enum=get_user_all_id()),
+            openapi.Parameter('clazz', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='class的id, 传表示它为该班级的regular',
+                              enum=get_class_all_id()),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='用户的TOKEN')
         ]
     )
     def partial_update(self, request, *args, **kwargs):
-        check_token = pd_super_adm_token(request)
-        if check_token:
-            return check_token
+        pk = kwargs['pk']
+
+        # 检测用户对这个pk的访问权限
+        check_permission = check_pk_and_permission(request, pk)
+        if check_permission:
+            return check_permission
 
         # 需要修改的检测
-        pk = kwargs['pk']
         regular_category_id = request.data.get("regular_category")
         user_id = request.data.get("user")
-        check_info = check_update_info(regular_category_id, user_id, pk)
+        class_id = request.data.get("clazz")
+        check_info = check_update_info(regular_category_id, user_id, class_id)
         if check_info:
             return check_info
 

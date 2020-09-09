@@ -60,7 +60,8 @@ def search_role(role):
             return False, response_error_400(status=STATUS_PARAMETER_ERROR, message="role的范围为(0`3)")
         user = User.objects.filter(role=role)
     else:
-        user = User.objects.all()
+        # 返回 role >=  0 的
+        user = User.objects.filter(role__gte=0)
     return True, user
 
 
