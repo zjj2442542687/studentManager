@@ -36,8 +36,8 @@ class TeacherPaginationSelectView(mixins.ListModelMixin,
                               description='班级id', enum=get_class_all_id()),
             openapi.Parameter('title', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='昵称'),
-            openapi.Parameter('identity', openapi.IN_QUERY, type=openapi.TYPE_STRING,
-                              description='身份'),
+            openapi.Parameter('role', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+                              description='角色', enum=[0, 3]),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
         ]
     )
@@ -66,8 +66,8 @@ class TeacherPaginationSelectView(mixins.ListModelMixin,
         teacher = search_title(title, teacher)
 
         # 身份
-        identity = request.GET.get("identity")
-        teacher = search_identity(identity, teacher)
+        role = request.GET.get("role")
+        teacher = search_role(role, teacher)
 
         print(teacher)
 
@@ -121,10 +121,10 @@ def search_title(title, teacher):
         return teacher
 
 
-def search_identity(identity, teacher):
+def search_role(role, teacher):
     if not teacher:
         return teacher
-    if identity:
-        return teacher.filter(identity__contains=identity)
+    if role:
+        return teacher.filter(user__role=role)
     else:
         return teacher
