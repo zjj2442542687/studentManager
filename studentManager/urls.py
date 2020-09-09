@@ -44,6 +44,8 @@ urlpatterns = [
     path('regular/', include('regular.urls')),
     # 习惯养成用户的添加
     path('regularAddRecord/', include('regular_add_record.urls')),
+    # 习惯养成用户的打卡
+    path('regularClock/', include('regular_clock.urls')),
     path('FileInfo/', include('FileInfo.urls')),
 ]
 

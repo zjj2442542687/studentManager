@@ -29,12 +29,13 @@ class Teacher(models.Model):
 
     def search(self):
         user_details = self.user.user_details
+        role = self.user.role
         return {
             "name": user_details.name,
             "sex": user_details.sex,
             "card": user_details.card,
             "title": self.title,
-            "identity": self.identity,
+            "identity": "辅导员" if role == 3 else ("普通教师" if role == 0 else "未知"),
             "phone_number": self.user.phone_number,
             "birthday": user_details.birthday,
             "qq": user_details.qq,

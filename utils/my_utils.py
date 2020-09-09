@@ -1,8 +1,12 @@
 import re
 
 # '"1","2"' 的 字符串转换成 [1, 2] int数组
+from django.db.models import QuerySet
+
 from classs.models import Class
+from regular.models import Regular
 from regular_category.models import RegularCategory
+from regular_clock.models import RegularClock
 from school.models import School
 from user.models import User
 
@@ -11,12 +15,6 @@ def string_to_int_arr(s: str):
     s = s.split(",")
     s = [int(re.sub("\D", "", w)) for w in s]
     return s
-
-
-# 获得所有RegularCategory中的id 返回list
-def get_regular_category_all_id() -> list:
-    regular_category = RegularCategory.objects.all()
-    return [r.id for r in regular_category]
 
 
 # 获得所有user中的id 返回list
@@ -35,3 +33,26 @@ def get_school_all_id() -> list:
 def get_class_all_id() -> list:
     clazz = Class.objects.all()
     return [c.id for c in clazz]
+
+
+# 获得所有regular中的id 返回list
+def get_regular_all_id() -> list:
+    regular = Regular.objects.all()
+    return [r.id for r in regular]
+
+
+# 获得所有RegularCategory中的id 返回list
+def get_regular_category_all_id() -> list:
+    regular_category = RegularCategory.objects.all()
+    return [r.id for r in regular_category]
+
+
+# 获得所有RegularClock中的id 返回list
+def get_regular_clock_all_id() -> list:
+    regular_clock = RegularClock.objects.all()
+    return [r.id for r in regular_clock]
+
+
+# 获得所有queryset中的id
+def get_queryset_all_id(queryset: QuerySet):
+    return [r.id for r in queryset]
