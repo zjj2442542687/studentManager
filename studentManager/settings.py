@@ -65,9 +65,12 @@ INSTALLED_APPS = [
     'regular_add_record.apps.RegularAddRecordConfig',
     # 习惯养成的打卡
     'regular_clock.apps.RegularClockConfig',
+    # 作业发布
+    'work.apps.WorkConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
+    'dwebsocket',  # websocket
 ]
 
 MIDDLEWARE = [
@@ -184,3 +187,8 @@ REST_FRAMEWORK = {  # 身份验证类
         'utils.authentication.my_authentication.MyAuthentication',
     )
 }
+
+MIDDLEWARE_CLASSES = {
+    'dwebsocket.middleware.WebSocketMiddleware'  # 为所有的URL提供websocket，如果只是单独的视图需要可以不选
+}
+WEBSOCKET_ACCEPT_ALL = True  # 可以允许每一个单独的视图实用websockets
