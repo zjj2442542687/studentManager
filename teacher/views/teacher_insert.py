@@ -7,6 +7,7 @@ from rest_framework import serializers, mixins, status, exceptions
 from teacher.models import Teacher
 from teacher.views.teacher_serializers import TeacherInfoSerializersAll
 from user_details.models import UserDetails
+from utils.my_card import IdCard
 from utils.my_encryption import my_encode
 from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email, pd_adm_token
 from utils.my_response import *
@@ -14,6 +15,8 @@ from utils.my_swagger_auto_schema import request_body, string_schema, integer_sc
 from school.models import School
 from user.models import User
 import pandas as pd
+
+from utils.my_time import date_to_time_stamp
 
 
 class TeacherInsertView(mixins.CreateModelMixin,
@@ -94,7 +97,7 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
             return check_file
         excel_data = pd.read_excel(file, header=0, dtype='str')
         for dt in excel_data.iterrows():
-            if not dt[1]['老师姓名'] or not dt[1]['性别'] or not dt[1]['身份证'] or not dt[1]['学校名称']:
+            if not dt[1]['老师姓名'] or not dt[1]['身份证'] or not dt[1]['学校名称']:
                 continue
             # 添加用户信息
             card = dt[1]['身份证']
@@ -107,12 +110,14 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
             if not School.objects.filter(school_name=school):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
             password = my_encode(phone_number)
+            # 分析身份证
+            id_card = IdCard(card)
             # 创建用户详情
             user_details_id = UserDetails.objects.create(
                 name=dt[1]['老师姓名'],
-                sex=-1 if dt[1]['性别'] == '女' else (1 if dt[1]['性别'] == '男' else 0),
+                sex=id_card.sex,
                 card=card,
-                birthday=dt[1]['生日'],
+                birthday=date_to_time_stamp(year=id_card.birth_year, month=id_card.birth_month, day=id_card.birth_day),
                 qq=dt[1]['QQ(选填)'],
                 email=dt[1]['邮箱(选填)'],
             ).id
@@ -145,7 +150,7 @@ def batch_import_test(file):
         qq = dt[1]['QQ(选填)']
         email = dt[1]['邮箱(选填)']
 
-        if not dt[1]['老师姓名'] or not dt[1]['性别'] or not card or not school:
+        if not dt[1]['老师姓名'] or not card or not school:
             message += "有空字段"
 
         # 判断身份证的格式是否存在

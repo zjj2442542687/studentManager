@@ -11,13 +11,16 @@ from parent.models import Parent
 from school.models import School
 from student.models import Student
 from student.views.student_serializers import StudentInfoSerializersInsert
+from student.views.views import check_student_insert_info
 from user_details.models import UserDetails
+from utils.my_card import IdCard
 from utils.my_encryption import my_encode
 from utils.my_info_judge import pd_card, pd_phone_number, pd_token, pd_adm_token
 from utils.my_response import *
 from classs.models import Class
 from user.models import User
 from utils.my_swagger_auto_schema import *
+from utils.my_time import date_to_time_stamp
 
 
 class StudentInsertView(mixins.CreateModelMixin,
@@ -29,46 +32,35 @@ class StudentInsertView(mixins.CreateModelMixin,
         operation_summary="添加一条数据",
         request_body=request_body(properties={
             'name': string_schema('学生姓名'),
-            'sex': string_schema('性别'),
-            'card': string_schema('身份证'),
+            'card': openapi.Schema(type=openapi.TYPE_STRING, description="身份证"),
             'clazz': integer_schema('班级id'),
             'phone_number': string_schema('电话号码'),
             'school': integer_schema('学校id'),
-            'birthday': string_schema('生日'),
             'qq': string_schema('QQ'),
             'email': string_schema('邮件'),
         }),
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
-        ],
-        deprecated=True
+        ]
     )
     def create(self, request, *args, **kwargs):
-        check_token = pd_token(request)
+        check_token = pd_adm_token(request)
         if check_token:
             return check_token
 
-        role = request.auth
-        if role >= 0:
-            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
-
         school = request.data.get('school')
-        # 学校关联
-        if not School.objects.filter(id=school):
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
-        # 班级关联
         clazz = request.data.get('clazz')
-        if not Class.objects.filter(id=clazz):
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="班级不存在")
-        # 添加用户信息
         card = request.data.get('card')
         phone_number = request.data.get('phone_number')
-        # 用户检查是否存在
-        if User.objects.filter(user_name=card):
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
-        if User.objects.filter(phone_number=phone_number):
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
-        password = my_encode(phone_number)
+        name = request.data.get('name')
+
+        check_insert = check_student_insert_info(request)
+        if check_insert:
+            return check_insert
+
+        # 创建userDetails
+        UserDetails.objects.create()
+        password = my_encode(card[-6:])
         user: User = User.objects.get_or_create(user_name=card, password=password, phone_number=phone_number,
                                                 role=1)
         request.data["user_info"] = User.objects.get(user_name=card).id
@@ -145,7 +137,7 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             phone_number = dt[1]['手机号码(选填)']
             school = dt[1]['学校名称']
             class_name = dt[1]['班级']
-            if not dt[1]['学生姓名'] or not dt[1]['性别'] or not card or not dt[1]['班级'] or not dt[1]['学校名称']:
+            if not dt[1]['学生姓名'] or not card or not dt[1]['班级'] or not dt[1]['学校名称']:
                 continue
             if User.objects.filter(user_name=card):
                 message = card + "身份证已经注册存在"
@@ -159,12 +151,15 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             if not Class.objects.filter(class_name=class_name):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
             password = my_encode(phone_number)
+
+            # 分析身份证
+            id_card = IdCard(card)
             # 创建用户详情
             user_details_id = UserDetails.objects.create(
                 name=dt[1]['学生姓名'],
-                sex=-1 if dt[1]['性别'] == '女' else (1 if dt[1]['性别'] == '男' else 0),
+                sex=id_card.sex,
                 card=card,
-                birthday=dt[1]['生日'],
+                birthday=date_to_time_stamp(year=id_card.birth_year, month=id_card.birth_month, day=id_card.birth_day),
                 qq=dt[1]['QQ(选填)'],
                 email=dt[1]['邮箱(选填)'],
             ).id
@@ -196,9 +191,8 @@ def batch_import_test(file):
         phone_number = dt[1]['手机号码(选填)']
         school = dt[1]['学校名称']
         class_name = dt[1]['班级']
-        birthday = dt[1]['生日']
 
-        if not dt[1]['学生姓名'] or not dt[1]['性别'] or not card or not class_name or not school or not birthday:
+        if not dt[1]['学生姓名'] or not card or not class_name or not school:
             message += "有空字段"
 
         # 判断身份证的格式是否存在

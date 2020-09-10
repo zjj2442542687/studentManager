@@ -1,3 +1,5 @@
+import time
+
 from django.db import models
 
 
@@ -6,7 +8,7 @@ class UserDetails(models.Model):
     avatar = models.ImageField("头像", upload_to="userDetails/avatar", null=True)
     card = models.CharField("身份证", max_length=255, null=True)
     sex = models.SmallIntegerField('性别', choices=((-1, '女'), (0, '保密'), (1, '男')), default=0)
-    birthday = models.CharField("出生日期", max_length=255, null=True)
+    birthday = models.BigIntegerField("出生日期", null=True, default=int(time.time()))
     qq = models.CharField("QQ号码", max_length=255, null=True)
     email = models.EmailField("邮箱", max_length=255, null=True)
     personal_signature = models.CharField("个性签名", max_length=255, default="这个人很神秘，什么都没写")

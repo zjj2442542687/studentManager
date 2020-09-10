@@ -11,6 +11,7 @@ from utils.status import *
 一些信息的验证
 """
 
+
 # 判断身份证的合法性
 def pd_card_3(id_number_str: str) -> bool:
     # 判断长度，如果不是 18 位，直接返回失败
