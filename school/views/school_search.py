@@ -48,6 +48,6 @@ class SchoolPaginationSelectView(mixins.ListModelMixin,
 
 def search_name(school_name):
     if school_name:
-        return School.objects.filter(school_name=school_name)
+        return School.objects.filter(school_name__contains=school_name)
     else:
         return School.objects.all()
