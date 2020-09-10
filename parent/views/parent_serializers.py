@@ -12,6 +12,22 @@ class ParentInfoSerializersAll(ModelSerializer):
         fields = "__all__"
 
 
+class ParentInfoSerializersInsert(ModelSerializer):
+    user_info = serializers.SerializerMethodField(label="用户信息", read_only=True)
+
+    class Meta:
+        model = Parent
+        fields = "__all__"
+
+    def get_user_info(self, parent: Parent):
+        try:
+            instance = parent.user
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None
+
+
 # 修改操作的序列化
 class ParentInfoSerializersUpdate(ModelSerializer):
     sex = serializers.IntegerField(label='性别', required=False)
@@ -71,7 +87,10 @@ class ParentSerializersSearch(ModelSerializer):
         fields = ["id", "user"]
 
     def get_user(self, parent: Parent):
+        try:
+            instance = parent.user
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None
         # instance = User.objects.all().filter()
-        instance = parent.user
-        serializer = UserSerializersSearch(instance)
-        return serializer.data

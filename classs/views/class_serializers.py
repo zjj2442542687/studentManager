@@ -16,6 +16,9 @@ class ClassSerializersSearch(ModelSerializer):
         depth = 1
 
     def get_headmaster(self, clazz: Class):
-        instance = clazz.headmaster
-        serializer = UserSerializersSearch(instance)
-        return serializer.data
+        try:
+            instance = clazz.headmaster
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None

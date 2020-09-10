@@ -11,7 +11,7 @@ from parent.models import Parent
 from school.models import School
 from student.models import Student
 from student.views.student_serializers import StudentInfoSerializersInsert
-from student.views.views import check_student_insert_info
+from student.views.views import check_student_insert_info, create_user_details_and_user
 from user_details.models import UserDetails
 from utils.my_card import IdCard
 from utils.my_encryption import my_encode
@@ -48,22 +48,13 @@ class StudentInsertView(mixins.CreateModelMixin,
         if check_token:
             return check_token
 
-        school = request.data.get('school')
-        clazz = request.data.get('clazz')
-        card = request.data.get('card')
-        phone_number = request.data.get('phone_number')
-        name = request.data.get('name')
-
+        # 检测插入的数据
         check_insert = check_student_insert_info(request)
         if check_insert:
             return check_insert
 
-        # 创建userDetails
-        UserDetails.objects.create()
-        password = my_encode(card[-6:])
-        user: User = User.objects.get_or_create(user_name=card, password=password, phone_number=phone_number,
-                                                role=1)
-        request.data["user_info"] = User.objects.get(user_name=card).id
+        # 创建userDetails和user, 并将user的id放到request中
+        create_user_details_and_user(request, 1)
 
         resp = super().create(request)
         return response_success_200(data=resp.data)

@@ -1,7 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
 from classs.models import Class
-from classs.views.class_serializers import ClassSerializersSearch
 from teacher.models import Teacher
 from rest_framework import serializers
 
@@ -61,10 +60,7 @@ class TeacherSerializersSearch(ModelSerializer):
 
     def get_clazz(self, teacher: Teacher):
         try:
-            instance = Class.objects.get(headmaster_id=teacher.user.id)
-            serializer = ClassSerializersSearch(instance)
-            return serializer.data
-            # return Class.objects.get(headmaster_id=teacher.user.id)
+            return Class.objects.get(headmaster_id=teacher.user.id)
         except Class.DoesNotExist:
             print("没找到")
             return None
