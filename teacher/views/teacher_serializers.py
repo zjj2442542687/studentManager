@@ -53,14 +53,18 @@ class TeacherSerializersSearch(ModelSerializer):
         depth = 2
 
     def get_user(self, teacher: Teacher):
-        # instance = User.objects.all().filter()
-        instance = teacher.user
-        serializer = UserSerializersSearch(instance)
-        return serializer.data
+        try:
+            instance = teacher.user
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None
 
     def get_clazz(self, teacher: Teacher):
         try:
-            return Class.objects.get(headmaster_id=teacher.user.id)
+            instance = Class.objects.get(headmaster_id=teacher.user.id)
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
         except Class.DoesNotExist:
             print("没找到")
             return None

@@ -3,6 +3,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from classs.views.class_serializers import ClassSerializersSearch
+from parent.views.parent_serializers import ParentSerializersSearch
 from student.models import Student
 
 # 添加操作的序列化
@@ -10,9 +11,21 @@ from user.views.user_serializers import UserSerializersSearch
 
 
 class StudentInfoSerializersInsert(ModelSerializer):
+    parent = ParentSerializersSearch(label="家长信息", read_only=True)
+    user_info = serializers.SerializerMethodField(label="用户信息", read_only=True)
+
     class Meta:
         model = Student
         fields = "__all__"
+        # depth = 1
+
+    def get_user_info(self, student: Student):
+        try:
+            instance = student.user
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None
 
 
 # 修改操作的序列化
@@ -55,12 +68,17 @@ class StudentSerializersSearch(ModelSerializer):
         depth = 2
 
     def get_user(self, student: Student):
-        # instance = User.objects.all().filter()
-        instance = student.user
-        serializer = UserSerializersSearch(instance)
-        return serializer.data
+        try:
+            instance = student.user
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None
 
     def get_clazz(self, student: Student):
-        instance = student.clazz
-        serializer = ClassSerializersSearch(instance)
-        return serializer.data
+        try:
+            instance = student.clazz
+            serializer = ClassSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None

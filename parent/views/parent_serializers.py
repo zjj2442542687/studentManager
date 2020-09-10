@@ -71,7 +71,10 @@ class ParentSerializersSearch(ModelSerializer):
         fields = ["id", "user"]
 
     def get_user(self, parent: Parent):
+        try:
+            instance = parent.user
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None
         # instance = User.objects.all().filter()
-        instance = parent.user
-        serializer = UserSerializersSearch(instance)
-        return serializer.data
