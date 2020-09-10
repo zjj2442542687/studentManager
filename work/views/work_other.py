@@ -4,7 +4,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser
 
-from regular_add_record.views.views import check_info, check_authority
+# from regular_add_record.views.views import check_info, check_authority
 from utils.my_info_judge import pd_token, pd_adm_token, lookup_token
 from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
@@ -43,9 +43,9 @@ class WorkOtherView(ModelViewSet):
             return check_token
 
         # 检查权限
-        check = check_authority(self, request, kwargs)
-        if check:
-            return check
+        # check = check_authority(self, request, kwargs)
+        # if check:
+        #     return check
 
         resp = super().partial_update(request, *args, **kwargs)
 

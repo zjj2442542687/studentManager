@@ -6,7 +6,7 @@ from utils.my_info_judge import pd_token
 from utils.my_response import response_error_400
 
 
-def check_insert_info(title, regular_category_id, user_id, class_id):
+def check_insert_info(title, regular_category_id, user_id, class_id, request):
     if not title:
         return response_error_400(message="title不能为空")
     if not regular_category_id:
@@ -14,7 +14,13 @@ def check_insert_info(title, regular_category_id, user_id, class_id):
     if not user_id:
         return response_error_400(message="user不能为空")
 
-    return check_update_info(regular_category_id, user_id, class_id=class_id)
+    check_update = check_update_info(regular_category_id, user_id, class_id=class_id)
+    if check_update:
+        return check_update
+
+    if request.auth >= 0:  # 普通用户添加
+        if user_id != request.user:
+            return response_error_400(message="user_id参数不正确，只能填写本人的id")
 
 
 # regular_category_id, user_id 不为空则检测他们的合法性

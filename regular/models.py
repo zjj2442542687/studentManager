@@ -1,3 +1,5 @@
+import time
+
 from django.db import models
 
 from classs.models import Class
@@ -13,7 +15,7 @@ class Regular(models.Model):
     user = models.ForeignKey(User, verbose_name="创建者", on_delete=models.CASCADE, null=True)
     clazz = models.ForeignKey(Class, verbose_name="班级", on_delete=models.CASCADE, null=True)
     is_system = models.SmallIntegerField('是不是系统的(0，否，1，是决定公开和私有性，是系统则公开)', choices=((0, '否'), (1, '是')), default=0)
-    creation_time = models.DateTimeField("创建时间", auto_now_add=True, blank=True)
+    creation_time = models.BigIntegerField("创建时间", blank=True, default=int(time.time()))
 
     def to_json(self):
         return {
