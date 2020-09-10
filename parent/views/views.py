@@ -6,10 +6,8 @@ from utils.my_response import response_error_400
 from utils.status import STATUS_PARAMETER_ERROR
 
 
-# 检测老师插入信息时数据的合法性
-def check_teacher_insert_info(request):
-    school = request.data.get('school')
-    title = request.data.get('title')
+# 检测家长插入信息时数据的合法性
+def check_parent_insert_info(request):
     card = request.data.get('card')
     phone_number = request.data.get('phone_number')
     name = request.data.get('name')
@@ -24,9 +22,6 @@ def check_teacher_insert_info(request):
     if not phone_number:
         return response_error_400(message="手机号 不能为空")
 
-    # 学校关联
-    if not School.objects.filter(id=school):
-        return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
     # 用户检查是否存在
     if UserDetails.objects.filter(card=card):
         return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
