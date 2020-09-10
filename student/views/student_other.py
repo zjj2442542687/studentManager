@@ -91,6 +91,14 @@ class StudentAdmView(ModelViewSet):
             return check_token
         # if pd_adm_token(request):
         #     return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+        user_detail = Student.objects.get(pk=kwargs['pk']).user.user_details
+        sex = request.data.get('sex')
+        if sex:
+            user_detail.sex = sex
+        name = request.data.get('name')
+        if name:
+            user_detail.name = name
+        user_detail.save()
 
         resp = super().partial_update(request, *args, **kwargs)
 
