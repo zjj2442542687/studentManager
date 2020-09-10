@@ -4,8 +4,10 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status, exceptions
 
+from student.views.views import create_user_details_and_user
 from teacher.models import Teacher
-from teacher.views.teacher_serializers import TeacherInfoSerializersAll
+from teacher.views.teacher_serializers import TeacherInfoSerializersAll, TeacherInfoSerializersInsert
+from teacher.views.views import check_teacher_insert_info
 from user_details.models import UserDetails
 from utils.my_card import IdCard
 from utils.my_encryption import my_encode
@@ -22,43 +24,36 @@ from utils.my_time import date_to_time_stamp
 class TeacherInsertView(mixins.CreateModelMixin,
                         GenericViewSet):
     queryset = Teacher.objects.all()
-    serializer_class = TeacherInfoSerializersAll
+    serializer_class = TeacherInfoSerializersInsert
 
     @swagger_auto_schema(
         operation_summary="教师信息单独导入",
         operation_description="说明：身份证和电话号码必须未注册过，学校必须存在",
         request_body=request_body(properties={
             'name': string_schema('老师姓名'),
-            'sex': string_schema('性别'),
             'card': string_schema('身份证'),
             'title': string_schema('职称'),
-            # 'clazz': integer_schema('班级'),
             'phone_number': string_schema('电话号码'),
-            'school': string_schema('学校名字'),
-            'birthday': string_schema('生日'),
+            'school': integer_schema('学校id'),
             'qq': string_schema('QQ'),
             'email': string_schema('邮件'),
-        })
+        }),
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
+        ]
     )
     def create(self, request, *args, **kwargs):
-        # 学校关联
-        school = request.data.get('school')
-        if not School.objects.filter(school_name=school):
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
-        school_id = School.objects.get(school_name=school).id
-        request.data["school"] = school_id
-        # 添加用户信息
-        card = request.data.get('card')
-        phone_number = request.data.get('phone_number')
-        # 用户检查是否存在
-        if User.objects.filter(user_name=card):
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
-        if User.objects.filter(phone_number=phone_number):
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
-        password = my_encode(phone_number)
-        User.objects.get_or_create(user_name=card, password=password, phone_number=phone_number,
-                                   role=0)
-        request.data["user_info"] = User.objects.get(user_name=card).id
+        check_token = pd_adm_token(request)
+        if check_token:
+            return check_token
+
+        # 检测teacher插入的合法性
+        check_info = check_teacher_insert_info(request)
+        if check_info:
+            return check_info
+
+        # 创建用户详情和用户
+        create_user_details_and_user(request, 0)
 
         resp = super().create(request)
         return response_success_200(data=resp.data)

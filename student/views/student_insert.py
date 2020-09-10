@@ -54,7 +54,7 @@ class StudentInsertView(mixins.CreateModelMixin,
             return check_insert
 
         # 创建userDetails和user, 并将user的id放到request中
-        create_user_details_and_user(request)
+        create_user_details_and_user(request, 1)
 
         resp = super().create(request)
         return response_success_200(data=resp.data)

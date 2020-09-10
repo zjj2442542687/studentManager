@@ -11,9 +11,9 @@ from utils.status import STATUS_PARAMETER_ERROR
 
 
 # 检测学生插入信息时数据的合法性
-def check_student_insert_info(request):
+def check_teacher_insert_info(request):
     school = request.data.get('school')
-    clazz = request.data.get('clazz')
+    title = request.data.get('title')
     card = request.data.get('card')
     phone_number = request.data.get('phone_number')
     name = request.data.get('name')
@@ -25,13 +25,12 @@ def check_student_insert_info(request):
         return response_error_400(message="card 不能为空")
     if not name:
         return response_error_400(message="name 不能为空")
+    if not phone_number:
+        return response_error_400(message="手机号 不能为空")
 
     # 学校关联
     if not School.objects.filter(id=school):
         return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
-    # 班级关联
-    if not Class.objects.filter(id=clazz):
-        return response_error_400(staus=STATUS_PARAMETER_ERROR, message="班级不存在")
     # 用户检查是否存在
     if UserDetails.objects.filter(card=card):
         return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
@@ -45,29 +44,29 @@ def check_student_insert_info(request):
         return response_error_400(message="qq格式不正确")
     if email and not pd_email(email):
         return response_error_400(message="email格式不正确")
-    if phone_number and not pd_phone_number(phone_number):
+    if not pd_phone_number(phone_number):
         return response_error_400(message="手机号格式错误")
 
 
 # 创建userDetails和user
-def create_user_details_and_user(request, role):
-    card = request.data.get('card')
-    phone_number = request.data.get('phone_number')
-    name = request.data.get('name')
-
-    # 解析身份证
-    id_card = IdCard(card)
-    # 创建userDetails
-    user_details = UserDetails.objects.create(
-        name=name,
-        sex=id_card.sex,
-        card=card,
-        birthday=date_to_time_stamp(year=id_card.birth_year, month=id_card.birth_month, day=id_card.birth_day), )
-
-    # 密码为身份证的后6位, 用户名为身份证
-    password = my_encode(card[-6:])
-    user: User = User.objects.create(user_name=card, password=password, phone_number=phone_number,
-                                     role=role, user_details_id=user_details.id)
-
-    # 保存该字段
-    request.data["user"] = user.id
+# def create_user_details_and_user(request):
+#     card = request.data.get('card')
+#     phone_number = request.data.get('phone_number')
+#     name = request.data.get('name')
+#
+#     # 解析身份证
+#     id_card = IdCard(card)
+#     # 创建userDetails
+#     user_details = UserDetails.objects.create(
+#         name=name,
+#         sex=id_card.sex,
+#         card=card,
+#         birthday=date_to_time_stamp(year=id_card.birth_year, month=id_card.birth_month, day=id_card.birth_day), )
+#
+#     # 密码为身份证的后6位, 用户名为身份证
+#     password = my_encode(card[-6:])
+#     user: User = User.objects.create(user_name=card, password=password, phone_number=phone_number,
+#                                      role=1, user_details_id=user_details.id)
+#
+#     # 保存该字段
+#     request.data["user"] = user.id

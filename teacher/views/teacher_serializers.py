@@ -16,11 +16,20 @@ class TeacherInfoSerializersAll(ModelSerializer):
 
 
 # 全部的序列化且深层1
-class TeacherInfoSerializersDepth(ModelSerializer):
+class TeacherInfoSerializersInsert(ModelSerializer):
+    user_info = serializers.SerializerMethodField(label="用户信息", read_only=True)
+
     class Meta:
         model = Teacher
         fields = "__all__"
-        depth = 1
+
+    def get_user_info(self, teacher: Teacher):
+        try:
+            instance = teacher.user
+            serializer = UserSerializersSearch(instance)
+            return serializer.data
+        except AttributeError:
+            return None
 
 
 # 管理员修改的序列化
