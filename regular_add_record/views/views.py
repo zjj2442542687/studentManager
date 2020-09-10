@@ -1,9 +1,10 @@
+from regular_add_record.models import RegularAddRecord
+from utils.my_encryption import get_time
 from utils.my_response import response_error_400
+from utils.my_time import date_to_time_stamp, check_time_stamp
 
 
-def check_authority(self, request, kwargs):  # 检查权限问题
-    # 需要修改的检测
-    pk = kwargs['pk']
+def check_authority(self, request, pk):  # 检查权限问题
     if not self.queryset.filter(pk=pk):
         return response_error_400(message="id未找到")
 
@@ -19,7 +20,67 @@ def check_authority(self, request, kwargs):  # 检查权限问题
             return response_error_400(message="不能删除管理员的东西!!!")
 
 
-def check_info(request):  # 检查其它信息
-    print(request.GET)
+def check_insert_time(request):  # 检查添加数据时，时间的规范
+    data = request.data
+    start_time = data.get("start_time")
+    end_time = data.get("end_time")
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
 
-    pass
+    if not (start_time and end_time and start_date and end_date):
+        return response_error_400(message="有空数据")
+
+    # 检测时间的范围
+
+    check_t = check_time(start_time, end_time,
+                         minute=3, err_message="结束时间需要大于开始时间3分钟")
+    if check_t:
+        return check_t
+
+    check_date = check_time(start_date, end_date,
+                            minute=30, err_message="结束日期需要大于开始日期30分钟")
+
+    if check_date:
+        return check_date
+
+
+# 检测时间的范围
+def check_time_range(time_stamp):
+    message = check_time_stamp(time_stamp)
+    if message:
+        return response_error_400(message=message)
+
+
+def check_time(start, end, day=0, hour=0, minute=0, second=0, err_message="结束时间需要大于开始时间3分钟"):
+    if not (start and end):
+        return None
+    check = check_time_range(start) or check_time_range(end)
+    if check:
+        return check
+
+    # 检测开始时间和结束时间之间的相距时间是否符合
+    return response_error_400(message=err_message) \
+        if start + get_time(day=day, hour=hour, minute=minute, second=second) > end \
+        else None
+
+
+def check_update_time(request, pk):  # 检查修改数据时，时间的规范
+    data = request.data
+    start_time = data.get("start_time")
+    end_time = data.get("end_time")
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+
+    # 获得pk对应的 对象
+    regular_add_record = RegularAddRecord.objects.get(pk=pk)
+
+    check_t = check_time(start_time or regular_add_record.start_time, end_time or regular_add_record.end_time,
+                         minute=3, err_message="结束时间需要大于开始时间3分钟")
+    if check_t:
+        return check_t
+
+    check_date = check_time(start_date or regular_add_record.start_date, end_date or regular_add_record.end_date,
+                            minute=30, err_message="结束日期需要大于开始日期30分钟")
+
+    if check_date:
+        return check_date

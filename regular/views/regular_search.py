@@ -48,7 +48,7 @@ class RegularPaginationSelectView(mixins.ListModelMixin,
 
         # class
         class_id = request.GET.get("clazz")
-        regular, pd = search_class(request, class_id, regular)
+        regular = search_class(request, class_id, regular)
 
         page = self.paginate_queryset(regular)
         serializer = self.serializer_class(page, many=True, context=self.get_serializer_context())

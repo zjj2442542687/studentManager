@@ -1,21 +1,18 @@
-from drf_yasg.openapi import FORMAT_DATE, FORMAT_DATETIME
+import time
+
+from drf_yasg.openapi import FORMAT_DATETIME
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from rest_framework.viewsets import ModelViewSet
 
-from regular.models import Regular
-from regular.views.regular_serializers import RegularInfoSerializersAll
-from regular.views.views import check_update_info
 from regular_add_record.models import RegularAddRecord
 from regular_add_record.views.regular_add_record_serializers import RegularAddRecordInfoSerializersInsert
-from regular_add_record.views.views import check_authority, check_info
-from utils.my_info_judge import pd_super_adm_token, pd_token
+from regular_add_record.views.views import check_authority, check_update_time
+from utils.my_info_judge import pd_token
 from utils.my_response import *
-from rest_framework.parsers import MultiPartParser
 
 from utils.my_swagger_auto_schema import request_body, string_schema, array_schema, integer_schema
-from utils.my_utils import get_regular_all_id
 
 
 class RegularAddRecordOtherView(ModelViewSet):
@@ -30,12 +27,15 @@ class RegularAddRecordOtherView(ModelViewSet):
         ],
     )
     def destroy(self, request, *args, **kwargs):
+        # 需要修改的检测
+        pk = kwargs['pk']
+
         check_token = pd_token(request)
         if check_token:
             return check_token
 
         # 检查权限
-        check = check_authority(self, request, kwargs)
+        check = check_authority(self, request, pk)
         if check:
             return check
 
@@ -45,14 +45,15 @@ class RegularAddRecordOtherView(ModelViewSet):
 
     @swagger_auto_schema(
         operation_summary="修改!!",
+        operation_description=f"当前的时间戳是 {int(time.time())}",
         request_body=request_body(properties={
             'describe': string_schema(description="我是描述", default="默认值", title="标题"),
             'regular': integer_schema('描述', default=1),
-            'reminder_time': string_schema('提醒时间', default="12:00"),
-            'start_time': string_schema('每天开始的时间', default="12:00"),
-            'end_time': string_schema('每天结束的时间', default="12:00"),
-            'start_date': string_schema('开始日期时间', default="2020-09-08 12:00", f=FORMAT_DATETIME),
-            'end_date': string_schema('结束日期时间', default="2020-09-08 12:00", f=FORMAT_DATETIME),
+            'reminder_time': integer_schema('提醒时间'),
+            'start_time': integer_schema('每天开始的时间'),
+            'end_time': integer_schema('每天结束的时间'),
+            'start_date': integer_schema('开始日期时间'),
+            'end_date': integer_schema('结束日期时间'),
             'week': array_schema('周'),
         }),
         manual_parameters=[
@@ -60,18 +61,22 @@ class RegularAddRecordOtherView(ModelViewSet):
         ]
     )
     def partial_update(self, request, *args, **kwargs):
-        check_info(request)
+        # 需要修改的检测
+        pk = kwargs['pk']
+
         check_token = pd_token(request)
         if check_token:
             return check_token
 
         # 检查权限
-        check = check_authority(self, request, kwargs)
+        check = check_authority(self, request, pk)
         if check:
             return check
+        # 判断时间
+        check_time = check_update_time(request, pk)
+        if check_time:
+            return check_time
 
         resp = super().partial_update(request, *args, **kwargs)
 
         return response_success_200(data=resp.data)
-
-
