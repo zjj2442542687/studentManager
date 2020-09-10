@@ -28,8 +28,7 @@ class RegularAddRecordPaginationSelectView(mixins.ListModelMixin,
     pagination_class = MyLimitOffsetPagination
 
     @swagger_auto_schema(
-        operation_summary="习惯养成查询",
-        operation_description="token为可选参数，如果不传递则只可以查看系统的regular",
+        operation_summary="习惯养成用户添加的查询",
         pagination_class=None,
         manual_parameters=[
             openapi.Parameter('user', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
