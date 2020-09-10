@@ -11,9 +11,50 @@ from utils.status import *
 一些信息的验证
 """
 
+# 判断身份证的合法性
+def pd_card(id_number_str: str) -> bool:
+    # 判断长度，如果不是 18 位，直接返回失败
+    if len(id_number_str) != 18:
+        return False
+    id_regex = '[1-9][0-9]{14}([0-9]{2}[0-9X])?'
+    if not re.match(id_regex, id_number_str):
+        return False
+    items = [int(item) for item in id_number_str]
+    # 加权因子表
+    factors = (7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2)
+    # 计算17位数字各位数字与对应的加权因子的乘积
+    copulas = sum([a * b for a, b in zip(factors, items)])
+    # 校验码表
+    check_codes = ('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2')
+    checkcode = check_codes[copulas % 11].upper()
+    return checkcode == id_number_str[-1:]
+
+
+# 验证身份证的另外一种算法
+def pd_card_2(num_str: str) -> bool:
+    str_to_int = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5,
+                  '6': 6, '7': 7, '8': 8, '9': 9, 'X': 10}
+    check_dict = {0: '1', 1: '0', 2: 'X', 3: '9', 4: '8', 5: '7',
+                  6: '6', 7: '5', 8: '4', 9: '3', 10: '2'}
+    if len(num_str) != 18:
+        print(u'请输入标准的第二代身份证号码')
+        return False
+    check_num = 0
+    for index, num in enumerate(num_str):
+        if index == 17:
+            right_code = check_dict.get(check_num % 11)
+            if num == right_code:
+                print(u"身份证号: %s 校验通过" % num_str)
+                return True
+            else:
+                print(u"身份证号: %s 校验不通过, 正确尾号应该为：%s" % (num_str, right_code))
+                return False
+        check_num += str_to_int.get(num) * (2 ** (17 - index) % 11)
+    return False
+
 
 # 判断身份证的合法性
-def pd_card(card: str) -> bool:
+def pd_card_3(card: str) -> bool:
     if not card:
         return False
     regular_expression = "(^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|" + \
