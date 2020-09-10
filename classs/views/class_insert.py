@@ -49,17 +49,18 @@ class ClassInsertView(mixins.CreateModelMixin,
         if check_token:
             return check_token
 
+        teacher_id = request.data.get('teacher')
         class_name = request.data.get('class_name')
+        school_id = request.data.get('school')
+
         print(class_name)
-        if Class.objects.filter(class_name=class_name):
+        if Class.objects.filter(school_id=school_id).filter(class_name=class_name):
             message = "班级已经存在"
             return response_error_400(status=STATUS_PARAMETER_ERROR, message=message)
-        teacher_id = request.data.get('teacher')
         if not Teacher.objects.filter(id=teacher_id):
             message = "老师ID信息不存在"
             return response_error_400(status=STATUS_PARAMETER_ERROR, message=message)
 
-        school_id = request.data.get('school')
         if not School.objects.filter(id=school_id):
             message = "学校ID信息不存在"
             return response_error_400(status=STATUS_CODE_ERROR, message=message)

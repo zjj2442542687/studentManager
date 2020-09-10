@@ -12,7 +12,7 @@ from utils.status import *
 """
 
 # 判断身份证的合法性
-def pd_card(id_number_str: str) -> bool:
+def pd_card_3(id_number_str: str) -> bool:
     # 判断长度，如果不是 18 位，直接返回失败
     if len(id_number_str) != 18:
         return False
@@ -54,7 +54,7 @@ def pd_card_2(num_str: str) -> bool:
 
 
 # 判断身份证的合法性
-def pd_card_3(card: str) -> bool:
+def pd_card(card: str) -> bool:
     if not card:
         return False
     regular_expression = "(^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|" + \
