@@ -11,10 +11,12 @@ from FileInfo.models import FileInfo
 from parent.views.parent_serializers import ParentInfoSerializersAll
 from user.models import User
 from user_details.models import UserDetails
+from utils.my_card import IdCard
 from utils.my_encryption import my_encode
 from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email, pd_adm_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
+from utils.my_time import date_to_time_stamp
 
 
 class ParentInsertView(mixins.CreateModelMixin,
@@ -134,7 +136,7 @@ class ParentInsertFileView(mixins.CreateModelMixin,
             # 添加用户信息
             card = dt[1]['身份证']
             phone_number = dt[1]['手机号码']
-            if not dt[1]['家长姓名'] or not dt[1]['性别'] or not card:
+            if not dt[1]['家长姓名'] or not card:
                 continue
             if User.objects.filter(user_name=card):
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
@@ -142,13 +144,16 @@ class ParentInsertFileView(mixins.CreateModelMixin,
                 return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
             # print(dt[1]['班级'])
             print(phone_number)
+
             password = my_encode(phone_number)
+            # 分析身份证
+            id_card = IdCard(card)
             # 创建用户详情
             user_details_id = UserDetails.objects.create(
                 name=dt[1]['家长姓名'],
-                sex=-1 if dt[1]['性别'] == '女' else (1 if dt[1]['性别'] == '男' else 0),
+                sex=id_card.sex,
                 card=card,
-                birthday=dt[1]['生日'],
+                birthday=date_to_time_stamp(year=id_card.birth_year, month=id_card.birth_month, day=id_card.birth_day),
                 qq=dt[1]['QQ(选填)'],
                 email=dt[1]['邮箱(选填)'],
             ).id
@@ -180,7 +185,7 @@ def batch_import_test(file):
         qq = dt[1]['QQ(选填)']
         email = dt[1]['邮箱(选填)']
 
-        if not dt[1]['家长姓名'] or not dt[1]['性别'] or not card or not phone_number or not dt[1]['生日']:
+        if not dt[1]['家长姓名'] or not card or not phone_number:
             message += "有空字段"
 
             # 判断身份证的格式是否存在
