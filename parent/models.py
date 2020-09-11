@@ -22,12 +22,6 @@ class Parent(models.Model):
         return {
             "id": self.id,
             "name": user_details.name,
-            "sex": user_details.sex,
-            "card": user_details.card,
-            "phone_number": self.user.phone_number,
-            "birthday": user_details.birthday,
-            "qq": user_details.qq,
-            "email": user_details.email,
         }
 
     def search(self):

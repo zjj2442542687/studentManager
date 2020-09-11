@@ -10,7 +10,7 @@ from parent.models import Parent
 def to_parent_list(parent):
     parents = []
     for p in parent:
-        parents.append(p.to_json())
+        parents.append(p.search())
     return parents
 
 
