@@ -39,7 +39,7 @@ class WorkOtherView(ModelViewSet):
         check_token = pd_token(request)
         if check_token:
             return check_token
-        if lookup_token(request) is not 0 or lookup_token(request) is not 3:
+        if lookup_token(request) is not 0 and 3:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         print(request.data)
