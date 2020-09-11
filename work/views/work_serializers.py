@@ -30,3 +30,10 @@ class TeacherInfoSerializersUpdate(ModelSerializer):
     class Meta:
         model = Work
         fields = "__all__"
+
+
+# 全部的序列化
+class WorkSerializersSearch(ModelSerializer):
+    class Meta:
+        model = Work
+        fields = "__all__"

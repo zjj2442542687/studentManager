@@ -9,6 +9,7 @@ from regular_add_record.models import RegularAddRecord
 from regular_category.models import RegularCategory
 from regular_clock.models import RegularClock
 from school.models import School
+from teacher.models import Teacher
 from user.models import User
 
 
@@ -36,6 +37,11 @@ def get_school_all_id() -> list:
 # 获得所有class中的id 返回list
 def get_class_all_id() -> list:
     return get_queryset_all_id(Class.objects.all())
+
+
+# 获得所有teacher中的id 返回list
+def get_teacher_all_id() -> list:
+    return get_queryset_all_id(Teacher.objects.all())
 
 
 # 获得所有regular中的id 返回list

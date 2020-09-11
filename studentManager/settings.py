@@ -70,7 +70,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
-    'dwebsocket',  # websocket
+    # 'channels',  # channels
+    # 'chat',
+    # 'dwebsocket',  # websocket
 ]
 
 MIDDLEWARE = [
@@ -188,7 +190,16 @@ REST_FRAMEWORK = {  # 身份验证类
     )
 }
 
-MIDDLEWARE_CLASSES = {
-    'dwebsocket.middleware.WebSocketMiddleware'  # 为所有的URL提供websocket，如果只是单独的视图需要可以不选
-}
-WEBSOCKET_ACCEPT_ALL = True  # 可以允许每一个单独的视图实用websockets
+# MIDDLEWARE_CLASSES = {
+#     'dwebsocket.middleware.WebSocketMiddleware'  # 为所有的URL提供websocket，如果只是单独的视图需要可以不选
+# }
+# WEBSOCKET_ACCEPT_ALL = True  # 可以允许每一个单独的视图实用websockets
+# ASGI_APPLICATION = 'chat_mysite.routing.application'
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
