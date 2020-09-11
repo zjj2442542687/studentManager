@@ -91,7 +91,7 @@ class StudentAdmView(ModelViewSet):
         if phone_number:
             if not pd_phone_number(phone_number):
                 return response_error_400(message="手机号输入有误")
-            if User.objects.filter(phone_number=phone_number):
+            if User.objects.exclude(pk=user_update.id).filter(phone_number=phone_number):
                 return response_error_400(message="手机号已存在")
             user_update.phone_number = phone_number
 
@@ -120,19 +120,19 @@ class StudentAdmView(ModelViewSet):
         if card:
             if not pd_card(card):
                 return response_error_400(message="身份证输入有误")
-            if UserDetails.objects.filter(card=card):
+            if UserDetails.objects.exclude(pk=user_detail_update.id).filter(card=card):
                 return response_error_400(message="身份证已存在")
             user_detail_update.card = card
         if qq:
             if not pd_qq(qq):
                 return response_error_400(message="qq输入有误")
-            if UserDetails.objects.filter(qq=qq):
+            if UserDetails.objects.exclude(pk=user_detail_update.id).filter(qq=qq):
                 return response_error_400(message="qq已存在")
             user_detail_update.qq = qq
         if email:
             if not pd_email(email):
                 return response_error_400(message="email输入有误")
-            if UserDetails.objects.filter(email=email):
+            if UserDetails.objects.exclude(pk=user_detail_update.id).filter(email=email):
                 return response_error_400(message="email已存在")
             user_detail_update.email = email
 
