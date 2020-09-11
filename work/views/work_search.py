@@ -58,9 +58,9 @@ class WorkPaginationSelectView(mixins.ListModelMixin,
 
         # 老师
         teacher = request.GET.get("teacher")
-        if work is not None:
+        if work is None:
             work = Work.objects.filter(teacher=teacher)
-        else:
+        elif teacher is not None:
             work = work.filter(teacher=teacher)
 
         print(work)
@@ -94,12 +94,14 @@ class WorkPaginationSelectView(mixins.ListModelMixin,
         manual_parameters=[
             openapi.Parameter('clazz', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
                               description='班级id', enum=get_class_all_id()),
-            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='辅导员TOKEN'),
         ]
     )
     def search_clazz(self, request, *args, **kwargs):
         teacher_pk = Class.objects.get(pk=request.GET.get('clazz')).headmaster.pk
-        if request.user.pk is not teacher_pk:
+        if request.user is not teacher_pk:
+            print(request.user)
+            print(teacher_pk)
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="这不是您所带班级")
         # 班级
         clazz = request.GET.get("clazz")
