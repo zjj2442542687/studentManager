@@ -46,10 +46,10 @@ class UserDetailsOtherView(ModelViewSet):
             return response_error_400(message="qq格式不正确")
         if email and not pd_email(email):
             return response_error_400(message="email格式不正确")
-
-        check_time = check_time_stamp(int(birthday))
-        if check_time:
-            return response_error_400(message=check_time)
+        if birthday:
+            check_time = check_time_stamp(int(birthday))
+            if check_time:
+                return response_error_400(message=check_time)
 
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)
