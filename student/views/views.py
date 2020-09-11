@@ -54,12 +54,16 @@ def create_user_details_and_user(request, role):
     card = request.data.get('card')
     phone_number = request.data.get('phone_number')
     name = request.data.get('name')
+    qq = request.data.get('qq')
+    email = request.data.get('email')
 
     # 解析身份证
     id_card = IdCard(card)
     # 创建userDetails
     user_details = UserDetails.objects.create(
         name=name,
+        qq=qq,
+        email=email,
         sex=id_card.sex,
         card=card,
         birthday=date_to_time_stamp(year=id_card.birth_year, month=id_card.birth_month, day=id_card.birth_day), )
