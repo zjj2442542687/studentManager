@@ -8,11 +8,14 @@ from school.models import School
 from student.models import Student
 from student.views.student_serializers import StudentInfoSerializersUpdate, StudentInfoSerializersInsert, \
     StudentInfoSerializersAdmUpdate, StudentInfoSerializersSelect
+from user.models import User
 from user.views.urls import del_user_and_user_details
+from user_details.models import UserDetails
 from utils.my_encryption import my_decode_token
-from utils.my_info_judge import pd_token, pd_adm_token, lookup_token
+from utils.my_info_judge import pd_token, pd_adm_token, lookup_token, pd_phone_number, pd_card, pd_qq, pd_email
 from utils.my_response import response_success_200, response_error_400
 from utils.my_swagger_auto_schema import request_body, string_schema
+from utils.my_time import check_time_stamp
 from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
 
 
@@ -70,46 +73,73 @@ class StudentOtherView(ModelViewSet):
 class StudentAdmView(ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentInfoSerializersAdmUpdate
-    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         operation_summary="管理员修改",
         required=[],
         manual_parameters=[
-            openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
-                              description='性别((-1, 女), (0, 保密), (1, 男))'),
-            # openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
-            #                   description='身份'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
-            # ,
-            # openapi.Parameter('id', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='学号')
         ],
     )
     def partial_update_adm(self, request, *args, **kwargs):
         check_token = pd_adm_token(request)
         if check_token:
             return check_token
-        # if pd_adm_token(request):
-        #     return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
-        user_detail = Student.objects.get(pk=kwargs['pk']).user.user_details
-        sex = request.data.get('sex')
+
+        user_update = Student.objects.get(pk=kwargs['pk']).user
+        phone_number = request.data.get("phone_number")
+        if phone_number:
+            if not pd_phone_number(phone_number):
+                return response_error_400(message="手机号输入有误")
+            if User.objects.filter(phone_number=phone_number):
+                return response_error_400(message="手机号已存在")
+            user_update.phone_number = phone_number
+
+        # 获得传过来的参数
+        user_details = request.data.get('user_details')
+        print(user_details)
+        # 获得需要修改的userDetails
+        user_detail_update = user_update.user_details
+        sex = user_details.get('sex')
+        name = user_details.get('name')
+        birthday = user_details.get('birthday')
+        card = user_details.get('card')
+        qq = user_details.get('qq')
+        email = user_details.get('email')
+
         if sex:
-            user_detail.sex = sex
-        name = request.data.get('name')
+            user_detail_update.sex = sex
         if name:
-            user_detail.name = name
-        user_detail.save()
+            user_detail_update.name = name
+        if birthday:
+            check_time = check_time_stamp(int(birthday))
+            print(check_time)
+            if check_time:
+                return response_error_400(message=check_time)
+            user_detail_update.birthday = birthday
+        if card:
+            if not pd_card(card):
+                return response_error_400(message="身份证输入有误")
+            if UserDetails.objects.filter(card=card):
+                return response_error_400(message="身份证已存在")
+            user_detail_update.card = card
+        if qq:
+            if not pd_qq(qq):
+                return response_error_400(message="qq输入有误")
+            if UserDetails.objects.filter(qq=qq):
+                return response_error_400(message="qq已存在")
+            user_detail_update.qq = qq
+        if email:
+            if not pd_email(email):
+                return response_error_400(message="email输入有误")
+            if UserDetails.objects.filter(email=email):
+                return response_error_400(message="email已存在")
+            user_detail_update.email = email
+
+        # 保存修改
+        user_update.save()
+        user_detail_update.save()
 
         resp = super().partial_update(request, *args, **kwargs)
-
-        # instance = self.get_object()
-        # serializer = self.get_serializer(instance, data=request.data, partial=True)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
-        #
-        # instance = self.get_object()
-        # serializer = StudentInfoSerializersSelect(instance, context=self.get_serializer_context())
-        # print(serializer.data)
-        # return response_success_200(data=serializer.data)
 
         return response_success_200(data=resp.data)

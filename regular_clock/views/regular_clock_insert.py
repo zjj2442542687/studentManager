@@ -34,11 +34,10 @@ class RegularClockInsertView(mixins.CreateModelMixin,
         if check_token:
             return check_token
 
-        regular_add_record_id = request.data.get("regular_add_record")
-        if not regular_add_record_id:
-            return response_error_400(message="regular_add_record不能为空")
-        elif not RegularAddRecord.objects.filter(id=regular_add_record_id):
-            return response_error_400(message="regular_add_record没找到该id")
+        # 用户打卡，该用户是否添加了这个打卡项，或者是否为该班级的打卡项，
+
+
+        # 判断打卡的时间段
 
         resp = super().create(request)
         return response_success_200(data=resp.data)

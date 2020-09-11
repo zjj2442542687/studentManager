@@ -8,6 +8,8 @@ from student.models import Student
 
 # 添加操作的序列化
 from user.views.user_serializers import UserSerializersSearch
+from user_details.models import UserDetails
+from user_details.views.user_details_serializers import UserDetailsInfoSerializersUpdate
 
 
 class StudentInfoSerializersInsert(ModelSerializer):
@@ -35,19 +37,27 @@ class StudentInfoSerializersUpdate(ModelSerializer):
         fields = []
 
 
+class StudentInfoSerializersAdmUpdateUserDetails(ModelSerializer):
+    name = serializers.CharField(label='姓名', required=False)
+    avatar = serializers.ImageField(label='头像', required=False)
+    birthday = serializers.IntegerField(label='生日', required=False)
+    card = serializers.CharField(label='生日', required=False)
+    qq = serializers.CharField(label='qq', required=False)
+    email = serializers.CharField(label='邮箱', required=False)
+
+    class Meta:
+        model = UserDetails
+        fields = ["name", "avatar", "sex", "birthday", "card", "qq", "email"]
+
+
 # 管理员修改的序列化
 class StudentInfoSerializersAdmUpdate(ModelSerializer):
+    phone_number = serializers.CharField(label='手机号码', required=False)
+    user_details = StudentInfoSerializersAdmUpdateUserDetails(label="详细详细")
+
     class Meta:
         model = Student
-        # fields = "__all__"
         exclude = ['user']
-        # depth = 2
-
-    name = serializers.CharField(label='姓名', required=False)
-    card = serializers.CharField(label='身份证', required=False)
-    # identity = serializers.CharField(label='身份', required=False)
-    phone_number = serializers.CharField(label='手机号码', required=False)
-    # id = serializers.IntegerField(label='学号')
 
 
 # 查询操作的序列化
