@@ -33,7 +33,7 @@ class TeacherOtherView(ModelViewSet):
         if check_del:
             return check_del
         # 删除老师
-        super().destroy(request, *args, **kwargs)
+        # super().destroy(request, *args, **kwargs)
         return response_success_200(message="成功")
 
     @swagger_auto_schema(
@@ -65,7 +65,7 @@ class TeacherOtherView(ModelViewSet):
 class TeacherAmdView(ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherInfoSerializersAdmUpdate
-    parser_classes = [MultiPartParser]
+    # parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         operation_summary="管理员修改",

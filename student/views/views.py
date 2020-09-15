@@ -22,9 +22,9 @@ def check_student_insert_info(request):
 
     # 不能为空的数据
     if not card:
-        return response_success_200(message="card 不能为空")
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="card 不能为空")
     if not name:
-        return response_success_200(message="name 不能为空")
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="name 不能为空")
 
     # 学校关联
     if not School.objects.filter(id=school):
@@ -40,13 +40,13 @@ def check_student_insert_info(request):
 
     # 验证格式
     if not pd_card(card):
-        return response_success_200(message="身份证格式错误")
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="身份证格式错误")
     if qq and not pd_qq(qq):
-        return response_success_200(message="qq格式不正确")
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="qq格式不正确")
     if email and not pd_email(email):
-        return response_success_200(message="email格式不正确")
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="email格式不正确")
     if phone_number and not pd_phone_number(phone_number):
-        return response_success_200(message="手机号格式错误")
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="手机号格式错误")
 
 
 # 创建userDetails和user

@@ -40,7 +40,7 @@ class StudentOtherView(ModelViewSet):
         if check_del:
             return check_del
         # 删除学生
-        super().destroy(request, *args, **kwargs)
+        # super().destroy(request, *args, **kwargs)
         return response_success_200(message="成功")
 
     @swagger_auto_schema(
@@ -112,7 +112,7 @@ class StudentAdmView(ModelViewSet):
             check_time = check_time_stamp(int(birthday))
             print(check_time)
             if check_time:
-                return response_success_200(message=check_time)
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message=check_time)
             user_detail_update.birthday = birthday
         if card:
             if not pd_card(card):

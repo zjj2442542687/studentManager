@@ -15,7 +15,7 @@ from user_details.models import UserDetails
 from utils.my_card import IdCard
 from utils.my_encryption import my_encode
 from utils.my_info_judge import pd_card, pd_phone_number, pd_token, pd_adm_token, STATUS_TOKEN_NO_AUTHORITY, \
-    STATUS_PARAMETER_ERROR
+    STATUS_PARAMETER_ERROR, STATUS_404_NOT_FOUND
 from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import *
 from utils.my_time import date_to_time_stamp
@@ -79,7 +79,7 @@ class StudentInsertView(mixins.CreateModelMixin,
         parent_id = request.data.get('parent_id')
 
         if not Parent.objects.filter(id=parent_id).exists():
-            return response_success_200(message="未找到该信息")
+            return response_success_200(code=STATUS_404_NOT_FOUND,message="未找到该信息")
         print(student_id)
         print(parent_id)
         self.queryset.get(pk=student_id).parent.add(parent_id)
