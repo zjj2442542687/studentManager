@@ -17,7 +17,7 @@ def time_stamp_to_str(time_stamp=time.time(), date_format="%Y-%m-%d %H:%M:%S"):
 
 # 数据库保存的时间最小的取值
 def get_min_time_stamp():
-    return date_to_time_stamp(year=1910)
+    return date_to_time_stamp(year=1970, day=2)
 
 
 # 数据库保存的时间最大的取值

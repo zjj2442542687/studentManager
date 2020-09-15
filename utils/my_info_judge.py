@@ -4,7 +4,7 @@ from coreapi import exceptions
 from rest_framework.response import Response
 
 from user.models import User
-from utils.my_response import response_error_400
+from utils.my_response import response_success_200
 from utils.status import *
 
 """
@@ -119,11 +119,11 @@ def pd_qq(qq: str) -> bool:
 def pd_token(request):
     token = request.META.get("HTTP_TOKEN")
     if request.user == STATUS_TOKEN_OVER:
-        return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        return response_success_200(code=STATUS_TOKEN_OVER, message="token失效")
     elif request.user == STATUS_TOKEN_PARAMETER_ERROR:
-        return response_error_400(staus=STATUS_TOKEN_PARAMETER_ERROR, message="token参数错误!!!!!")
+        return response_success_200(code=STATUS_TOKEN_PARAMETER_ERROR, message="token参数错误!!!!!")
     elif not User.objects.filter(token=token):
-        return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+        return response_success_200(code=STATUS_TOKEN_OVER, message="token失效")
     return None
 
 
@@ -133,7 +133,7 @@ def pd_adm_token(request):
     if check_token:
         return check_token
     elif request.auth >= 0:
-        return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+        return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
     return None
 
@@ -144,7 +144,7 @@ def pd_super_adm_token(request):
     if check_token:
         return check_token
     elif request.auth != -1:
-        return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+        return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
     return None
 

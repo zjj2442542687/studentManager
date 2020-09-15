@@ -33,7 +33,7 @@ class ParentOtherView(ModelViewSet):
         if check_del:
             return check_del
         # 删除家长
-        super().destroy(request, *args, **kwargs)
+        # super().destroy(request, *args, **kwargs)
         return response_success_200(message="成功")
 
     @swagger_auto_schema(
