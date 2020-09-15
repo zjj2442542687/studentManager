@@ -8,9 +8,8 @@ def response(code=_status.HTTP_201_CREATED, headers=None, **data):
     return Response(data, status=code, headers=headers)
 
 
-def response_success_200(status=STATUS_200_SUCCESS, headers=None, code=STATUS_200_SUCCESS, **data):
+def response_success_200(headers=None, code=STATUS_200_SUCCESS, **data):
     data['code'] = code
-    data['status'] = status
     return Response(data, status=_status.HTTP_200_OK, headers=headers)
 
 

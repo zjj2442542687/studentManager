@@ -9,7 +9,7 @@ from rest_framework.serializers import ModelSerializer
 from school.models import School
 from school.views.school_insert import SchoolInfoSerializers
 from utils.my_info_judge import pd_token, pd_adm_token
-from utils.my_response import *
+from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import *
 
 
@@ -46,6 +46,6 @@ class SchoolOtherView(ModelViewSet):
 
         pk = kwargs.get('pk')
         if not School.objects.filter(pk=pk):
-            return response_error_400(message="学校未找到")
+            return response_success_200(message="学校未找到")
         super().destroy(request, *args, **kwargs)
         return response_success_200(message="成功")

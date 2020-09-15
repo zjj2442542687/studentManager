@@ -12,7 +12,7 @@ from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from user.views.user_serializers import UserSerializersSearch
-from utils.my_response import response_error_400
+from utils.my_response import response_success_200
 from utils.my_utils import get_school_all_id, get_class_all_id
 from utils.status import STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
 
@@ -43,7 +43,7 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
             return check_token
 
         if request.auth >= 0:
-            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
         # 名字
         name = request.GET.get("name")

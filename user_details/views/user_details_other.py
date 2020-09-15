@@ -8,10 +8,10 @@ from rest_framework.viewsets import ModelViewSet
 from user.models import User
 from user_details.models import UserDetails
 from user_details.views.user_details_serializers import UserDetailsInfoSerializersUpdate
-from utils.my_info_judge import pd_token, pd_qq, pd_email
-from utils.my_response import *
+from utils.my_info_judge import *
 from rest_framework.parsers import MultiPartParser
 
+from utils.my_response import response_success_200
 from utils.my_time import check_time_stamp
 
 
@@ -43,13 +43,13 @@ class UserDetailsOtherView(ModelViewSet):
         birthday = request.data.get("birthday")
 
         if qq and not pd_qq(qq):
-            return response_error_400(message="qq格式不正确")
+            return response_success_200(code=STATUS_PARAMETER_ERROR, message="qq格式不正确")
         if email and not pd_email(email):
-            return response_error_400(message="email格式不正确")
+            return response_success_200(code=STATUS_PARAMETER_ERROR, message="email格式不正确")
         if birthday:
             check_time = check_time_stamp(int(birthday))
             if check_time:
-                return response_error_400(message=check_time)
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message=check_time)
 
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)

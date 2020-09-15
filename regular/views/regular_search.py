@@ -4,18 +4,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 
-from parent.models import Parent
-from parent.views.parent_serializers import ParentSerializersSearch
 from regular.models import Regular
 from regular.views.regular_serializers import RegularSerializersSearch
-from user.models import User
-from user_details.models import UserDetails
-from utils.my_encryption import my_decode_token
-from utils.my_info_judge import pd_token, pd_adm_token, pd_super_adm_token
+from utils.my_info_judge import pd_token, pd_super_adm_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
-from utils.my_response import response_error_400
+from utils.my_response import response_success_200
 from utils.my_utils import get_class_all_id
-from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
 
 class RegularPaginationSelectView(mixins.ListModelMixin,
@@ -86,7 +80,7 @@ def search_is_system(request, is_system):
         # 返回该用户的所有系统以及个人非系统的regular
         return Regular.objects.filter(Q(user_id=request.user, is_system=0) | Q(is_system=1)), True
 
-    return response_error_400(message="参数错误"), False
+    return response_success_200(message="参数错误"), False
 
 
 # 查询班级的信息，

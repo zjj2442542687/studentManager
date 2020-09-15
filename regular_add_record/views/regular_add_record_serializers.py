@@ -1,12 +1,8 @@
-import time
+from rest_framework import serializers
 
 from regular.views.regular_serializers import RegularSerializersSearch
 from regular_add_record.models import RegularAddRecord
-from rest_framework import serializers
-
-from user.views.user_serializers import UserSerializersSearch
 from utils.my_time import time_stamp_to_str
-from week.views.week_serializers import WeekInfoSerializersAll
 
 
 class RegularAddRecordInfoSerializersAll(serializers.ModelSerializer):

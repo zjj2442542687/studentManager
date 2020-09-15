@@ -1,13 +1,11 @@
 import pandas as pd
-from drf_yasg.utils import swagger_auto_schema, no_body
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema, no_body
+from rest_framework import mixins
 from rest_framework.parsers import MultiPartParser
-
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status
+from rest_framework.viewsets import GenericViewSet
 
 from parent.models import Parent
-from FileInfo.models import FileInfo
 from parent.views.parent_serializers import ParentInfoSerializersAll, ParentInfoSerializersInsert
 from parent.views.views import check_parent_insert_info
 from student.views.views import create_user_details_and_user
@@ -15,9 +13,9 @@ from user.models import User
 from user_details.models import UserDetails
 from utils.my_card import IdCard
 from utils.my_encryption import my_encode
-from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email, pd_adm_token
-from utils.my_response import *
-from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
+from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email, pd_adm_token, STATUS_PARAMETER_ERROR
+from utils.my_response import response_success_200
+from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.my_time import date_to_time_stamp
 
 
@@ -95,9 +93,9 @@ class ParentInsertFileView(mixins.CreateModelMixin,
             if not dt[1]['家长姓名'] or not card:
                 continue
             if User.objects.filter(user_name=card):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
             if User.objects.filter(phone_number=phone_number):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
             # print(dt[1]['班级'])
             print(phone_number)
 
@@ -173,5 +171,5 @@ def batch_import_test(file):
             phone_list.append(phone_number)
 
     if len(test) > 0:
-        return response_error_400(status=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
     return None

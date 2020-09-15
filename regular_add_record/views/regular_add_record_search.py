@@ -1,23 +1,14 @@
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 
-from parent.models import Parent
-from parent.views.parent_serializers import ParentSerializersSearch
-from regular.models import Regular
-from regular.views.regular_serializers import RegularSerializersSearch
 from regular_add_record.models import RegularAddRecord
 from regular_add_record.views.regular_add_record_serializers import RegularAddRecordSerializersSearch
-from user.models import User
-from user_details.models import UserDetails
-from utils.my_encryption import my_decode_token
-from utils.my_info_judge import pd_token, pd_adm_token, pd_super_adm_token
+from utils.my_info_judge import pd_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
-from utils.my_response import response_error_400
-from utils.my_utils import get_class_all_id, get_regular_all_id
-from utils.status import STATUS_TOKEN_NO_AUTHORITY
+from utils.my_response import response_success_200
 
 
 class RegularAddRecordPaginationSelectView(mixins.ListModelMixin,
@@ -69,7 +60,7 @@ def search_user(request, user_id):
         return RegularAddRecord.objects.all(), True
 
     if request.auth >= 0 and user_id != request.user:  # 用户id和token对应的id不一样
-        return response_error_400(message="不能查询他人信息"), False
+        return response_success_200(message="不能查询他人信息"), False
 
     return RegularAddRecord.objects.filter(user_id=user_id), True
 

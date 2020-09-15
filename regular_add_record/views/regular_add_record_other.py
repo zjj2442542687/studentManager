@@ -1,17 +1,14 @@
 import time
 
-from drf_yasg.openapi import FORMAT_DATETIME
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.viewsets import ModelViewSet
 
 from regular_add_record.models import RegularAddRecord
 from regular_add_record.views.regular_add_record_serializers import RegularAddRecordInfoSerializersInsert
 from regular_add_record.views.views import check_authority, check_update_time
 from utils.my_info_judge import pd_token
-from utils.my_response import *
-
+from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import request_body, string_schema, array_schema, integer_schema
 
 

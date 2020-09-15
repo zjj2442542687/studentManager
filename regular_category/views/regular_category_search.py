@@ -1,25 +1,12 @@
-from django.db.models import Q, QuerySet
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 
-from parent.models import Parent
-from parent.views.parent_serializers import ParentSerializersSearch
-from regular.models import Regular
-from regular.views.regular_serializers import RegularSerializersSearch
-from regular_add_record.models import RegularAddRecord
-from regular_add_record.views.regular_add_record_serializers import RegularAddRecordSerializersSearch
 from regular_category.models import RegularCategory
 from regular_category.views.regular_category_serializers import RegularCategorySerializersSearch
-from user.models import User
-from user_details.models import UserDetails
-from utils.my_encryption import my_decode_token
-from utils.my_info_judge import pd_token, pd_adm_token, pd_super_adm_token
+from utils.my_info_judge import pd_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
-from utils.my_response import response_error_400
-from utils.my_utils import get_class_all_id, get_regular_all_id
-from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
 
 class RegularCategoryPaginationSelectView(mixins.ListModelMixin,

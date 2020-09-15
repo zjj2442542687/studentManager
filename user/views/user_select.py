@@ -1,17 +1,13 @@
-
 from drf_yasg.utils import swagger_auto_schema, no_body
-from rest_framework.utils import json
-
-from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
+from rest_framework.viewsets import GenericViewSet
 
 from user.models import User
-
 from user.views.urls import judge_code, get_info_by_token
-from user.views.user_serializers import UserInfoSerializersLess, UserInfoSerializersLogin
-from utils.my_encryption import my_encode, my_encode_token, my_decode_token, my_decode
-from utils.my_info_judge import pd_token
-from utils.my_response import *
+from user.views.user_serializers import UserInfoSerializersLogin
+from utils.my_encryption import my_encode, my_encode_token
+from utils.my_info_judge import *
+from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import *
 
 
@@ -52,9 +48,9 @@ class UserSelectView(mixins.ListModelMixin,
             else:
                 instance = None
         except User.DoesNotExist:
-            return response_error_400(message="用户名或密码错误")
+            return response_success_200(code=STATUS_PASSWORD_ERROR, message="用户名或密码错误")
         except UserWarning:
-            return response_error_400(status=STATUS_PARAMETER_ERROR, message="参数错误！！！")
+            return response_success_200(code=STATUS_PARAMETER_ERROR, message="参数错误！！！")
         # 设置token
         instance.token = my_encode_token(instance.pk, instance.role, my_encode(instance.user_name))
         # 保存
@@ -130,7 +126,8 @@ class UserSelectView(mixins.ListModelMixin,
         # 获得角色信息
         role_info = get_info_by_token(instance.token)
         role_info = role_info.to_json() if role_info else None
-        return response_success_200(message="成功!!!!", data=serializer.data, role_info=role_info)
+        return response_success_200(code=STATUS_200_SUCCESS, message="成功!!!!", data=serializer.data,
+                                    role_info=role_info)
 
     @swagger_auto_schema(
         operation_summary="检测手机号是否被注册",
@@ -146,6 +143,3 @@ class UserSelectView(mixins.ListModelMixin,
         print(phone_number_status)
         return response_success_200(phone_number_status=phone_number_status,
                                     message="手机号未被注册" if phone_number_status == 0 else "手机号已被注册")
-
-
-

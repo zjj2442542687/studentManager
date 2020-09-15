@@ -4,7 +4,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from classs.models import Class
 from classs.views.class_select import ClassInfoSerializers2
 from utils.my_info_judge import pd_token
-from utils.my_response import response_error_400
+from utils.my_response import response_success_200
 from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
 
@@ -25,6 +25,6 @@ class ClassOtherView(ModelViewSet):
             return check_token
 
         if request.auth >= 0:
-            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
         return super().destroy(request, *args, **kwargs)

@@ -1,24 +1,22 @@
 import pandas as pd
-
 from drf_yasg.utils import swagger_auto_schema, no_body
-from rest_framework.parsers import MultiPartParser
-
-from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
-from rest_framework.serializers import ModelSerializer
+from rest_framework.parsers import MultiPartParser
+from rest_framework.viewsets import GenericViewSet
 
+from classs.models import Class
 from parent.models import Parent
 from school.models import School
 from student.models import Student
 from student.views.student_serializers import StudentInfoSerializersInsert
 from student.views.views import check_student_insert_info, create_user_details_and_user
+from user.models import User
 from user_details.models import UserDetails
 from utils.my_card import IdCard
 from utils.my_encryption import my_encode
-from utils.my_info_judge import pd_card, pd_phone_number, pd_token, pd_adm_token
-from utils.my_response import *
-from classs.models import Class
-from user.models import User
+from utils.my_info_judge import pd_card, pd_phone_number, pd_token, pd_adm_token, STATUS_TOKEN_NO_AUTHORITY, \
+    STATUS_PARAMETER_ERROR
+from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import *
 from utils.my_time import date_to_time_stamp
 
@@ -75,13 +73,13 @@ class StudentInsertView(mixins.CreateModelMixin,
             return check_token
 
         if request.auth != 1:
-            return response_error_400(message="没有权限")
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         student_id = Student.objects.get(user_id=request.user).id
         parent_id = request.data.get('parent_id')
 
         if not Parent.objects.filter(id=parent_id).exists():
-            return response_error_400(message="未找到该信息")
+            return response_success_200(message="未找到该信息")
         print(student_id)
         print(parent_id)
         self.queryset.get(pk=student_id).parent.add(parent_id)
@@ -133,14 +131,14 @@ class StudentInsertFileView(mixins.CreateModelMixin,
             if User.objects.filter(user_name=card):
                 message = card + "身份证已经注册存在"
                 print(message)
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message=message)
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
             if User.objects.filter(phone_number=phone_number):
                 message = card + phone_number
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message=message)
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
             if not School.objects.filter(school_name=school):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message="学校不存在")
             if not Class.objects.filter(class_name=class_name):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message="学校不存在")
             password = my_encode(phone_number)
 
             # 分析身份证
@@ -214,5 +212,5 @@ def batch_import_test(file):
             phone_list.append(phone_number)
 
     if len(test) > 0:
-        return response_error_400(status=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
     return None

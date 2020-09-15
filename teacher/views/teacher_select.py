@@ -7,8 +7,8 @@ from rest_framework.serializers import ModelSerializer
 
 from teacher.models import Teacher
 from teacher.views.teacher_serializers import TeacherInfoSerializersAll
-from utils.my_info_judge import pd_token
-from utils.my_response import *
+from utils.my_info_judge import pd_token, STATUS_TOKEN_NO_AUTHORITY
+from utils.my_response import response_success_200
 
 
 class TeacherSelectView(mixins.ListModelMixin,
@@ -31,7 +31,7 @@ class TeacherSelectView(mixins.ListModelMixin,
             return check_token
 
         if not (request.auth == 0 or request.auth == 3):
-            return response_error_400(message="权限不够")
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         instance = self.queryset.get(user_id=request.user)
         serializer = self.get_serializer(instance)

@@ -1,15 +1,11 @@
-from drf_yasg.utils import swagger_auto_schema, no_body
 from drf_yasg import openapi
-
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status
-from rest_framework.serializers import ModelSerializer
+from drf_yasg.utils import swagger_auto_schema, no_body
+from rest_framework import mixins
+from rest_framework.viewsets import GenericViewSet
 
 from parent.models import Parent
 from parent.views.parent_serializers import ParentInfoSerializersSelect
-from utils.my_response import *
-
-from student.models import Student
+from utils.my_response import response_success_200, STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR
 
 
 class ParentSelectView(mixins.ListModelMixin,
@@ -49,9 +45,9 @@ class ParentSelectView(mixins.ListModelMixin,
         print(token)
         print(request.user)
         if request.user == STATUS_TOKEN_OVER:
-            return response_error_400(staus=STATUS_TOKEN_OVER, message="token失效")
+            return response_success_200(staus=STATUS_TOKEN_OVER, message="token失效")
         elif request.user == STATUS_PARAMETER_ERROR:
-            return response_error_400(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!")
+            return response_success_200(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!")
 
         instance = self.queryset.get(user_info=request.user)
         serializer = self.get_serializer(instance)

@@ -1,5 +1,4 @@
 from django.http import FileResponse
-
 # Create your views here.
 from django.utils.http import urlquote
 from rest_framework import mixins
@@ -7,7 +6,7 @@ from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin, ListMode
 from rest_framework.parsers import MultiPartParser
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import GenericViewSet
-from utils.my_response import *
+
 from FileInfo.models import FileInfo
 
 

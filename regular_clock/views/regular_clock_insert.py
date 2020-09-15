@@ -1,16 +1,13 @@
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.parsers import MultiPartParser
-
-from rest_framework.viewsets import GenericViewSet
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
+from rest_framework.parsers import MultiPartParser
+from rest_framework.viewsets import GenericViewSet
 
-from regular_add_record.models import RegularAddRecord
 from regular_clock.models import RegularClock
 from regular_clock.views.regular_clock_serializers import RegularClockInfoSerializersAll
-from utils.my_info_judge import pd_super_adm_token, pd_token
-from utils.my_response import response_success_200, response_error_400
-from utils.my_swagger_auto_schema import request_body, string_schema
+from utils.my_info_judge import pd_token
+from utils.my_response import response_success_200
 from utils.my_utils import get_regular_add_record_all_id
 
 

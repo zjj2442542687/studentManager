@@ -9,7 +9,7 @@ from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from user.views.user_serializers import UserSerializersSearch
-from utils.my_response import response_error_400
+from utils.my_response import response_error_400, response_success_200
 from utils.status import STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
 
 
@@ -57,7 +57,7 @@ class UserPaginationSelectView(mixins.ListModelMixin,
 def search_role(role):
     if role:
         if int(role) < 0 or int(role) > 3:
-            return False, response_error_400(status=STATUS_PARAMETER_ERROR, message="role的范围为(0`3)")
+            return False, response_success_200(code=STATUS_PARAMETER_ERROR, message="role的范围为(0`3)")
         user = User.objects.filter(role=role)
     else:
         # 返回 role >=  0 的

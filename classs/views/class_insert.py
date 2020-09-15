@@ -1,17 +1,16 @@
 from django.db import IntegrityError
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import mixins
 from rest_framework.serializers import ModelSerializer
+from rest_framework.viewsets import GenericViewSet
 
+from classs.models import Class
 from school.models import School
 from teacher.models import Teacher
-from classs.models import Class
 from user.models import User
-from utils.my_info_judge import pd_token, pd_adm_token
-from utils.my_response import *
+from utils.my_info_judge import pd_adm_token, STATUS_PARAMETER_ERROR
+from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
 
 
@@ -56,14 +55,14 @@ class ClassInsertView(mixins.CreateModelMixin,
         print(class_name)
         if Class.objects.filter(school_id=school_id).filter(class_name=class_name):
             message = "班级已经存在"
-            return response_error_400(status=STATUS_PARAMETER_ERROR, message=message)
+            return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
         if not Teacher.objects.filter(id=teacher_id):
             message = "老师ID信息不存在"
-            return response_error_400(status=STATUS_PARAMETER_ERROR, message=message)
+            return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
 
         if not School.objects.filter(id=school_id):
             message = "学校ID信息不存在"
-            return response_error_400(status=STATUS_CODE_ERROR, message=message)
+            return response_success_200(code=STATUS_CODE_ERROR, message=message)
 
         teacher = Teacher.objects.get(id=teacher_id)
         headmaster_id = teacher.user_id
@@ -72,7 +71,7 @@ class ClassInsertView(mixins.CreateModelMixin,
                                          class_name=class_name)
         #     一对一重复报错
         except IntegrityError:
-            return response_error_400(message="该老师已有班级")
+            return response_success_200(message="该老师已有班级")
 
         # 修改老师的信息为管理员
         user = User.objects.get(id=teacher.user_id)

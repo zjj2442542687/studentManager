@@ -147,5 +147,5 @@ def batch_import_test(file):
         if message:
             test.append({"index": i, "message": message})
     if len(test) > 0:
-        return response_error_400(status=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
     return None

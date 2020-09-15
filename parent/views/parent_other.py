@@ -1,20 +1,14 @@
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
-
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status
-from rest_framework.serializers import ModelSerializer
+from rest_framework.parsers import MultiPartParser
+from rest_framework.viewsets import ModelViewSet
 
 from parent.models import Parent
-from parent.views.parent_serializers import ParentInfoSerializersUpdate, ParentInfoSerializersAll, \
-    ParentInfoSerializersAdmUpdate
+from parent.views.parent_serializers import ParentInfoSerializersUpdate, ParentInfoSerializersAdmUpdate
 from user.views.urls import del_user_and_user_details
-from utils.my_encryption import my_decode_token
 from utils.my_info_judge import pd_token, pd_adm_token
-from utils.my_response import *
-from rest_framework.parsers import MultiPartParser
+from utils.my_response import response_success_200
 
 
 class ParentOtherView(ModelViewSet):

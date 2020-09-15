@@ -7,7 +7,7 @@ from regular.models import Regular
 from regular.views.regular_serializers import RegularInfoSerializersAll
 from regular.views.views import check_update_info, check_pk_and_permission
 from utils.my_info_judge import pd_super_adm_token, pd_token
-from utils.my_response import *
+from utils.my_response import response_success_200
 from rest_framework.parsers import MultiPartParser
 
 from utils.my_utils import get_regular_category_all_id, get_user_all_id, get_class_all_id
@@ -33,7 +33,7 @@ class RegularOtherView(ModelViewSet):
         # 需要修改的
         pk = kwargs['pk']
         if not self.queryset.filter(pk=pk):
-            return response_error_400(message="id未找到")
+            return response_success_200(message="id未找到")
 
         # 删除
         super().destroy(request, *args, **kwargs)

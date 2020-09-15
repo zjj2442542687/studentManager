@@ -51,18 +51,18 @@ class UserInsertView(mixins.CreateModelMixin,
         name = request.data.get('name')
 
         if not (role == 0 or role == 1 or role == 2):
-            return response_error_400(message="role的取值为(0, 1, 2)")
+            return response_success_200(code=STATUS_PARAMETER_ERROR, message="role的取值为(0, 1, 2)")
 
         if not pd_phone_number(phone_number):
             message = "手机号格式错误"
-            return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message=message)
+            return response_success_200(code=STATUS_PHONE_NUMBER_DUPLICATE, message=message)
 
         if check_user_name(user_name):
             message = "用户名已存在"
-            return response_error_400(status=STATUS_USER_NAME_DUPLICATE, message=message)
+            return response_success_200(code=STATUS_USER_NAME_DUPLICATE, message=message)
         if check_phone_number(phone_number):
             message = "该手机号已被注册"
-            return response_error_400(status=STATUS_PHONE_NUMBER_DUPLICATE, message=message)
+            return response_success_200(code=STATUS_PHONE_NUMBER_DUPLICATE, message=message)
 
         # 创建用户详情 并获得他的id
         user_details_id = UserDetails.objects.create(name=name).id
@@ -90,7 +90,7 @@ class UserInsertView(mixins.CreateModelMixin,
             save_parent.save()
         else:
             message = "角色不存在"
-            return response_error_400(status=STATUS_CODE_ERROR, message=message)
+            return response_success_200(status=STATUS_CODE_ERROR, message=message)
         # data = serializer.data
         print(f'数据是：{serializer.data}')
-        return response_success_200(data=serializer.data, headers=headers)
+        return response_success_200(code=STATUS_200_SUCCESS, data=serializer.data, headers=headers)

@@ -11,8 +11,8 @@ from teacher.views.views import check_teacher_insert_info
 from user_details.models import UserDetails
 from utils.my_card import IdCard
 from utils.my_encryption import my_encode
-from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email, pd_adm_token
-from utils.my_response import *
+from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email, pd_adm_token, STATUS_PARAMETER_ERROR
+from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
 from school.models import School
 from user.models import User
@@ -99,11 +99,11 @@ class TeacherInsertFileView(mixins.CreateModelMixin,
             phone_number = dt[1]['手机号码']
             school = dt[1]['学校名称']
             if User.objects.filter(user_name=card):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
             if User.objects.filter(phone_number=phone_number):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
             if not School.objects.filter(school_name=school):
-                return response_error_400(staus=STATUS_PARAMETER_ERROR, message="学校不存在")
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message="学校不存在")
             password = my_encode(phone_number)
             # 分析身份证
             id_card = IdCard(card)
@@ -179,5 +179,5 @@ def batch_import_test(file):
         card_list.append(card)
         phone_list.append(phone_number)
     if len(test) > 0:
-        return response_error_400(status=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
     return None

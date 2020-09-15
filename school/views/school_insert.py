@@ -7,7 +7,7 @@ from rest_framework.serializers import ModelSerializer
 
 from school.models import School
 from utils.my_info_judge import pd_token, pd_adm_token
-from utils.my_response import *
+from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import *
 
 

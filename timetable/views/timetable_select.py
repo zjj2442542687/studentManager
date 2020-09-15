@@ -8,8 +8,8 @@ from drf_yasg.utils import swagger_auto_schema, no_body
 
 from timetable.views.timetable_serializers import TimetableDepth2SerializersInsert
 from timetable.views.views import select_class
-from utils.my_info_judge import pd_token
-from utils.my_response import response_success_200, response_error_400
+from utils.my_info_judge import pd_token, STATUS_PARAMETER_ERROR
+from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import request_body, integer_schema
 
 
@@ -45,15 +45,15 @@ class TimetableSelectView(mixins.ListModelMixin,
             return check_token
 
         if request.auth != 1:
-            return response_error_400(message="需要传入学生token")
+            return response_success_200(code=STATUS_PARAMETER_ERROR, message="需要传入学生token")
 
         try:
             clazz = Student.objects.get(user_info_id=request.user).clazz
             if not clazz:
-                return response_error_400(message="请先加入班级")
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message="请先加入班级")
             return select_class(self, clazz.id)
         except Student.DoesNotExist:
-            return response_error_400(message="未找到该学生")
+            return response_success_200(code=STATUS_PARAMETER_ERROR, message="未找到该学生")
 
 
 

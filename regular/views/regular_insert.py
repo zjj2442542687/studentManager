@@ -1,16 +1,14 @@
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.parsers import MultiPartParser
-
-from rest_framework.viewsets import GenericViewSet
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
+from rest_framework.parsers import MultiPartParser
+from rest_framework.viewsets import GenericViewSet
 
 from regular.models import Regular
 from regular.views.regular_serializers import RegularInfoSerializersAll
 from regular.views.views import check_insert_info
-from regular_category.models import RegularCategory
-from utils.my_info_judge import pd_super_adm_token, pd_token
-from utils.my_response import response_success_200, response_error_400
+from utils.my_info_judge import pd_token
+from utils.my_response import response_success_200
 from utils.my_utils import get_regular_category_all_id, get_user_all_id, get_class_all_id
 
 
@@ -44,7 +42,7 @@ class RegularInsertView(mixins.CreateModelMixin,
 
         is_system = int(request.data.get("is_system"))
         if is_system == 1 and request.auth >= 0:
-            return response_error_400(message="没有权限添加系统类型的regular")
+            return response_success_200(message="没有权限添加系统类型的regular")
 
         title = request.data.get("title")
         regular_category_id = request.data.get("regular_category")

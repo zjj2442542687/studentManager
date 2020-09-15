@@ -1,15 +1,15 @@
-from rest_framework.viewsets import ModelViewSet
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from teacher.models import Teacher
-from teacher.views.teacher_serializers import TeacherInfoSerializersUpdate, TeacherInfoSerializersAdmUpdate
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser
+from rest_framework.viewsets import ModelViewSet
 
+from teacher.models import Teacher
+from teacher.views.teacher_serializers import TeacherInfoSerializersUpdate, TeacherInfoSerializersAdmUpdate
 from user.views.urls import del_user_and_user_details
 from utils.my_info_judge import pd_token, pd_adm_token, lookup_token
-from utils.my_response import response_success_200, response_error_400
-from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
+from utils.my_response import response_success_200
+from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
 
 class TeacherOtherView(ModelViewSet):
@@ -83,7 +83,7 @@ class TeacherAmdView(ModelViewSet):
         if check_token:
             return check_token
         if lookup_token(request) >= 0:
-            return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)

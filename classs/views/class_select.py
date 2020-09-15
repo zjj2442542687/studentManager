@@ -1,13 +1,10 @@
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+from rest_framework import mixins
 from rest_framework.serializers import ModelSerializer
-
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework import serializers, mixins, status, exceptions
+from rest_framework.viewsets import GenericViewSet
 
 from classs.models import Class
-from classs.views.class_insert import ClassInfoSerializers
-from utils.my_response import *
+from utils.my_response import response_success_200
 
 
 class ClassInfoSerializers2(ModelSerializer):
@@ -52,9 +49,9 @@ class ClassSelectView(mixins.ListModelMixin,
             # instance = self.queryset.filter(school_name__contains=kwargs.get("name"))
             instance = Class.objects.filter(class_name=kwargs.get("name"))
         except Class.DoesNotExist:
-            return response_error_500(message="没找到")
+            return response_success_200(message="没找到")
         except Class.MultipleObjectsReturned:
-            return response_error_500(message="返回多个")
+            return response_success_200(message="返回多个")
         serializer = self.get_serializer(instance, many=True)
         return response_success_200(data=serializer.data)
 
@@ -67,8 +64,8 @@ class ClassSelectView(mixins.ListModelMixin,
         try:
             instance = Class.objects.filter(school_info_id=kwargs.get("school_id"))
         except Class.DoesNotExist:
-            return response_error_500(message="没找到")
+            return response_success_200(message="没找到")
         except Class.MultipleObjectsReturned:
-            return response_error_500(message="返回多个")
+            return response_success_200(message="返回多个")
         serializer = self.get_serializer(instance, many=True)
         return response_success_200(data=serializer.data)

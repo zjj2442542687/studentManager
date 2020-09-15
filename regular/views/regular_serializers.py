@@ -1,7 +1,6 @@
-from regular.models import Regular
 from rest_framework import serializers
 
-from user.views.user_serializers import UserSerializersSearch
+from regular.models import Regular
 from utils.my_time import time_stamp_to_str
 
 

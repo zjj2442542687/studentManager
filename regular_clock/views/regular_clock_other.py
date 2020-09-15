@@ -1,15 +1,12 @@
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import ModelViewSet
 
-from regular_category.models import RegularCategory
-from regular_category.views.regular_category_serializers import RegularCategoryInfoSerializersAll
 from regular_clock.models import RegularClock
 from regular_clock.views.regular_clock_serializers import RegularClockInfoSerializersAll
 from utils.my_info_judge import pd_super_adm_token
-from utils.my_response import *
-from rest_framework.parsers import MultiPartParser
+from utils.my_response import response_success_200
 
 
 class RegularClockOtherView(ModelViewSet):
@@ -31,7 +28,7 @@ class RegularClockOtherView(ModelViewSet):
         # 需要修改的
         pk = kwargs['pk']
         if not self.queryset.filter(pk=pk):
-            return response_error_400(message="id未找到")
+            return response_success_200(message="id未找到")
 
         # 删除
         super().destroy(request, *args, **kwargs)
@@ -54,6 +51,6 @@ class RegularClockOtherView(ModelViewSet):
         # 需要修改的
         pk = kwargs['pk']
         if not self.queryset.filter(pk=pk):
-            return response_error_400(message="id未找到")
+            return response_success_200(message="id未找到")
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)

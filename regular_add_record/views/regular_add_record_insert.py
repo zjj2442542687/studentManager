@@ -1,13 +1,9 @@
-import re
 import time
 
-from drf_yasg.openapi import FORMAT_DATE, FORMAT_DATETIME
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.parsers import MultiPartParser
-
-from rest_framework.viewsets import GenericViewSet
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
+from rest_framework.viewsets import GenericViewSet
 
 from regular_add_record.models import RegularAddRecord
 from regular_add_record.views.regular_add_record_serializers import RegularAddRecordInfoSerializersInsert
