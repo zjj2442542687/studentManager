@@ -113,11 +113,11 @@ class UserSelectView(mixins.ListModelMixin,
         phone_number = request.data.get("phone_number")
         # 检测手机号是否被注册
         if not User.objects.filter(phone_number=phone_number):
-            return response_not_found_404(status=STATUS_NOT_FOUND_ERROR, message=f"该手机号({phone_number})未被注册!!")
+            return response_success_200(code=STATUS_NOT_FOUND_ERROR, message=f"该手机号({phone_number})未被注册!!")
         # 检测验证码是否正确
         if not judge_code(phone_number, request.data.get('code')):
             message = "验证码不正确"
-            return response_error_400(status=STATUS_CODE_ERROR, message=message)
+            return response_success_200(code=STATUS_CODE_ERROR, message=message)
         # 获得用户信息
         instance = self.queryset.get(phone_number=phone_number)
         # 设置token
