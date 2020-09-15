@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
-    'channels',  # channels
+    # 'channels',  # channels
     # 'chat',
     # 'dwebsocket',  # websocket
 ]
