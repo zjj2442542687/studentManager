@@ -1,5 +1,4 @@
 from drf_yasg import openapi
-from drf_yasg.openapi import FORMAT_DATETIME
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
 from rest_framework.parsers import MultiPartParser
@@ -7,8 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from utils.my_info_judge import pd_token, lookup_token, STATUS_TOKEN_NO_AUTHORITY
 from utils.my_response import response_success_200, response_error_400
-from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
-from utils.my_utils import get_regular_category_all_id, get_user_all_id, get_class_all_id, get_teacher_all_id
+from utils.my_utils import get_class_all_id, get_teacher_all_id
 from work.models import Work
 from work.views.work_serializers import WorkInfoSerializersAll
 

@@ -4,6 +4,9 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status, exceptions
 
+from parent.models import Parent
+from student.models import Student
+from teacher.models import Teacher
 from user.views.urls import judge_code, check_phone_number, check_user_name
 from user.views.user_serializers import UserInfoSerializersAll, UserInfoSerializersLess
 from user_details.views.urls import *

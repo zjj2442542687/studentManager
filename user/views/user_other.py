@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from user.models import User
 from user.views.urls import send_code
 from user.views.user_insert import pd_phone_number
-from user.views.user_serializers import UserInfoSerializersUpdate
+from user.views.user_serializers import UserInfoSerializersUpdate, UserInfoSerializersUpdatePhone
 from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
@@ -109,3 +109,33 @@ class Other(APIView):
         except UserWarning:
             return response_success_200(code=STATUS_PHONE_NUMBER_ERROR, message='参数错误或手机号不合法')
         return response_success_200(code=STATUS_200_SUCCESS, message="发送验证码成功,验证码在10分钟内有效")
+
+
+class UserUpdateView(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserInfoSerializersUpdatePhone
+    parser_classes = [MultiPartParser]
+
+    @swagger_auto_schema(
+        operation_summary="根据token修改用户手机号码",
+        required=[],
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN'),
+        ]
+    )
+    def Phone_update(self, request, *args, **kwargs):
+        phone_number = request.data.get("phone_number")
+
+        # 判断token
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
+
+        # 获得pk
+        pk = request.user
+        print(pk)
+        # 查看id是否存在
+        if not User.objects.filter(pk=pk):
+            return response_success_200(code=STATUS_NOT_FOUND_ERROR, message="id未找到")
+        User.objects.filter(pk=pk).update(phone_number=phone_number)
+        return response_success_200(message="修改成功!")

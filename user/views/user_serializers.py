@@ -48,6 +48,15 @@ class UserInfoSerializersLogin(UserInfoSerializers):
         depth = 1
 
 
+# 手机号验证码验证
+class UserInfoSerializersCheck(UserInfoSerializers):
+    phone_number = serializers.CharField(label='手机号码', required=False)
+
+    class Meta:
+        model = User
+        fields = ["phone_number"]
+
+
 # 修改信息的token
 # class UserInfoSerializersUpdate(UserInfoSerializers):
 #     class Meta:
@@ -63,6 +72,15 @@ class UserInfoSerializersUpdate(ModelSerializer):
     class Meta:
         model = User
         fields = ["user_name", "phone_number"]
+
+
+# updatePhone中包含的序列化
+class UserInfoSerializersUpdatePhone(ModelSerializer):
+    phone_number = serializers.CharField(label='手机号', required=False)
+
+    class Meta:
+        model = User
+        fields = ["phone_number"]
 
 
 # 手机号验证码修改密码
