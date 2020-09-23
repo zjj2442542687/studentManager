@@ -70,7 +70,7 @@ class TeacherPaginationSelectView(mixins.ListModelMixin,
 
         page = self.paginate_queryset(teacher)
         serializer = self.serializer_class(page, many=True, context=self.get_serializer_context())
-
+        print(serializer.data)
         return self.get_paginated_response(serializer.data)
 
 

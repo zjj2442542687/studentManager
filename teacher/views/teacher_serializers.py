@@ -50,11 +50,12 @@ class TeacherInfoSerializersAdmUpdateUserDetails(ModelSerializer):
 
 class TeacherInfoSerializersAdmUpdate(ModelSerializer):
     phone_number = serializers.CharField(label='手机号码', required=False)
+    # clazz_id = serializers.IntegerField(label='班级', required=False)
     user_details = TeacherInfoSerializersAdmUpdateUserDetails(label="详细详细")
 
     class Meta:
         model = Teacher
-        exclude = ['user']
+        exclude = ['user', 'school']
 
 
 # 修改操作的序列化
@@ -65,6 +66,15 @@ class TeacherInfoSerializersUpdate(ModelSerializer):
     class Meta:
         model = Teacher
         fields = ['title', 'identity']
+
+
+# 批量删除操作的序列化
+class TeacherInfoSerializersDeleteAll(ModelSerializer):
+    id_list = serializers.ListField(label='id_list', required=False)
+
+    class Meta:
+        model = Teacher
+        fields = ['id_list']
 
 
 class TeacherSerializersSearch(ModelSerializer):

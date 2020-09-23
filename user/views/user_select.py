@@ -5,7 +5,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from user.models import User
 from user.views.urls import judge_code, get_info_by_token
-from user.views.user_serializers import UserInfoSerializersLogin, UserInfoSerializersCheck
+from user.views.user_serializers import UserInfoSerializersLogin, UserInfoSerializersCheck, UserInfoSerializersPassword
 from utils.my_encryption import my_encode, my_encode_token, my_decode
 from utils.my_info_judge import *
 from utils.my_response import response_success_200
@@ -155,36 +155,53 @@ class UserSelectView(mixins.ListModelMixin,
     @swagger_auto_schema(
         operation_summary="检测手机号验证码是否正确",
         operation_description="传入手机号、验证码和token",
-        required=[],
+        request_body=request_body(properties={
+            'phone_number': string_schema('手机号'),
+            'code': string_schema('验证码'),
+        }),
         manual_parameters=[
-            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN'),
-            openapi.Parameter('phone_number', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='phone_number')
-        ]
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='用户TOKEN'),
+        ],
     )
     def check_phone_code(self, request, *args, **kwargs):
         phone_number = request.data.get("phone_number")
+        code = request.data.get("code")
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
         # 检测手机号是否被注册
-        if not User.objects.filter(phone_number=phone_number):
-            return response_success_200(code=STATUS_NOT_FOUND_ERROR, message=f"该手机号({phone_number})未被注册!!")
+        # if not User.objects.filter(phone_number=phone_number):
+        #     return response_success_200(code=STATUS_NOT_FOUND_ERROR, message=f"该手机号({phone_number})未被注册!!")
         # 检测验证码是否正确
-        if not judge_code(phone_number, kwargs.get('code')):
+        if not judge_code(phone_number, code):
             message = "验证码不正确"
             return response_success_200(code=STATUS_CODE_ERROR, message=message)
         return response_success_200(code=STATUS_200_SUCCESS, message="手机验证码正确！")
 
+
+class UserSelectViewCheck(mixins.ListModelMixin,
+                          mixins.RetrieveModelMixin,
+                          GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserInfoSerializersPassword
+
     @swagger_auto_schema(
         operation_summary="检测当前token密码是否正确",
         operation_description="传入token、密码",
-        required=[],
+        required=no_body,
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ]
     )
     def check_password(self, request, *args, **kwargs):
-        password = kwargs.get("password")
+        password = request.data.get("password")
+        # print(password)
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
         password = my_encode(password)
         # 获得pk
         pk = request.user
         if not User.objects.filter(pk=pk, password=password):
             return response_success_200(code=STATUS_NOT_FOUND_ERROR, message="用户名不存在或密码错误")
-        return response_success_200(code=STATUS_200_SUCCESS, message="密码正确！")
+        return response_success_200(message="当前token用户密码正确")

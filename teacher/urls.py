@@ -3,7 +3,7 @@ from django.urls import path
 from teacher.views.teacher_insert import TeacherInsertView, TeacherInsertFileView
 from teacher.views.teacher_search import TeacherPaginationSelectView
 from teacher.views.teacher_select import TeacherSelectView
-from teacher.views.teacher_other import TeacherOtherView, TeacherAmdView
+from teacher.views.teacher_other import TeacherOtherView, TeacherAmdView, TeacherDeleteAllView
 from user.views.user_select import UserSelectView
 
 urlpatterns = [
@@ -12,6 +12,10 @@ urlpatterns = [
     path("getInfoByToken", TeacherSelectView.as_view({'post': 'retrieve_by_token'})),
     path("insert_file", TeacherInsertFileView.as_view({'post': 'batch_import'})),
     path("delete/<int:pk>", TeacherOtherView.as_view({'delete': 'destroy'})),
+    # 批量删除老师信息
+    path("delete_all", TeacherOtherView.as_view({'delete': 'destroy_all'})),
+    # 批量删除老师信息
+    path("delete_all2", TeacherDeleteAllView.as_view({'post': 'destroy_all2'})),
     # 根据token修改老师信息
     path("update", TeacherOtherView.as_view({'patch': 'partial_update'})),
     # 管理员根据token修改老师信息

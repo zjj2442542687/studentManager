@@ -42,6 +42,6 @@ class CourseInsertView(mixins.CreateModelMixin,
             return response_success_200(status=STATUS_PARAMETER_ERROR, message=message)
         # 把课程添加到课程表中
         resp = super().create(request)
-        Timetable.objects.get(id=timetable_id).course_info.add(resp.data['id'])
+        # Timetable.objects.get(id=timetable_id).course_info.add(resp.data['id'])
         print(resp.data)
         return response_success_200(data=resp.data)

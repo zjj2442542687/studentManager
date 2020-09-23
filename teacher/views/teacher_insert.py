@@ -12,7 +12,7 @@ from user_details.models import UserDetails
 from utils.my_card import IdCard
 from utils.my_encryption import my_encode
 from utils.my_info_judge import pd_card, pd_phone_number, pd_qq, pd_email, pd_adm_token, STATUS_PARAMETER_ERROR
-from utils.my_response import response_success_200
+from utils.my_response import response_success_200, response_error_400
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
 from school.models import School
 from user.models import User
@@ -179,5 +179,5 @@ def batch_import_test(file):
         card_list.append(card)
         phone_list.append(phone_number)
     if len(test) > 0:
-        return response_success_200(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
+        return response_error_400(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
     return None

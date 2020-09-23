@@ -58,7 +58,6 @@ class ClassSelectView(mixins.ListModelMixin,
     @swagger_auto_schema(
         operation_summary="根据学校id查询班级",
         operation_description="学校id",
-        deprecated=True
     )
     def retrieve_by_school_id(self, request, *args, **kwargs):
         try:

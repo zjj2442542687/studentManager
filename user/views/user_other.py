@@ -125,7 +125,7 @@ class UserUpdateView(ModelViewSet):
     )
     def Phone_update(self, request, *args, **kwargs):
         phone_number = request.data.get("phone_number")
-
+        print(phone_number)
         # 判断token
         check_token = pd_token(request)
         if check_token:

@@ -48,6 +48,15 @@ class UserInfoSerializersLogin(UserInfoSerializers):
         depth = 1
 
 
+# 只显示password(只写，不显示)
+class UserInfoSerializersPassword(UserInfoSerializers):
+    password = serializers.CharField(label='密码', required=False)
+
+    class Meta:
+        model = User
+        fields = ["password"]
+
+
 # 手机号验证码验证
 class UserInfoSerializersCheck(UserInfoSerializers):
     phone_number = serializers.CharField(label='手机号码', required=False)

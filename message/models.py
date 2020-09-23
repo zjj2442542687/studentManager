@@ -9,7 +9,7 @@ class StudentNoticeHz(models.Model):
     class Meta:
         verbose_name = '学生信息通知表'
         verbose_name_plural = verbose_name
-        db_table = 'T_StudentNoticeHz'
+        db_table = 'T_StudentNotice'
 
     sender = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name='发送人')
     Student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, verbose_name='学生')

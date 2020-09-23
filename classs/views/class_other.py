@@ -27,4 +27,6 @@ class ClassOtherView(ModelViewSet):
         if request.auth >= 0:
             return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
-        return super().destroy(request, *args, **kwargs)
+        # return super().destroy(request, *args, **kwargs)
+        super().destroy(request, *args, **kwargs)
+        return response_success_200(message="删除成功!!")
