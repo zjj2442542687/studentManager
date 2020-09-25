@@ -47,8 +47,6 @@ class RegularOtherView(ModelViewSet):
             openapi.Parameter('describe', openapi.IN_FORM, type=openapi.TYPE_STRING, description='描述'),
             openapi.Parameter('regular_category', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='习惯类别的id',
                               enum=get_regular_category_all_id()),
-            openapi.Parameter('user', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='user的id',
-                              enum=get_user_all_id()),
             openapi.Parameter('clazz', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
                               description='class的id, 传表示它为该班级的regular',
                               enum=get_class_all_id()),
@@ -65,9 +63,8 @@ class RegularOtherView(ModelViewSet):
 
         # 需要修改的检测
         regular_category_id = request.data.get("regular_category")
-        user_id = request.data.get("user")
         class_id = request.data.get("clazz")
-        check_info = check_update_info(regular_category_id, user_id, class_id)
+        check_info = check_update_info(regular_category_id, request.user, class_id)
         if check_info:
             return check_info
 

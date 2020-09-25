@@ -23,7 +23,7 @@ class RegularAddRecordInsertView(mixins.CreateModelMixin,
         operation_description=f"当前的时间戳是 {int(time.time())}",
         request_body=request_body(properties={
             'describe': string_schema(description="我是描述", default="默认值", title="标题"),
-            'regular': integer_schema('描述', default=1),
+            'regular': integer_schema('regular的id', default=1),
             'reminder_time': integer_schema('提醒时间'),
             'start_time': integer_schema('每天开始的时间'),
             'end_time': integer_schema('每天结束的时间'),

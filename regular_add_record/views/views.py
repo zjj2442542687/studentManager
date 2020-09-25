@@ -2,11 +2,12 @@ from regular_add_record.models import RegularAddRecord
 from utils.my_encryption import get_time
 from utils.my_response import response_success_200
 from utils.my_time import date_to_time_stamp, check_time_stamp
+from utils.status import STATUS_TOKEN_NO_AUTHORITY, STATUS_NULL, STATUS_PARAMETER_ERROR, STATUS_404_NOT_FOUND
 
 
 def check_authority(self, request, pk):  # 检查权限问题
     if not self.queryset.filter(pk=pk):
-        return response_success_200(message="id未找到")
+        return response_success_200(code=STATUS_404_NOT_FOUND, message="id未找到")
 
     # 管理员的记录不能被别人删除，其他用户的只能自己删除
     regular_add_record_user = self.queryset.get(pk=pk).user
@@ -15,9 +16,9 @@ def check_authority(self, request, pk):  # 检查权限问题
     if regular_add_record_user_id != request.user:  # 不是自己的
         if regular_add_record_user_role >= 0:  # 需要删除的regularAddRecord是普通用户的
             if request.auth >= 0:  # 执行的用户是普通用户
-                return response_success_200(message="没有权限删除别人的东西!!!")
+                return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限删除别人的东西!!!")
         else:  # 需要被删除的regularAddRecord是管理员的
-            return response_success_200(message="不能删除管理员的东西!!!")
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="不能删除管理员的东西!!!")
 
 
 def check_insert_time(request):  # 检查添加数据时，时间的规范
@@ -28,7 +29,7 @@ def check_insert_time(request):  # 检查添加数据时，时间的规范
     end_date = data.get("end_date")
 
     if not (start_time and end_time and start_date and end_date):
-        return response_success_200(message="有空数据")
+        return response_success_200(code=STATUS_NULL, message="有空参数")
 
     # 检测时间的范围
 
@@ -48,7 +49,7 @@ def check_insert_time(request):  # 检查添加数据时，时间的规范
 def check_time_range(time_stamp):
     message = check_time_stamp(time_stamp)
     if message:
-        return response_success_200(message=message)
+        return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
 
 
 def check_time(start, end, day=0, hour=0, minute=0, second=0, err_message="结束时间需要大于开始时间3分钟"):
@@ -59,7 +60,7 @@ def check_time(start, end, day=0, hour=0, minute=0, second=0, err_message="结�
         return check
 
     # 检测开始时间和结束时间之间的相距时间是否符合
-    return response_success_200(message=err_message) \
+    return response_success_200(code=STATUS_PARAMETER_ERROR, message=err_message) \
         if start + get_time(day=day, hour=hour, minute=minute, second=second) > end \
         else None
 

@@ -48,7 +48,7 @@ class TimetableSelectView(mixins.ListModelMixin,
             return response_success_200(code=STATUS_PARAMETER_ERROR, message="需要传入学生token")
 
         try:
-            clazz = Student.objects.get(user_info_id=request.user).clazz
+            clazz = Student.objects.get(user_id=request.user).clazz
             if not clazz:
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message="请先加入班级")
             return select_class(self, clazz.id)

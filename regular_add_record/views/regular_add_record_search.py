@@ -9,6 +9,7 @@ from regular_add_record.views.regular_add_record_serializers import RegularAddRe
 from utils.my_info_judge import pd_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from utils.my_response import response_success_200
+from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
 
 class RegularAddRecordPaginationSelectView(mixins.ListModelMixin,
@@ -60,7 +61,7 @@ def search_user(request, user_id):
         return RegularAddRecord.objects.all(), True
 
     if request.auth >= 0 and user_id != request.user:  # 用户id和token对应的id不一样
-        return response_success_200(message="不能查询他人信息"), False
+        return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="不能查询他人信息"), False
 
     return RegularAddRecord.objects.filter(user_id=user_id), True
 

@@ -5,6 +5,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from classs.models import Class
 from classs.views.class_serializers import ClassSerializersSearch
+from utils.my_info_judge import pd_adm_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from utils.my_utils import get_school_all_id
 
@@ -28,9 +29,9 @@ class ClassPaginationSelectView(mixins.ListModelMixin,
         ]
     )
     def search(self, request, *args, **kwargs):
-        # check_token = pd_adm_token(request)
-        # if check_token:
-        #     return check_token
+        check_token = pd_adm_token(request)
+        if check_token:
+            return check_token
 
         # 名字
         class_name = request.GET.get("class_name")

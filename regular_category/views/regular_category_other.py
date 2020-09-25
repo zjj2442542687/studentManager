@@ -9,6 +9,8 @@ from utils.my_info_judge import pd_super_adm_token
 from utils.my_response import response_success_200
 from rest_framework.parsers import MultiPartParser
 
+from utils.status import STATUS_404_NOT_FOUND
+
 
 class RegularCategoryOtherView(ModelViewSet):
     queryset = RegularCategory.objects.all()
@@ -29,7 +31,7 @@ class RegularCategoryOtherView(ModelViewSet):
         # 需要修改的
         pk = kwargs['pk']
         if not self.queryset.filter(pk=pk):
-            return response_success_200(message="id未找到")
+            return response_success_200(code=STATUS_404_NOT_FOUND, message="id未找到")
 
         # 删除
         super().destroy(request, *args, **kwargs)
@@ -52,6 +54,6 @@ class RegularCategoryOtherView(ModelViewSet):
         # 需要修改的
         pk = kwargs['pk']
         if not self.queryset.filter(pk=pk):
-            return response_success_200(message="id未找到")
+            return response_success_200(code=STATUS_404_NOT_FOUND, message="id未找到")
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)
