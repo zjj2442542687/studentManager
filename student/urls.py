@@ -7,7 +7,7 @@ from django.contrib import admin
 from student.views.student_insert import StudentInsertView, StudentInsertFileView
 from student.views.student_search import StudentPaginationSelectView
 from student.views.student_select import StudentSelectView
-from student.views.student_other import StudentOtherView, StudentAdmView
+from student.views.student_other import StudentOtherView, StudentAdmView,StudentDeleteAllView
 
 urlpatterns = [
     path("insert", StudentInsertView.as_view({'post': 'create'})),
@@ -19,6 +19,8 @@ urlpatterns = [
     path("getInfoByToken", StudentSelectView.as_view({'post': 'retrieve_by_token'})),
     # 根据id删除学生
     path("delete/<int:pk>", StudentOtherView.as_view({'delete': 'destroy'})),
+    # 批量删除老师信息
+    path("delete_all", StudentDeleteAllView.as_view({'post': 'destroy_all2'})),
     # 学生的批量导入
     path("insertFile", StudentInsertFileView.as_view({'post': 'batch_import'})),
     # 添加家长

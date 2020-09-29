@@ -1,18 +1,16 @@
-from rest_framework.viewsets import ModelViewSet
-from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from teacher.models import Teacher
-from teacher.views.teacher_serializers import TeacherInfoSerializersUpdate, TeacherInfoSerializersAdmUpdate, \
-    TeacherInfoSerializersDeleteAll
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser
+from rest_framework.viewsets import ModelViewSet
 
+from teacher.models import Teacher
+from teacher.views.teacher_serializers import TeacherInfoSerializersUpdate, TeacherInfoSerializersAdmUpdate
 from user.views.urls import del_user_and_user_details
 from user_details.views.urls import adm_update_user_details
-from utils.my_info_judge import pd_token, pd_adm_token, lookup_token
-from utils.my_response import response_success_200, response_error_400
-from utils.my_swagger_auto_schema import string_schema, request_body, array_schema
-from utils.status import STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR, STATUS_TOKEN_NO_AUTHORITY
+from utils.my_info_judge import pd_token, pd_adm_token
+from utils.my_response import response_success_200
+from utils.my_swagger_auto_schema import request_body, array_schema, integer_schema
 
 
 class TeacherOtherView(ModelViewSet):
@@ -41,26 +39,27 @@ class TeacherOtherView(ModelViewSet):
 
     @swagger_auto_schema(
         operation_summary="根据id列表批量删除老师信息及用户信息",
+        operation_description="说明：无",
+        # request_body=request_body(properties={
+        #     'list_id': array_schema('老师ID列表')
+        # }),
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
             openapi.Parameter('list_id', openapi.IN_QUERY, type=openapi.TYPE_ARRAY, description='老师ID列表',
                               items=openapi.Schema(type=openapi.TYPE_INTEGER))
-        ],
-        deprecated=True
+        ]
     )
     def destroy_all(self, request, *args, **kwargs):
         check_token = pd_adm_token(request)
         if check_token:
             return check_token
-        list = kwargs.get('list_id')
-        print(list)
-        list = request.data.get('list_id')
+        list = request.query_params.get('list_id')
         print(list)
         # 先删除用户
-        # for i in list:
-        #     check_del = del_user_and_user_details(0, i)
-        # if check_del:
-        #     return check_del
+        for i in list:
+            check_del = del_user_and_user_details(0, int(i))
+        if check_del:
+            return check_del
         # 删除老师
         # super().destroy(request, *args, **kwargs)
         return response_success_200(message="成功")
@@ -124,21 +123,21 @@ class TeacherAmdView(ModelViewSet):
 
 class TeacherDeleteAllView(ModelViewSet):
     queryset = Teacher.objects.all()
-    serializer_class = TeacherInfoSerializersDeleteAll
-    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         operation_summary="根据id列表批量删除老师信息及用户信息",
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
-            # openapi.Parameter('list_id', openapi.IN_HEADER, type=openapi.TYPE_ARRAY, description='老师ID列表',
-            #                   items=openapi.Schema(type=openapi.TYPE_INTEGER))
         ],
+        request_body=request_body(properties={
+            'id_list': array_schema('老师ID列表', it=integer_schema())
+        }),
     )
     def destroy_all2(self, request, *args, **kwargs):
         check_token = pd_adm_token(request)
         if check_token:
             return check_token
+        # print(request.data)
         list = request.data.get("id_list")
         print(list)
         # # 先删除用户

@@ -9,6 +9,7 @@ from parent.views.parent_serializers import ParentInfoSerializersUpdate, ParentI
 from user.views.urls import del_user_and_user_details
 from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_response import response_success_200
+from utils.my_swagger_auto_schema import request_body, integer_schema, array_schema
 
 
 class ParentOtherView(ModelViewSet):
@@ -86,3 +87,32 @@ class ParentAdmView(ModelViewSet):
 
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)
+
+
+class ParentDeleteAllView(ModelViewSet):
+    queryset = Parent.objects.all()
+
+    @swagger_auto_schema(
+        operation_summary="根据id列表批量删除家长信息及用户信息",
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
+        ],
+        request_body=request_body(properties={
+            'id_list': array_schema('家长ID列表', it=integer_schema())
+        }),
+    )
+    def destroy_all2(self, request, *args, **kwargs):
+        check_token = pd_adm_token(request)
+        if check_token:
+            return check_token
+        # print(request.data)
+        list = request.data.get("id_list")
+        print(list)
+        # # 先删除用户
+        for i in list:
+            check_del = del_user_and_user_details(0, int(i))
+        if check_del:
+            return check_del
+        # 删除老师
+        # super().destroy(request, *args, **kwargs)
+        return response_success_200(message="成功")

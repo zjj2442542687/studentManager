@@ -12,6 +12,7 @@ from user_details.models import UserDetails
 from utils.my_info_judge import pd_token, pd_adm_token, pd_phone_number, pd_card, pd_qq, pd_email, \
     STATUS_PHONE_NUMBER_ERROR, STATUS_PHONE_NUMBER_DUPLICATE, STATUS_PARAMETER_ERROR
 from utils.my_response import response_success_200
+from utils.my_swagger_auto_schema import request_body, array_schema, integer_schema
 from utils.my_time import check_time_stamp
 from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
@@ -140,3 +141,30 @@ class StudentAdmView(ModelViewSet):
         resp = super().partial_update(request, *args, **kwargs)
 
         return response_success_200(data=resp.data)
+
+
+class StudentDeleteAllView(ModelViewSet):
+    queryset = Student.objects.all()
+
+    @swagger_auto_schema(
+        operation_summary="根据id列表批量删除学生信息及用户信息",
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
+        ],
+        request_body=request_body(properties={
+            'id_list': array_schema('学生ID列表', it=integer_schema())
+        }),
+    )
+    def destroy_all2(self, request, *args, **kwargs):
+        check_token = pd_adm_token(request)
+        if check_token:
+            return check_token
+        # print(request.data)
+        list = request.data.get("id_list")
+        print(list)
+        # # 先删除用户
+        for i in list:
+            check_del = del_user_and_user_details(0, int(i))
+        if check_del:
+            return check_del
+        return response_success_200(message="成功")
