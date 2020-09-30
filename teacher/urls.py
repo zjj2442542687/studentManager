@@ -23,4 +23,6 @@ urlpatterns = [
 
     # 分页查询
     path("search", TeacherPaginationSelectView.as_view({'get': 'search'})),
+    # 查询所有老师信息
+    path("getAll", TeacherSelectView.as_view({'get': 'list'})),
 ]

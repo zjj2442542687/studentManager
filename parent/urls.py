@@ -8,7 +8,7 @@ from parent.views.parent_select import ParentSelectView
 urlpatterns = [
     path("insert", ParentInsertView.as_view({'post': 'create'})),
     # 获得全部
-    # path("getAll", ParentSelectView.as_view({'get': 'list'})),
+    path("getAll", ParentSelectView.as_view({'get': 'list'})),
     # 根据token获得家长信息
     path("getInfoByToken", ParentSelectView.as_view({'post': 'retrieve_by_token'})),
     # 根据id查询

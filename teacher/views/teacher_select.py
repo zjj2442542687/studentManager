@@ -36,3 +36,9 @@ class TeacherSelectView(mixins.ListModelMixin,
         instance = self.queryset.get(user_id=request.user)
         serializer = self.get_serializer(instance)
         return response_success_200(data=serializer.data)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+        return response_success_200(data=serializer.data)

@@ -15,6 +15,7 @@ class TeacherInfoSerializersAll(ModelSerializer):
     class Meta:
         model = Teacher
         fields = "__all__"
+        depth = 2
 
 
 # 全部的序列化且深层1
