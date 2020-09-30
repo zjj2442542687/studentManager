@@ -8,7 +8,7 @@ from user.models import User
 from user.views.urls import send_code
 from user.views.user_insert import pd_phone_number
 from user.views.user_serializers import UserInfoSerializersUpdate, UserInfoSerializersUpdatePhone
-from utils.my_info_judge import pd_token, pd_adm_token
+from utils.my_info_judge import pd_token, pd_adm_token, pd_super_adm_token
 from utils.my_response import *
 from utils.my_swagger_auto_schema import request_body, string_schema
 from utils.status import *
@@ -69,7 +69,7 @@ class UserOtherView(ModelViewSet):
         ],
         deprecated=True
     )
-    def destroy(self, request, *args, **kwargs):
+    def destroy_token(self, request, *args, **kwargs):
         check_token = pd_adm_token(request)
         if check_token:
             return check_token
@@ -83,6 +83,20 @@ class UserOtherView(ModelViewSet):
             # return self.queryset.get(user=user_id)
             return get_object_or_404(self.queryset, pk=pk)
         return super().get_object()
+
+    @swagger_auto_schema(
+        operation_summary="根据id删除用户",
+        required=[],
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='超级管理员TOKEN'),
+        ],
+    )
+    def destroy(self, request, *args, **kwargs):
+        check_token = pd_super_adm_token(request)
+        if check_token:
+            return check_token
+        super().destroy(request, *args, **kwargs)
+        return response_success_200(message="删除成功!!")
 
 
 class Other(APIView):
