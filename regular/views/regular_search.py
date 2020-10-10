@@ -51,7 +51,9 @@ class RegularPaginationSelectView(mixins.ListModelMixin,
 
 def search_is_system(request, is_system):
     token = request.META.get("HTTP_TOKEN")
-    if not token:  # 没有传token, 返回系统的
+    print(token)
+    print(type(token))
+    if not token or token == 'null':  # 没有传token, 返回系统的
         return Regular.objects.filter(is_system=1), True
     if is_system is None:  # 没有传参
 

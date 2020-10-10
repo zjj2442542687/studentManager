@@ -46,4 +46,8 @@ class RegularAddRecordInsertView(mixins.CreateModelMixin,
             return check_token
 
         resp = super().create(request)
-        return response_success_200(data=resp.data)
+        # 保存用户的id
+        regular = RegularAddRecord.objects.get(id=resp.data['id'])
+        regular.user_id = request.user
+        regular.save()
+        return response_success_200(data=resp.data, message="添加成功")

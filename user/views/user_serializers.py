@@ -103,11 +103,12 @@ class UserInfoSerializersUpdatePasswordByPhone(ModelSerializer):
 
 
 class UserSerializersSearch(ModelSerializer):
-    role_info = serializers.SerializerMethodField(label='角色信息')
+    # role_info = serializers.SerializerMethodField(label='角色信息')
 
     class Meta:
         model = User
-        fields = ["id", "user_name", "role", "role_info"]
+        fields = ["id", "user_name", "role", "user_details"]
+        depth = 2
 
     def get_role_info(self, user: User):
         info = get_info(user.id, user.role)

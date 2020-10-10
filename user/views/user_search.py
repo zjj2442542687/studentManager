@@ -25,10 +25,10 @@ class UserPaginationSelectView(mixins.ListModelMixin,
         pagination_class=None,
         manual_parameters=[
             openapi.Parameter('role', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description='(0, 老师), (1, 学生), (2, 家长), (3, 辅导员)', enum=[0, 1, 2, 3]),
+                              description='(-2, 学校管理员)，(0, 老师), (1, 学生), (2, 家长), (3, 辅导员)', enum=[-2, 0, 1, 2, 3]),
             openapi.Parameter('user_name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='用户名'),
-            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='管理员TOKEN'),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='超级管理员TOKEN'),
         ]
     )
     def search(self, request, *args, **kwargs):
@@ -43,8 +43,8 @@ class UserPaginationSelectView(mixins.ListModelMixin,
             return user
 
         # 名字
-        name = request.GET.get("user_name")
-        user = search_name(name, user)
+        # name = request.GET.get("user_name")
+        # user = search_name(name, user)
 
         page = self.paginate_queryset(user)
         serializer = UserSerializersSearch(page, many=True, context=self.get_serializer_context())
@@ -56,7 +56,8 @@ class UserPaginationSelectView(mixins.ListModelMixin,
 
 def search_role(role):
     if role:
-        if int(role) < 0 or int(role) > 3:
+        # if int(role) < 0 or int(role) > 3:
+        if role not in '-20123':
             return False, response_success_200(code=STATUS_PARAMETER_ERROR, message="role的范围为(0`3)")
         user = User.objects.filter(role=role)
     else:
