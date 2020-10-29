@@ -133,7 +133,7 @@ class StudentInsertFileView(mixins.CreateModelMixin,
                 print(message)
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
             if User.objects.filter(phone_number=phone_number):
-                message = card + phone_number
+                message = phone_number + "手机号码已经存在"
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
             if not School.objects.filter(school_name=school):
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message="学校不存在")
@@ -169,7 +169,7 @@ class StudentInsertFileView(mixins.CreateModelMixin,
 def batch_import_test(file):
     excel_data = pd.read_excel(file, header=0, dtype='str')
     test = []
-    i = 0
+    i = 1
     card_list = []
     phone_list = []
     for dt in excel_data.iterrows():
@@ -208,8 +208,8 @@ def batch_import_test(file):
         if message:
             test.append({"index": i, "message": message})
         card_list.append(card)
-        if phone_number:
-            phone_list.append(phone_number)
+    if phone_number:
+        phone_list.append(phone_number)
 
     if len(test) > 0:
         return response_error_400(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))

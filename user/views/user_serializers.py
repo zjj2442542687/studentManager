@@ -107,7 +107,7 @@ class UserSerializersSearch(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "user_name", "role", "user_details"]
+        fields = ["id", "user_name", "role", "user_details", "phone_number"]
         depth = 2
 
     def get_role_info(self, user: User):

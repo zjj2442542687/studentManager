@@ -87,11 +87,12 @@ class StudentAdmView(ModelViewSet):
         user_update = Student.objects.get(pk=kwargs['pk']).user
         phone_number = request.data.get("phone_number")
         if phone_number:
-            if not pd_phone_number(phone_number):
-                return response_success_200(code=STATUS_PHONE_NUMBER_ERROR, message="手机号输入有误")
-            if User.objects.exclude(pk=user_update.id).filter(phone_number=phone_number):
-                return response_success_200(code=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已存在")
-            user_update.phone_number = phone_number
+            if phone_number != user_update.phone_number:
+                if not pd_phone_number(phone_number):
+                    return response_success_200(code=STATUS_PHONE_NUMBER_ERROR, message="手机号输入有误")
+                if User.objects.exclude(pk=user_update.id).filter(phone_number=phone_number):
+                    return response_success_200(code=STATUS_PHONE_NUMBER_DUPLICATE, message="手机号已存在")
+                user_update.phone_number = phone_number
 
         # 获得传过来的参数
         user_details = request.data.get('user_details')
@@ -105,29 +106,31 @@ class StudentAdmView(ModelViewSet):
         qq = user_details.get('qq')
         email = user_details.get('email')
 
-        if sex:
+        if sex and sex is not user_detail_update.sex:
             user_detail_update.sex = sex
-        if name:
+        if name and name is not user_detail_update.name:
             user_detail_update.name = name
-        if birthday:
+        if birthday and birthday != user_detail_update.birthday:
             check_time = check_time_stamp(int(birthday))
             print(check_time)
             if check_time:
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message=check_time)
             user_detail_update.birthday = birthday
-        if card:
+        if card and card != user_detail_update.card:
             if not pd_card(card):
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message="身份证输入有误")
             if UserDetails.objects.exclude(pk=user_detail_update.id).filter(card=card):
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message="身份证已存在")
             user_detail_update.card = card
-        if qq:
+        if qq and qq != user_detail_update.qq:
+            print(qq)
+            print(user_detail_update.qq)
             if not pd_qq(qq):
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message="qq输入有误")
             if UserDetails.objects.exclude(pk=user_detail_update.id).filter(qq=qq):
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message="qq已存在")
             user_detail_update.qq = qq
-        if email:
+        if email and email != user_detail_update.email:
             if not pd_email(email):
                 return response_success_200(code=STATUS_PARAMETER_ERROR, message="email输入有误")
             if UserDetails.objects.exclude(pk=user_detail_update.id).filter(email=email):
@@ -164,7 +167,7 @@ class StudentDeleteAllView(ModelViewSet):
         print(list)
         # # 先删除用户
         for i in list:
-            check_del = del_user_and_user_details(0, int(i))
+            check_del = del_user_and_user_details(1, int(i))
         if check_del:
             return check_del
         return response_success_200(message="成功")

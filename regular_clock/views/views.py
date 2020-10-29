@@ -17,14 +17,20 @@ def check_insert_info(request):
     elif not RegularAddRecord.objects.filter(id=regular_add_record_id):
         return response_success_200(code=STATUS_404_NOT_FOUND, message="regular_add_record没找到该id")
 
-    # 用户所在班级的id
-    clazz = Student.objects.get(user_id=request.user)
-    clazz_id = -1
-    if clazz:
-        clazz_id = clazz.clazz_id
-    # 检测用户是否添加了这个打卡项，或者是用户班级添加的
-    if not RegularAddRecord.objects.filter(Q(user_id=request.user) | Q(clazz_id=clazz_id), id=regular_add_record_id):
-        return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="该用户没有添加这个打卡项")
+    try:
+        # 用户所在班级的id
+        clazz = Student.objects.get(user_id=request.user)
+        clazz_id = -1
+        if clazz:
+            clazz_id = clazz.clazz_id
+        # 检测用户是否添加了这个打卡项，或者是用户班级添加的
+        if not RegularAddRecord.objects.filter(Q(user_id=request.user) | Q(clazz_id=clazz_id),
+                                               id=regular_add_record_id):
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="该用户没有添加这个打卡项")
+    except Student.DoesNotExist:
+        print("没找到学生")
+        pass
+
 
     # 判断打卡时间段
     time_stamp = time.time()  # 现在的时间段
