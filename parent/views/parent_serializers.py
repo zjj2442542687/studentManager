@@ -45,7 +45,7 @@ class ParentInfoSerializersUpdate(ModelSerializer):
 class ParentInfoSerializersAdmUpdate(ModelSerializer):
     name = serializers.CharField(label='姓名', required=False)
     card = serializers.CharField(label='身份证', required=False)
-    identity = serializers.CharField(label='身份', required=False)
+    # identity = serializers.CharField(label='身份', required=False)
     phone_number = serializers.CharField(label='手机号码', required=False)
     sex = serializers.IntegerField(label='性别', required=False)
     birthday = serializers.CharField(label='生日', required=False)
