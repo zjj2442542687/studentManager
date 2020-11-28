@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     'regular_clock.apps.RegularClockConfig',
     # 作业发布
     'work.apps.WorkConfig',
+    # 作业审核
+    'examine.apps.ExamineConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域

@@ -19,7 +19,7 @@ class StudentSelectView(mixins.ListModelMixin,
 
     @swagger_auto_schema(
         operation_summary="通过用户的token获得学生信息",
-        operation_description="传入token",
+        operation_description="传入学生token",
         request_body=no_body,
         manual_parameters=[
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
@@ -31,7 +31,7 @@ class StudentSelectView(mixins.ListModelMixin,
             return check_token
 
         if request.auth != 1:
-            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够，该token不是学生")
 
         instance = self.queryset.get(user_id=request.user)
         serializer = self.get_serializer(instance)

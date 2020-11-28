@@ -8,7 +8,7 @@ from teacher.models import Teacher
 
 class Work(models.Model):
     teacher = models.ForeignKey(Teacher, verbose_name="发布老师ID", on_delete=models.SET_NULL, null=True)
-    clazz = models.ForeignKey(Class, verbose_name="ID", on_delete=models.CASCADE, null=True)
+    clazz = models.ForeignKey(Class, verbose_name="班级ID", on_delete=models.CASCADE, null=True)
     course = models.CharField("作业课程科目", max_length=255)
     title = models.CharField("作业标题", max_length=255)
     content = models.CharField("作业内容", max_length=255)

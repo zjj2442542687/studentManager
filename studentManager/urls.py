@@ -48,6 +48,8 @@ urlpatterns = [
     path('regularClock/', include('regular_clock.urls')),
     # 作业发布
     path('work/', include('work.urls')),
+    # 作业审核
+    path('examine/', include('examine.urls')),
     path('FileInfo/', include('FileInfo.urls')),
 ]
 

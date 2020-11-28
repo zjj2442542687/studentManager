@@ -9,8 +9,10 @@ from regular_add_record.models import RegularAddRecord
 from regular_category.models import RegularCategory
 from regular_clock.models import RegularClock
 from school.models import School
+from student.models import Student
 from teacher.models import Teacher
 from user.models import User
+from work.models import Work
 
 
 def string_to_int_arr(s: str):
@@ -44,6 +46,11 @@ def get_teacher_all_id() -> list:
     return get_queryset_all_id(Teacher.objects.all())
 
 
+# 获得所有Student中的id 返回list
+def get_student_all_id() -> list:
+    return get_queryset_all_id(Student.objects.all())
+
+
 # 获得所有regular中的id 返回list
 def get_regular_all_id() -> list:
     return get_queryset_all_id(Regular.objects.all())
@@ -62,3 +69,8 @@ def get_regular_clock_all_id() -> list:
 # 获得所有RegularAddRecord中的id 返回list
 def get_regular_add_record_all_id() -> list:
     return get_queryset_all_id(RegularAddRecord.objects.all())
+
+
+# work 返回list
+def get_work_all_id() -> list:
+    return get_queryset_all_id(Work.objects.all())
