@@ -19,4 +19,4 @@ class RegularClockSerializersSearch(serializers.ModelSerializer):
 
     def get_clock_in_time_str(self, regular_clock: RegularClock):
         clock_in_time = regular_clock.clock_in_time
-        return time_stamp_to_str(time_stamp=clock_in_time, date_format="%Y-%m-%d %H:%M:%S")
+        return time_stamp_to_str(time_stamp=clock_in_time, date_format="%Y-%m-%d %H:%M")

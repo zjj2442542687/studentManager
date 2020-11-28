@@ -14,9 +14,9 @@ def create_user_details(**kwargs) -> bool:
 
 
 # 管理员修改角色的信息
-def adm_update_user_details(user_update:User, request):
+def adm_update_user_details(user_update: User, request):
     phone_number = request.data.get("phone_number")
-    if phone_number:
+    if phone_number and phone_number != user_update.phone_number:
         if not pd_phone_number(phone_number):
             return response_error_400(message="手机号输入有误")
         if User.objects.exclude(pk=user_update.id).filter(phone_number=phone_number):
@@ -35,29 +35,29 @@ def adm_update_user_details(user_update:User, request):
     qq = user_details.get('qq')
     email = user_details.get('email')
 
-    if sex:
+    if sex and sex is not user_detail_update.sex:
         user_detail_update.sex = sex
-    if name:
+    if name and name is not user_detail_update.name:
         user_detail_update.name = name
-    if birthday:
+    if birthday and birthday != user_detail_update.birthday:
         check_time = check_time_stamp(int(birthday))
         print(check_time)
         if check_time:
             return response_error_400(message=check_time)
         user_detail_update.birthday = birthday
-    if card:
+    if card and card != user_detail_update.card:
         if not pd_card(card):
             return response_error_400(message="身份证输入有误")
         if UserDetails.objects.exclude(pk=user_detail_update.id).filter(card=card):
             return response_error_400(message="身份证已存在")
         user_detail_update.card = card
-    if qq:
+    if qq and qq != user_detail_update.qq:
         if not pd_qq(qq):
             return response_error_400(message="qq输入有误")
         if UserDetails.objects.exclude(pk=user_detail_update.id).filter(qq=qq):
             return response_error_400(message="qq已存在")
         user_detail_update.qq = qq
-    if email:
+    if email and email != user_detail_update.email:
         if not pd_email(email):
             return response_error_400(message="email输入有误")
         if UserDetails.objects.exclude(pk=user_detail_update.id).filter(email=email):

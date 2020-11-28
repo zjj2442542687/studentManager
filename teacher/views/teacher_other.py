@@ -113,7 +113,7 @@ class TeacherAmdView(ModelViewSet):
             return check_token
 
         user_update = Teacher.objects.get(pk=kwargs['pk']).user
-        check_update = adm_update_user_details(user_update)
+        check_update = adm_update_user_details(user_update, request)
         if check_update:
             return check_update
 

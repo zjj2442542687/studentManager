@@ -93,9 +93,11 @@ class ParentInsertFileView(mixins.CreateModelMixin,
             if not dt[1]['家长姓名'] or not card:
                 continue
             if User.objects.filter(user_name=card):
-                return response_success_200(code=STATUS_PARAMETER_ERROR, message="身份证已经注册存在")
+                message = card + "身份证已经注册存在"
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
             if User.objects.filter(phone_number=phone_number):
-                return response_success_200(code=STATUS_PARAMETER_ERROR, message="手机号码已经注册存在")
+                message = phone_number + "手机号码已经存在"
+                return response_success_200(code=STATUS_PARAMETER_ERROR, message=message)
             # print(dt[1]['班级'])
             print(phone_number)
 
@@ -126,7 +128,7 @@ class ParentInsertFileView(mixins.CreateModelMixin,
 def batch_import_test(file):
     excel_data = pd.read_excel(file, header=0, dtype='str')
     test = []
-    i = 0
+    i = 1
     card_list = []
     phone_list = []
 
@@ -142,33 +144,34 @@ def batch_import_test(file):
         if not dt[1]['家长姓名'] or not card or not phone_number:
             message += "有空字段"
 
-            # 判断身份证的格式是否存在
-            if not pd_card(card):
-                message += ",身份证格式错误"
-            elif card in card_list:
-                message += f",身份证和{card_list.index(card) + 1}重复"
-            elif User.objects.filter(user_name=card):
-                message += ",身份证已经注册存在"
+        # 判断身份证的格式是否存在
+        if not pd_card(card):
+            message += ",身份证格式错误"
+        elif card in card_list:
+            message += f",身份证和{card_list.index(card) + 1}重复"
+        elif User.objects.filter(user_name=card):
+            message += ",身份证已经注册存在"
 
-            if not pd_phone_number(phone_number):
-                message += ",手机号格式错误"
-            elif phone_number in phone_list:
-                message += f",手机号和{phone_list.index(phone_number) + 1}重复"
-            elif User.objects.filter(phone_number=phone_number):
-                message += ",手机号码已经注册存在"
+        if not pd_phone_number(phone_number):
+            message += ",手机号格式错误"
+        elif phone_number in phone_list:
+            message += f",手机号和{phone_list.index(phone_number) + 1}重复"
+        elif User.objects.filter(phone_number=phone_number):
+            message += ",手机号码已经注册存在"
 
-            #  验证qq号
-            if not qq and not pd_qq(qq):
-                message += ",qq号格式错误"
+        #  验证qq号
+        if not qq and not pd_qq(qq):
+            message += ",qq号格式错误"
 
-            # 验证邮箱
-            if not email and not pd_email(email):
-                message += ",邮箱格式错误"
+        # 验证邮箱
+        if not email and not pd_email(email):
+            message += ",邮箱格式错误"
 
-            if message:
-                test.append({"index": i, "message": message})
-            card_list.append(card)
-            phone_list.append(phone_number)
+        if message:
+            test.append({"index": i, "message": message})
+        card_list.append(card)
+    if phone_number:
+        phone_list.append(phone_number)
 
     if len(test) > 0:
         return response_error_400(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))

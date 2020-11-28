@@ -69,19 +69,17 @@ class ParentAdmView(ModelViewSet):
     parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
-        operation_summary="管理员修改",
+        operation_summary="家长信息修改",
         required=[],
         manual_parameters=[
             openapi.Parameter('sex', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
                               description='性别((-1, 女), (0, 保密), (1, 男))'),
-            openapi.Parameter('title', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
-                              description='身份'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
         ],
-        deprecated=True
+        # deprecated=True
     )
     def partial_update(self, request, *args, **kwargs):
-        check_token = pd_adm_token(request)
+        check_token = pd_token(request)
         if check_token:
             return check_token
 
@@ -110,7 +108,7 @@ class ParentDeleteAllView(ModelViewSet):
         print(list)
         # # 先删除用户
         for i in list:
-            check_del = del_user_and_user_details(0, int(i))
+            check_del = del_user_and_user_details(2, int(i))
         if check_del:
             return check_del
         # 删除老师

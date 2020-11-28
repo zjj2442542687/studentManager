@@ -10,6 +10,14 @@ class RegularInfoSerializersAll(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class RegularInfoSerializersInsert(serializers.ModelSerializer):
+    creation_time = serializers.IntegerField(label="创建时间", read_only=True)
+
+    class Meta:
+        model = Regular
+        fields = "__all__"
+
+
 class RegularSerializersSearch(serializers.ModelSerializer):
     # user = UserSerializersSearch(label="用户id", read_only=True)
     user_id = serializers.IntegerField(label="用户id", read_only=True)

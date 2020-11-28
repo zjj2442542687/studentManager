@@ -84,7 +84,7 @@ class TeacherSerializersSearch(ModelSerializer):
 
     class Meta:
         model = Teacher
-        fields = ["id", "user", "school", "clazz"]
+        fields = ["id", "user", "school", "clazz", "title"]
         depth = 2
 
     def get_user(self, teacher: Teacher):

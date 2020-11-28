@@ -59,6 +59,9 @@ def create_user_details_and_user(request, role):
 
     # 解析身份证
     id_card = IdCard(card)
+    print(id_card.birth_year)
+    print(id_card.birth_month)
+    print(id_card.birth_day)
     # 创建userDetails
     user_details = UserDetails.objects.create(
         name=name,

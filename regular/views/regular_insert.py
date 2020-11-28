@@ -5,7 +5,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import GenericViewSet
 
 from regular.models import Regular
-from regular.views.regular_serializers import RegularInfoSerializersAll
+from regular.views.regular_serializers import RegularInfoSerializersInsert
 from regular.views.views import check_insert_info
 from utils.my_info_judge import pd_token
 from utils.my_response import response_success_200
@@ -16,7 +16,7 @@ from utils.status import STATUS_TOKEN_NO_AUTHORITY
 class RegularInsertView(mixins.CreateModelMixin,
                         GenericViewSet):
     queryset = Regular.objects.all()
-    serializer_class = RegularInfoSerializersAll
+    serializer_class = RegularInfoSerializersInsert
     parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
@@ -31,6 +31,9 @@ class RegularInsertView(mixins.CreateModelMixin,
             openapi.Parameter('clazz', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
                               description='class的id, 传表示它为该班级的regular',
                               enum=get_class_all_id()),
+            openapi.Parameter('user', openapi.IN_FORM, type=openapi.TYPE_INTEGER,
+                              description='用户id，不用传，根据token获得',
+                              enum=[]),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='用户的token'),
         ]
     )
@@ -52,5 +55,6 @@ class RegularInsertView(mixins.CreateModelMixin,
         if check:
             return check
 
+        request.data['user'] = request.user
         resp = super().create(request)
         return response_success_200(data=resp.data)
