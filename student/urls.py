@@ -28,6 +28,8 @@ urlpatterns = [
 
     # 分页查询
     path("search", StudentPaginationSelectView.as_view({'get': 'search'})),
-    # 查询所有老师信息
+    # 查询所有学生信息
     path("getAll", StudentSelectView.as_view({'get': 'list'})),
+    # 根据班级查询所有学生信息
+    path("getInfoByclass", StudentSelectView.as_view({'get': 'clazz_search'})),
 ]

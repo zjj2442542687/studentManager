@@ -31,3 +31,10 @@ class ClassSerializersSearch(ModelSerializer):
             return count
         except AttributeError:
             return -1
+
+
+# 修改操作的序列化
+class ClassInfoSerializersUpdate(ModelSerializer):
+    class Meta:
+        model = Class
+        fields = "__all__"

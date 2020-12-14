@@ -24,7 +24,7 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
 
     @swagger_auto_schema(
         operation_summary="学生信息查询",
-        pagination_class=None,
+        operation_description="默认查询所有",
         manual_parameters=[
             openapi.Parameter('name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
                               description='名字'),
@@ -83,3 +83,37 @@ def search_clazz(clazz_id, student):
         return student.filter(clazz_id=clazz_id)
     else:
         return student
+
+
+class StudentPaginationView(mixins.ListModelMixin,
+                            mixins.RetrieveModelMixin,
+                            GenericViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializersSearch
+    pagination_class = MyLimitOffsetPagination
+
+    @swagger_auto_schema(
+        operation_summary="根据班级查询学生信息",
+        pagination_class=None,
+        operation_description="传入token和班级id",
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN'),
+            openapi.Parameter('clazz_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+                              description='班级id', enum=get_class_all_id()),
+        ]
+    )
+    def clazz_search(self, request, *args, **kwargs):
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
+
+        if request.auth not in [-1, -2, 0, 3]:
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+
+        # 班级
+        clazz_id = request.GET.get("clazz_id")
+        student = Student.objects.filter(clazz=clazz_id)
+
+        page = self.paginate_queryset(student)
+        serializer = self.serializer_class(page, many=True, context=self.get_serializer_context())
+        return self.get_paginated_response(serializer.data)

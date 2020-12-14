@@ -16,4 +16,5 @@ urlpatterns = [
     path("delete_all", ClassDeleteAllView.as_view({'post': 'destroy_all'})),
     path("selectBySchoolId/<int:school_id>", ClassSelectView.as_view({'get': 'retrieve_by_school_id'})),
     path("search", ClassPaginationSelectView.as_view({'get': 'search'})),
+    path("partialUpdate/<int:pk>", ClassOtherView.as_view({'patch': 'partial_update'})),
 ]

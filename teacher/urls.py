@@ -2,7 +2,7 @@ from django.urls import path
 
 from teacher.views.teacher_insert import TeacherInsertView, TeacherInsertFileView
 from teacher.views.teacher_search import TeacherPaginationSelectView
-from teacher.views.teacher_select import TeacherSelectView
+from teacher.views.teacher_select import TeacherSelectView, ClassSelectView
 from teacher.views.teacher_other import TeacherOtherView, TeacherAmdView, TeacherDeleteAllView
 from user.views.user_select import UserSelectView
 
@@ -25,4 +25,6 @@ urlpatterns = [
     path("search", TeacherPaginationSelectView.as_view({'get': 'search'})),
     # 查询所有老师信息
     path("getAll", TeacherSelectView.as_view({'get': 'list'})),
+    # 查询老师所带班级信息
+    path("getclazz", ClassSelectView.as_view({'get': 'search_clazz'})),
 ]

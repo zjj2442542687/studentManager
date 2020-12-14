@@ -3,6 +3,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from classs.models import Class
 from classs.views.class_select import ClassInfoSerializers2
+from classs.views.class_serializers import ClassInfoSerializersUpdate
 from utils.my_info_judge import pd_token, pd_adm_token
 from utils.my_response import response_success_200
 from utils.my_swagger_auto_schema import request_body, integer_schema, array_schema
@@ -11,7 +12,7 @@ from utils.status import STATUS_TOKEN_NO_AUTHORITY
 
 class ClassOtherView(ModelViewSet):
     queryset = Class.objects.all()
-    serializer_class = ClassInfoSerializers2
+    serializer_class = ClassInfoSerializersUpdate
 
     @swagger_auto_schema(
         operation_summary="删除",
@@ -31,6 +32,24 @@ class ClassOtherView(ModelViewSet):
         # return super().destroy(request, *args, **kwargs)
         super().destroy(request, *args, **kwargs)
         return response_success_200(message="删除成功!!")
+
+    @swagger_auto_schema(
+        operation_summary="修改班级信息",
+        required=[],
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ]
+    )
+    def partial_update(self, request, *args, **kwargs):
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
+
+        if request.auth not in [-1, -2, 3]:
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+
+        resp = super().partial_update(request, *args, **kwargs)
+        return response_success_200(data=resp.data)
 
 
 class ClassDeleteAllView(ModelViewSet):
