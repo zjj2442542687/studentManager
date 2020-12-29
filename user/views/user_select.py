@@ -34,7 +34,7 @@ class UserSelectView(mixins.ListModelMixin,
         username = request.data.get("user_name")
         password = request.data.get("password")
         phone_number = request.data.get("phone_number")
-        if User.objects.get(user_name=username).role >= 0:
+        if username and User.objects.get(user_name=username).role >= 0:
             password = my_encode(password)
 
         print(f"用户名:{username},password:{password},phone_number:{phone_number}")

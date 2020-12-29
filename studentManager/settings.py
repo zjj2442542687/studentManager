@@ -72,9 +72,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
-    # 'channels',  # channels
+    'channels',  # channels
     # 'chat',
     # 'dwebsocket',  # websocket
+    'char.apps.CharConfig',
 ]
 
 MIDDLEWARE = [
@@ -205,3 +206,5 @@ REST_FRAMEWORK = {  # 身份验证类
 #         },
 #     },
 # }
+# 设置为指向该路由对象作为您的根应用程序
+ASGI_APPLICATION = 'studentManager.routing.application'
