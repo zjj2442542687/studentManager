@@ -34,7 +34,7 @@ class StudentOtherView(ModelViewSet):
         if check_token:
             return check_token
         role = request.auth
-        if role >= 0:
+        if role not in [-2, -1, 3]:
             return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
         # 先删除用户
         check_del = del_user_and_user_details(1, kwargs.get("pk"))
@@ -159,9 +159,12 @@ class StudentDeleteAllView(ModelViewSet):
         }),
     )
     def destroy_all2(self, request, *args, **kwargs):
-        check_token = pd_adm_token(request)
+        check_token = pd_token(request)
         if check_token:
             return check_token
+        role = request.auth
+        if role not in [-2, -1, 3]:
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
         # print(request.data)
         list = request.data.get("id_list")
         print(list)

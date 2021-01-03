@@ -73,8 +73,7 @@ class WorkPaginationSelectView(mixins.ListModelMixin,
         operation_summary="老师查询自己发布作业信息",
         pagination_class=None,
         manual_parameters=[
-            openapi.Parameter('teacher', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description='老师id', enum=get_class_all_id()),
+            openapi.Parameter('teacher', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='老师ID'),
         ]
     )
     def search_teacher(self, request, *args, **kwargs):
