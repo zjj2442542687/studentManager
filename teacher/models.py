@@ -22,6 +22,7 @@ class Teacher(models.Model):
     def to_json(self):
         role = self.user.role
         return {
+            "id": self.id,
             "title": self.title,
             "identity": "辅导员" if role == 3 else ("普通教师" if role == 0 else "未知"),
             "school": self.school.to_json() if self.school else None,
