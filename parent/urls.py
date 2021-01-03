@@ -15,7 +15,7 @@ urlpatterns = [
     # path("getParentById/<int:pk>", ParentSelectView.as_view({'get': 'retrieve'})),
     # path("FileInfo/<int:pk>", ParentOtherView.as_view({'patch': 'FileInfo'})),
     path("delete/<int:pk>", ParentOtherView.as_view({'delete': 'destroy'})),
-    # 批量删除老师信息
+    # 批量删除家长信息
     path("delete_all", ParentDeleteAllView.as_view({'post': 'destroy_all2'})),
     # 根据token修改家长信息
     path("update", ParentOtherView.as_view({'patch': 'partial_update'})),
