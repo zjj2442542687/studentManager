@@ -9,6 +9,7 @@ from classs.models import Class
 from classs.views.class_serializers import ClassInfoSerializersUpdate
 from teacher.models import Teacher
 from teacher.views.teacher_serializers import TeacherInfoSerializersAll
+from user.models import User
 from utils.my_info_judge import pd_token, STATUS_TOKEN_NO_AUTHORITY
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from utils.my_response import response_success_200
@@ -70,9 +71,10 @@ class ClassSelectView(mixins.ListModelMixin,
         if request.auth not in [0, 3]:
             return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
-        techer_id = Teacher.objects.get(user_id=request.user)
-        print(techer_id)
-        clazz = Class.objects.filter(teachers=techer_id)
+        print(request.user)
+        # techer_id = Teacher.objects.get(user_id=request.user).id
+        # print(techer_id)
+        clazz = Class.objects.filter(headmaster=request.user)
         print(clazz)
 
         page = self.paginate_queryset(clazz)

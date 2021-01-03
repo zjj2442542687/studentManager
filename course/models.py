@@ -16,5 +16,5 @@ class Course(models.Model):
                                      default=1)
 
     class Meta:
-        verbose_name = '课程'
+        verbose_name = '课表'
         verbose_name_plural = verbose_name
