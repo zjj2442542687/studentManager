@@ -40,8 +40,8 @@ class StudentPaginationSelectView(mixins.ListModelMixin,
         if check_token:
             return check_token
 
-        if request.auth >= 0:
-            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
+        # if request.auth >= 0:
+        #     return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="没有权限")
 
         # 名字
         name = request.GET.get("name")
