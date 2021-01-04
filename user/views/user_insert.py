@@ -108,10 +108,11 @@ class UserInsertView(mixins.CreateModelMixin,
             'password': string_schema('密码', f=FORMAT_PASSWORD),
             'phone_number': string_schema('手机号'),
             'name': string_schema('真实姓名'),
+            'school_id': integer_schema('学校的id'),
         }),
         manual_parameters=[
-            openapi.Parameter('school_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description='学校的id'),
+            # openapi.Parameter('school_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+            #                   description='学校的id'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='超级管理员TOKEN'),
         ],
     )
