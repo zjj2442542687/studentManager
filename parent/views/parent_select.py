@@ -4,7 +4,7 @@ from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 
 from parent.models import Parent
-from parent.views.parent_serializers import ParentInfoSerializersSelect
+from parent.views.parent_serializers import *
 from student.models import Student
 from utils.my_info_judge import pd__token1, STATUS_404_NOT_FOUND
 from utils.my_response import response_success_200, STATUS_TOKEN_OVER, STATUS_PARAMETER_ERROR
@@ -82,6 +82,8 @@ class ParentSelectView(mixins.ListModelMixin,
         print(parent)
         if not parent:
             return response_success_200(staus=STATUS_404_NOT_FOUND, message="没有查到该信息")
-        instance = self.queryset.filter(pk=parent)
-        serializer = self.get_serializer(instance)
+        instance = self.queryset.filter(pk__in=[x for x in parent]).all()
+        # print(instance)
+        serializer = self.get_serializer(instance, many=True)
+        # print(serializer)
         return response_success_200(data=serializer.data)

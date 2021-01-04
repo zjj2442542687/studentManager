@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     'work.apps.WorkConfig',
     # 作业审核
     'examine.apps.ExamineConfig',
+    # 学校管理员
+    'schooladm.apps.SchooladmConfig',
     'rest_framework',
     'drf_yasg',
     'corsheaders',  # 跨域
