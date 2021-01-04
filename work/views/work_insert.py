@@ -4,11 +4,13 @@ from rest_framework import mixins
 from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import GenericViewSet
 
+from student.models import Student
 from utils.my_info_judge import pd_token, lookup_token, STATUS_TOKEN_NO_AUTHORITY
 from utils.my_response import response_success_200, response_error_400
 from utils.my_utils import get_class_all_id, get_teacher_all_id
 from work.models import Work
 from work.views.work_serializers import WorkInfoSerializersAll
+from char.consumers import UserNoticeSend
 
 
 class WorkInsertView(mixins.CreateModelMixin,
@@ -31,9 +33,9 @@ class WorkInsertView(mixins.CreateModelMixin,
                               required=True),
             openapi.Parameter('request', openapi.IN_FORM, type=openapi.TYPE_STRING, description='作业要求'),
             openapi.Parameter('teacher', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='teacher的id',
-                              enum=get_teacher_all_id(), required=True),
+                              required=True),
             openapi.Parameter('clazz', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='class的id',
-                              enum=get_class_all_id(), required=True),
+                              required=True),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='用户的token'),
         ]
     )
@@ -44,6 +46,12 @@ class WorkInsertView(mixins.CreateModelMixin,
         if lookup_token(request) not in [0, 3]:
             return response_error_400(status=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
 
-        print(request.data)
+        # print(request.data)
         resp = super().create(request)
+        clazz = resp.data['clazz']
+        # print(clazz)
+        students = Student.objects.filter(clazz=clazz)
+        # print(students)
+        for i in students:
+            UserNoticeSend.send_notice(i.user, 0, resp.data['id'])
         return response_success_200(data=resp.data)
