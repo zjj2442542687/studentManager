@@ -1,7 +1,7 @@
 from django.urls import path
 
 from work.views.work_insert import WorkInsertView
-from work.views.work_other import WorkOtherView
+from work.views.work_other import WorkOtherView, WorkInfoDownloadView
 from work.views.work_search import WorkPaginationSelectView
 
 urlpatterns = [
@@ -22,4 +22,6 @@ urlpatterns = [
     path("getClassInfo", WorkPaginationSelectView.as_view({'get': 'search_clazz'})),
     # 删除作业
     path("delete/<int:pk>", WorkOtherView.as_view({'delete': 'destroy'})),
+    # 根据作业ID下载作业附件
+    path("download/<int:pk>", WorkInfoDownloadView.as_view({'get': 'download'})),
 ]

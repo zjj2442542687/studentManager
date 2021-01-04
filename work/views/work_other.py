@@ -1,5 +1,8 @@
+from django.http import FileResponse
+from django.utils.http import urlquote
 from drf_yasg.openapi import FORMAT_DATETIME, Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import mixins
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser
@@ -50,3 +53,28 @@ class WorkOtherView(ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class WorkInfoDownloadView(mixins.CreateModelMixin,
+                           GenericViewSet):
+    """
+    download:
+    作业文件下载
+
+    无描述
+    """
+    queryset = Work.objects.all()
+
+    # serializer_class = FileInfoSerializer
+
+    def download(self, request, *args, **kwargs):
+        work = Work.objects.get(id=kwargs.get('pk'))
+        # print(work)
+        file_name = ""+work.clazz.class_name+"班"+work.course+"作业"
+        # print('下载的文件名：' + file_name)
+        # print(work.file)
+        file = open(work.file.path, 'rb')
+        resp = FileResponse(file)
+        # response['Content-Type'] = 'application/vnd.ms-excel'
+        resp['Content-Disposition'] = 'attachment;filename="%s"' % urlquote(file_name + ".txt")
+        return resp
