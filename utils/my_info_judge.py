@@ -138,6 +138,17 @@ def pd_adm_token(request):
     return None
 
 
+# 检查权限(管理员和辅导员)
+def pd__token1(request):
+    check_token = pd_token(request)
+    if check_token:
+        return check_token
+    elif request.auth not in [-1, -2, 3]:
+        return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+
+    return None
+
+
 # 超级管理员
 def pd_super_adm_token(request):
     check_token = pd_token(request)

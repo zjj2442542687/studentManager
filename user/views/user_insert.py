@@ -5,6 +5,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import serializers, mixins, status, exceptions
 
 from parent.models import Parent
+from schooladm.models import Schooladm
 from student.models import Student
 from teacher.models import Teacher
 from user.views.urls import judge_code, check_phone_number, check_user_name
@@ -109,6 +110,8 @@ class UserInsertView(mixins.CreateModelMixin,
             'name': string_schema('真实姓名'),
         }),
         manual_parameters=[
+            openapi.Parameter('school_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+                              description='学校的id'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='超级管理员TOKEN'),
         ],
     )
@@ -125,6 +128,8 @@ class UserInsertView(mixins.CreateModelMixin,
         password = request.data.get("password")
         # 真实姓名
         name = request.data.get('name')
+        # 真实姓名
+        school_id = request.data.get('school_id')
 
         if check_user_name(user_name):
             message = "用户名已存在"
@@ -140,13 +145,24 @@ class UserInsertView(mixins.CreateModelMixin,
         user_details_id = UserDetails.objects.create(name=name).id
 
         # 加密
-        request.data["password"] = my_encode(password)
-        request.data['user_details'] = user_details_id
-        request.data['role'] = -2
-        request.data['token'] = "-1"
+        # request.data["password"] = my_encode(password)
+        # request.data['user_details'] = user_details_id
+        # request.data['role'] = -2
+        # request.data['token'] = "-1"
 
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return response_success_200(code=STATUS_200_SUCCESS, data=serializer.data, headers=headers)
+        # serializer = self.get_serializer(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+        # self.perform_create(serializer)
+        # headers = self.get_success_headers(serializer.data)
+        # return response_success_200(code=STATUS_200_SUCCESS, data=serializer.data, headers=headers)
+
+        # 创建user
+        user_id = User.objects.create(
+            user_name=user_name, password=my_encode(password),
+            phone_number=phone_number, role=-2, user_details_id=user_details_id, token=-1
+        ).id
+        Schooladm.objects.create(
+            school_id=school_id, user_id=user_id,
+        )
+
+        return response_success_200(message="成功!!!!")

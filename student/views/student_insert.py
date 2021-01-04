@@ -15,7 +15,7 @@ from user_details.models import UserDetails
 from utils.my_card import IdCard
 from utils.my_encryption import my_encode
 from utils.my_info_judge import pd_card, pd_phone_number, pd_token, pd_adm_token, STATUS_TOKEN_NO_AUTHORITY, \
-    STATUS_PARAMETER_ERROR, STATUS_404_NOT_FOUND
+    STATUS_PARAMETER_ERROR, STATUS_404_NOT_FOUND, pd__token1
 from utils.my_response import response_success_200, response_error_400
 from utils.my_swagger_auto_schema import *
 from utils.my_time import date_to_time_stamp
@@ -42,7 +42,7 @@ class StudentInsertView(mixins.CreateModelMixin,
         ]
     )
     def create(self, request, *args, **kwargs):
-        check_token = pd_adm_token(request)
+        check_token = pd__token1(request)
         if check_token:
             return check_token
 
@@ -110,7 +110,7 @@ class StudentInsertFileView(mixins.CreateModelMixin,
         ],
     )
     def batch_import(self, request, *args, **kwargs):
-        check_token = pd_adm_token(request)
+        check_token = pd__token1(request)
         if check_token:
             return check_token
 

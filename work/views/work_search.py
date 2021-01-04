@@ -115,7 +115,10 @@ class WorkPaginationSelectView(mixins.ListModelMixin,
 
         if request.auth not in [3]:
             return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够，该token不是辅导员")
-        clazz = Class.objects.get(headmaster=request.user)
+        try:
+            clazz = Class.objects.get(headmaster=request.user)
+        except Class.DoesNotExist:
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够，该token不是辅导员!")
         work = Work.objects.filter(clazz=clazz)
 
         print(work)

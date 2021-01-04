@@ -50,6 +50,8 @@ urlpatterns = [
     path('work/', include('work.urls')),
     # 作业审核
     path('examine/', include('examine.urls')),
+    # 学校管理员
+    path('schooladm/', include('schooladm.urls')),
     path('FileInfo/', include('FileInfo.urls')),
 ]
 
