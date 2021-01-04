@@ -2,9 +2,13 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from requests import Response
 from rest_framework import mixins
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
+from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import GenericViewSet
 
 from classs.models import Class
+from school.models import School
+from student.models import Student
 from teacher.models import Teacher
 from utils.my_info_judge import pd_adm_token, STATUS_TOKEN_NO_AUTHORITY, pd_token
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
@@ -12,6 +16,12 @@ from utils.my_response import response_error_400, response_success_200
 from utils.my_utils import get_class_all_id
 from work.models import Work
 from work.views.work_serializers import WorkSerializersSearch
+
+
+class WorkInfoView(RetrieveModelMixin, GenericViewSet, ListModelMixin):
+    queryset = Work.objects.all()
+    serializer_class = WorkSerializersSearch
+    parser_classes = [MultiPartParser]
 
 
 class WorkPaginationSelectView(mixins.ListModelMixin,
@@ -82,10 +92,34 @@ class WorkPaginationSelectView(mixins.ListModelMixin,
             return check_token
 
         if request.auth not in [0, 3]:
-            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够，该token不是学生")
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够，该token不是老师")
         # 老师
         teacher = Teacher.objects.get(user=request.user).id
         work = Work.objects.filter(teacher=teacher)
+
+        print(work)
+        page = self.paginate_queryset(work)
+        serializer = self.serializer_class(page, many=True, context=self.get_serializer_context())
+
+        return self.get_paginated_response(serializer.data)
+
+    @swagger_auto_schema(
+        operation_summary="学生查询自己作业信息",
+        pagination_class=None,
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='学生TOKEN'),
+        ]
+    )
+    def search_student(self, request, *args, **kwargs):
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
+
+        if request.auth not in [1]:
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够，该token不是学生")
+        # 老师
+        clazz = Student.objects.get(user=request.user).clazz
+        work = Work.objects.filter(clazz=clazz)
 
         print(work)
         page = self.paginate_queryset(work)
