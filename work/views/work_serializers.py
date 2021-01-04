@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from classs.models import Class
+from user_details.models import UserDetails
 from work.models import Work
 
 
@@ -34,6 +34,20 @@ class TeacherInfoSerializersUpdate(ModelSerializer):
 
 # 全部的序列化
 class WorkSerializersSearch(ModelSerializer):
+    user_details = serializers.SerializerMethodField(label="头像")
+
     class Meta:
         model = Work
         fields = "__all__"
+
+    def get_user_details(self, work: Work):
+        if not work.teacher:
+            return None
+        serializer = UserAvatar(work.teacher.user.user_details)
+        return serializer.data
+
+
+class UserAvatar(ModelSerializer):
+    class Meta:
+        model = UserDetails
+        fields = ["avatar", "name"]
