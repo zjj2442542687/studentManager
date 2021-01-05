@@ -7,7 +7,7 @@ from parent.models import Parent
 from parent.views.parent_serializers import ParentSerializersSearch
 from user.models import User
 from user_details.models import UserDetails
-from utils.my_info_judge import pd_adm_token
+from utils.my_info_judge import pd_adm_token, pd__token1
 from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 
 
@@ -28,7 +28,7 @@ class ParentPaginationSelectView(mixins.ListModelMixin,
         ]
     )
     def search(self, request, *args, **kwargs):
-        check_token = pd_adm_token(request)
+        check_token = pd__token1(request)
         if check_token:
             return check_token
 
