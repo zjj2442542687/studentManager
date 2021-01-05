@@ -13,15 +13,15 @@ from user.views.user_update_password import UserUpdatePassword
 urlpatterns = [
     path("insert", UserInsertView.as_view({'post': 'create'})),
     # 插入一条学校管理员数据
-    path("insert_stu_adm", UserInsertView.as_view({'post': 'create_stu_adm'})),
+    path("insertStuAdm", UserInsertView.as_view({'post': 'create_stu_adm'})),
     # 用户名密码登录
     path("login", UserSelectView.as_view({'post': 'login'})),
     # 判断手机号是否存在
     path("checkPhoneNumber/<str:phone_number>", UserSelectView.as_view({'get': 'check_phone_number'})),
     # 检测手机号验证码是否正确
-    path("check_phone_code", UserSelectView.as_view({'post': 'check_phone_code'})),
+    path("checkPhoneCode", UserSelectView.as_view({'post': 'check_phone_code'})),
     # 检测手机号验证码是否正确
-    path("check_password", UserSelectViewCheck.as_view({'post': 'check_password'})),
+    path("checkPassword", UserSelectViewCheck.as_view({'post': 'check_password'})),
     # 手机号登录
     path("loginPhoneNumber", UserSelectView.as_view({'post': 'login_phone_number'})),
     # token登录
@@ -37,7 +37,7 @@ urlpatterns = [
     # 根据token删除用户信息
     path("delete", UserOtherView.as_view({'delete': 'destroy_token'})),
     # 根据token修改用户手机号码
-    path("update_phone", UserUpdateView.as_view({'patch': 'Phone_update'})),
+    path("updatePhone", UserUpdateView.as_view({'patch': 'Phone_update'})),
     # 根据用户id删除用户信息
     path("delete/<int:pk>", UserOtherView.as_view({'delete': 'destroy'})),
 

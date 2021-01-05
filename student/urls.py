@@ -20,7 +20,7 @@ urlpatterns = [
     # 根据id删除学生
     path("delete/<int:pk>", StudentOtherView.as_view({'delete': 'destroy'})),
     # 批量删除老师信息
-    path("delete_all", StudentDeleteAllView.as_view({'post': 'destroy_all2'})),
+    path("deleteAll", StudentDeleteAllView.as_view({'post': 'destroy_all2'})),
     # 学生的批量导入
     path("insertFile", StudentInsertFileView.as_view({'post': 'batch_import'})),
     # 添加家长

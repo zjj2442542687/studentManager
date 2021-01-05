@@ -49,14 +49,14 @@ class TeacherSelectView(mixins.ListModelMixin,
 
 
 class ClassSelectView(mixins.ListModelMixin,
-                         mixins.RetrieveModelMixin,
-                         GenericViewSet):
+                      mixins.RetrieveModelMixin,
+                      GenericViewSet):
     queryset = Teacher.objects.all()
     serializer_class = ClassInfoSerializersUpdate
     pagination_class = MyLimitOffsetPagination
 
     @swagger_auto_schema(
-        operation_summary="通过老师的token获得所带班级信息",
+        operation_summary="通过辅导员的token获得所带班级信息",
         operation_description="传入token",
         request_body=no_body,
         manual_parameters=[
@@ -75,6 +75,33 @@ class ClassSelectView(mixins.ListModelMixin,
         # techer_id = Teacher.objects.get(user_id=request.user).id
         # print(techer_id)
         clazz = Class.objects.filter(headmaster=request.user)
+        print(clazz)
+
+        page = self.paginate_queryset(clazz)
+        serializer = self.serializer_class(page, many=True, context=self.get_serializer_context())
+        print(serializer.data)
+        return self.get_paginated_response(serializer.data)
+
+    @swagger_auto_schema(
+        operation_summary="通过老师的token获得该老师所有班级信息",
+        operation_description="传入token",
+        request_body=no_body,
+        manual_parameters=[
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='TOKEN')
+        ]
+    )
+    def search_clazz_teacher(self, request):
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
+
+        if request.auth not in [0, 3]:
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+
+        print(request.user)
+        techer_id = Teacher.objects.get(user_id=request.user).id
+        print(techer_id)
+        clazz = Class.objects.filter(teachers=techer_id)
         print(clazz)
 
         page = self.paginate_queryset(clazz)
