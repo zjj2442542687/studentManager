@@ -43,8 +43,8 @@ class UserPaginationSelectView(mixins.ListModelMixin,
             return user
 
         # 名字
-        # name = request.GET.get("user_name")
-        # user = search_name(name, user)
+        name = request.GET.get("user_name")
+        user = search_name(name, user)
 
         page = self.paginate_queryset(user)
         serializer = UserSerializersSearch(page, many=True, context=self.get_serializer_context())
