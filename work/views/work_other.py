@@ -2,6 +2,7 @@ from django.http import FileResponse
 from django.utils.http import urlquote
 from drf_yasg.openapi import FORMAT_DATETIME, Response
 from rest_framework import mixins
+from rest_framework.mixins import DestroyModelMixin
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -17,7 +18,7 @@ from work.models import Work
 from work.views.work_serializers import WorkInfoSerializersAll
 
 
-class WorkOtherView(ModelViewSet):
+class WorkOtherView(ModelViewSet, DestroyModelMixin):
     queryset = Work.objects.all()
     serializer_class = WorkInfoSerializersAll
     parser_classes = [MultiPartParser]
@@ -49,10 +50,10 @@ class WorkOtherView(ModelViewSet):
         resp = super().partial_update(request, *args, **kwargs)
         return response_success_200(data=resp.data)
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     self.perform_destroy(instance)
+    #     return Response(status=status.STATUS_200_SUCCESS)
 
 
 class WorkInfoDownloadView(mixins.CreateModelMixin,
@@ -70,7 +71,7 @@ class WorkInfoDownloadView(mixins.CreateModelMixin,
     def download(self, request, *args, **kwargs):
         work = Work.objects.get(id=kwargs.get('pk'))
         # print(work)
-        file_name = ""+work.clazz.class_name+"班"+work.course+"作业"
+        file_name = "" + work.clazz.class_name + "班" + work.course + "作业"
         # print('下载的文件名：' + file_name)
         # print(work.file)
         file = open(work.file.path, 'rb')
