@@ -89,6 +89,7 @@ class ParentSerializersSearch(ModelSerializer):
     def get_user(self, parent: Parent):
         try:
             instance = parent.user
+            print(parent.user)
             serializer = UserSerializersSearch(instance)
             return serializer.data
         except AttributeError:

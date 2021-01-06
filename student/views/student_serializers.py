@@ -71,7 +71,7 @@ class StudentInfoSerializersSelect(ModelSerializer):
 class StudentSerializersSearch(ModelSerializer):
     user = serializers.SerializerMethodField(label="用户信息")
     clazz = serializers.SerializerMethodField(label="班级信息")
-    parent = serializers.SerializerMethodField(label="班级信息")
+    parent = serializers.SerializerMethodField(label="家长")
 
     class Meta:
         model = Student
@@ -96,8 +96,8 @@ class StudentSerializersSearch(ModelSerializer):
 
     def get_parent(self, student: Student):
         try:
-            instance = student.clazz
-            serializer = ParentSerializersSearch(instance)
+            instance = student.parent.all()
+            serializer = ParentSerializersSearch(instance, many=True)
             return serializer.data
         except AttributeError:
             return None
