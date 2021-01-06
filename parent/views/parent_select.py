@@ -55,6 +55,24 @@ class ParentSelectView(mixins.ListModelMixin,
         serializer = self.get_serializer(instance)
         return response_success_200(data=serializer.data)
 
+
+class ParentSelect2View(mixins.ListModelMixin,
+                       mixins.RetrieveModelMixin,
+                       GenericViewSet):
+    """
+    list:
+    获得所有家长信息
+
+    无描述
+
+    retrieve:
+    根据id查询家长信息
+
+    传家长ID
+    """
+    queryset = Parent.objects.all()
+    serializer_class = StudentInfoSerializersUserInfo
+
     @swagger_auto_schema(
         operation_summary="根据班级查询家长信息",
         operation_description="传班级ID",

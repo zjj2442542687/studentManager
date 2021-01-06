@@ -25,6 +25,8 @@ urlpatterns = [
     path("insertFile", StudentInsertFileView.as_view({'post': 'batch_import'})),
     # 添加家长
     path("addParent", StudentInsertView.as_view({'post': 'add_parent'})),
+    # 批量学生添加家长
+    path("BatchAddParent", StudentInsertFileView.as_view({'post': 'batch_add_parent'})),
 
     # 分页查询
     path("search", StudentPaginationSelectView.as_view({'get': 'search'})),

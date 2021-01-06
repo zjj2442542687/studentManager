@@ -58,7 +58,7 @@ class StudentInsertView(mixins.CreateModelMixin,
         return response_success_200(data=resp.data)
 
     @swagger_auto_schema(
-        operation_description="传入学生id和家长id",
+        operation_description="传入学生token和家长id",
         operation_summary="学生添加家长",
         request_body=request_body(properties={
             'parent_id': integer_schema('家长id'),
@@ -79,7 +79,7 @@ class StudentInsertView(mixins.CreateModelMixin,
         parent_id = request.data.get('parent_id')
 
         if not Parent.objects.filter(id=parent_id).exists():
-            return response_success_200(code=STATUS_404_NOT_FOUND,message="未找到该信息")
+            return response_success_200(code=STATUS_404_NOT_FOUND, message="未找到该信息")
         print(student_id)
         print(parent_id)
         self.queryset.get(pk=student_id).parent.add(parent_id)
@@ -165,6 +165,39 @@ class StudentInsertFileView(mixins.CreateModelMixin,
 
         return response_success_200(message="成功!!!!")
 
+    @swagger_auto_schema(
+        operation_description="传入Excel表",
+        operation_summary="批量学生添加家长",
+        request_body=no_body,
+        manual_parameters=[
+            openapi.Parameter('file', openapi.IN_FORM, type=openapi.TYPE_FILE,
+                              description='文件'),
+            openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='辅导员或管理员的TOKEN'),
+        ],
+    )
+    def batch_add_parent(self, request):
+        check_token = pd_token(request)
+        if check_token:
+            return check_token
+
+        if request.auth not in [-2, -1, 3]:
+            return response_success_200(code=STATUS_TOKEN_NO_AUTHORITY, message="权限不够")
+
+        file = request.FILES.get("file")
+
+        check_file = batch_add_parent_test(file)
+        if check_file:
+            return check_file
+
+        excel_data = pd.read_excel(file, header=0, dtype='str')
+        for dt in excel_data.iterrows():
+            # print(dt)
+            a = dt[1]['学生学号']
+            b = dt[1]['家长ID']
+            Student.objects.get(id=a).parent.add(b)
+
+        return response_success_200(message="成功")
+
 
 def batch_import_test(file):
     excel_data = pd.read_excel(file, header=0, dtype='str')
@@ -210,6 +243,48 @@ def batch_import_test(file):
         card_list.append(card)
     if phone_number:
         phone_list.append(phone_number)
+
+    if len(test) > 0:
+        return response_error_400(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))
+    return None
+
+
+def batch_add_parent_test(file):
+    excel_data = pd.read_excel(file, header=0, dtype='str')
+    test = []
+    i = 1
+    for dt in excel_data.iterrows():
+        i = i + 1
+        message = ""
+        # 添加用户信息
+        student_id = dt[1]['学生学号']
+        student_name = dt[1]['学生姓名']
+        parent_id = dt[1]['家长ID']
+        parent_name = dt[1]['家长姓名']
+
+        if not student_id or not student_name or not parent_id or not parent_name:
+            message += "有空字段"
+
+        # 判断学生ID是否存在
+
+        if not Student.objects.get(id=int(student_id)):
+            message += ",没有该学生ID错误"
+        else:
+            student = Student.objects.get(id=int(student_id))
+            if student.user.user_details.name != student_name:
+                message += ",该学生ID与姓名不匹配"
+
+        # 判断家长ID是否存在
+        if not Parent.objects.filter(id=parent_id):
+            message += ",没有该家长ID错误"
+            parent = None
+        else:
+            parent = Parent.objects.get(id=int(parent_id))
+            if parent.user.user_details.name != parent_name:
+                message += ",该家长ID与姓名不匹配"
+
+        if message:
+            test.append({"index": i, "message": message})
 
     if len(test) > 0:
         return response_error_400(code=STATUS_PARAMETER_ERROR, message="有错误信息", err_data=test, length=len(test))

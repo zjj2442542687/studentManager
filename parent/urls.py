@@ -3,7 +3,7 @@ from django.urls import path
 from parent.views.parent_insert import ParentInsertView, ParentInsertFileView
 from parent.views.parent_other import ParentOtherView, ParentAdmView, ParentDeleteAllView
 from parent.views.parent_search import ParentPaginationSelectView
-from parent.views.parent_select import ParentSelectView
+from parent.views.parent_select import ParentSelectView, ParentSelect2View
 
 urlpatterns = [
     path("insert", ParentInsertView.as_view({'post': 'create'})),
@@ -11,8 +11,8 @@ urlpatterns = [
     path("getAll", ParentSelectView.as_view({'get': 'list'})),
     # 根据token获得家长信息
     path("getInfoByToken", ParentSelectView.as_view({'post': 'retrieve_by_token'})),
-    # 根据token获得家长信息
-    path("getInfoByClass", ParentSelectView.as_view({'post': 'retrieve_by_Class'})),
+    # 根据班级获得家长信息
+    path("getInfoByClass", ParentSelect2View.as_view({'post': 'retrieve_by_Class'})),
     # 根据id查询
     # path("getParentById/<int:pk>", ParentSelectView.as_view({'get': 'retrieve'})),
     # path("FileInfo/<int:pk>", ParentOtherView.as_view({'patch': 'FileInfo'})),

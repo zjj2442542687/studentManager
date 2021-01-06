@@ -10,7 +10,7 @@ from rest_framework.parsers import MultiPartParser
 
 # from regular_add_record.views.views import check_info, check_authority
 from utils import status
-from utils.my_info_judge import pd_token, pd_adm_token, lookup_token, STATUS_TOKEN_NO_AUTHORITY
+from utils.my_info_judge import pd_token, pd_adm_token, lookup_token, STATUS_TOKEN_NO_AUTHORITY, STATUS_PARAMETER_ERROR
 from utils.my_response import response_success_200, response_error_400
 from utils.my_swagger_auto_schema import request_body, string_schema, integer_schema
 from utils.my_utils import get_class_all_id
@@ -69,13 +69,20 @@ class WorkInfoDownloadView(mixins.CreateModelMixin,
     # serializer_class = FileInfoSerializer
 
     def download(self, request, *args, **kwargs):
+        if not Work.objects.filter(id=kwargs.get('pk')):
+            return response_success_200(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!改作业ID不存在")
         work = Work.objects.get(id=kwargs.get('pk'))
+        if not work.file:
+            return response_success_200(staus=STATUS_PARAMETER_ERROR, message="参数错误!!!!!改作业没有附件")
         # print(work)
         file_name = "" + work.clazz.class_name + "班" + work.course + "作业"
         # print('下载的文件名：' + file_name)
-        # print(work.file)
+        print(work.file)
+        str = '' + work.file.path
+        str = str.split(".")[1]
+        print(str)
         file = open(work.file.path, 'rb')
         resp = FileResponse(file)
         # response['Content-Type'] = 'application/vnd.ms-excel'
-        resp['Content-Disposition'] = 'attachment;filename="%s"' % urlquote(file_name + ".txt")
+        resp['Content-Disposition'] = 'attachment;filename="%s"' % urlquote(file_name + "."+str)
         return resp
