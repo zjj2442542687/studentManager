@@ -100,17 +100,39 @@ class TimetableInsertFileView(mixins.CreateModelMixin,
             # week = dt[1]['星期']
             teacher = ['课程老师工号']
             allweek = ['星期', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
-            week = Week.objects.create(index=allweek.index(dt[1]['星期']))
+            index = allweek.index(dt[1]['星期'])
+            if Week.objects.filter(index=index):
+                week = Week.objects.get(index=index)
+            else:
+                week = Week.objects.create(index=index)
             course = ['课程', ' 第一节课', ' 第二节课', ' 第三节课', ' 第四节课', ' 第五节课', ' 第六节课', ' 第七节课', ' 第八节课']
             for j in range(1, 9):
                 s = dt[1]['课程老师工号' + str(j)]
                 if s is not np.nan:
                     teacher.append(s)
+
+            # 检测之前的课表是否已经存在了，存在就先删除
+            t2 = Timetable.objects.filter(week=week, clazz=Class.objects.get(class_name=clazz))
+            Course.objects.filter(timetable__in=[x.pk for x in t2]).delete()
+            t2.delete()
+            # try:
+            #     t = Timetable.objects.get(week=week, clazz=Class.objects.get(class_name=clazz))
+            #     Course.objects.filter(timetable=t).delete()
+            #     t.delete()
+            #     print("删除成功")
+            # except Timetable.DoesNotExist:
+            #     print("没有")
+            # except Timetable.MultipleObjectsReturned:
+            #
+            #     print("多个")
+
             # 创建timetable表
             timetable = Timetable.objects.create(week=week, clazz=Class.objects.get(class_name=clazz))
+
             for j in range(1, len(teacher)):
                 # print(j)
-                Course.objects.create(teacher=Teacher.objects.get(pk=teacher[j]), course_name=dt[1][course[j]], index=j, timetable=timetable)
+                Course.objects.create(teacher=Teacher.objects.get(pk=teacher[j]), course_name=dt[1][course[j]], index=j,
+                                      timetable=timetable)
 
         return response_success_200(message="成功!!!!")
 
