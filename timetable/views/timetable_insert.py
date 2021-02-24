@@ -39,28 +39,25 @@ class TimetableInsertView(mixins.CreateModelMixin,
         result = views.add_course(timetable_id, course_id)
         return result if result else response_success_200(message="添加成功")
 
-    # @swagger_auto_schema(
-    #     request_body=request_body(properties={
-    #         'class_info': integer_schema('班级id'),
-    #         'course_info': integer_schema('课程ID'),
-    #         'week': string_schema('星期'),
-    #         'Date': string_schema('时间'),
-    #     })
-    # )
-    # def create(self, request, *args, **kwargs):
-    #     class_info = request.data.get('class_info')
-    #     course_info = request.data.get('course_info')
-    #     if not Class.objects.filter(id=class_info):
-    #         message = "班级ID信息不存在"
-    #         return response_error_400(status=STATUS_PARAMETER_ERROR, message=message)
-    #     if not Course.objects.filter(id=course_info):
-    #         message = "课程不存在"
-    #         return response_error_400(status=STATUS_PARAMETER_ERROR, message=message)
-    #     # 把课程添加到课程表中
-    #     resp = super().create(request)
-    #     Timetable.objects.get(id=resp.data['id']).course_info.add(course_info)
-    #     print(resp.data)
-    #     return response_success_200(data=resp.data)
+    @swagger_auto_schema(
+        request_body=request_body(properties={
+            'clazz': integer_schema('班级id'),
+            'week': integer_schema('星期'),
+        })
+    )
+    def create(self, request, *args, **kwargs):
+        clazz = request.data.get('clazz')
+        week = request.data.get('week')
+
+        if not Class.objects.filter(id=clazz):
+            message = "班级ID信息不存在"
+            return response_success_200(status=STATUS_PARAMETER_ERROR, message=message)
+        if Timetable.objects.filter(clazz_id=clazz).filter(week=week):
+            message = "课程已经添加"
+            return response_success_200(status=STATUS_PARAMETER_ERROR, message=message)
+        # 把课程添加到课程表中
+        resp = super().create(request)
+        return response_success_200(data=resp.data)
 
 
 class TimetableInsertFileView(mixins.CreateModelMixin,
