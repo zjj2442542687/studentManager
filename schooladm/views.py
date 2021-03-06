@@ -11,6 +11,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from schooladm.models import Schooladm
 from utils.my_info_judge import pd_super_adm_token
+from utils.my_limit_offset_pagination import MyLimitOffsetPagination
 from utils.my_response import response_success_200
 
 
@@ -32,6 +33,7 @@ class SchoolAdmSelectView(mixins.ListModelMixin,
                           GenericViewSet):
     queryset = Schooladm.objects.all()
     serializer_class = SchoolAdmSerializer
+    pagination_class = MyLimitOffsetPagination
 
     @swagger_auto_schema(
         operation_summary="根据学校查询学校管理员信息",
