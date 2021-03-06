@@ -62,8 +62,12 @@ class SchoolAdmSelectView(mixins.ListModelMixin,
             schooladm = schooladm.filter(user__user_name=adm_name)
 
         # print(schooladm)
-        serializer = self.get_serializer(schooladm, many=True)
-        return response_success_200(data=serializer.data)
+        # serializer = self.get_serializer(schooladm, many=True)
+        # return response_success_200(data=serializer.data)
+
+        page = self.paginate_queryset(schooladm)
+        serializer = SchoolAdmSerializer(page, many=True, context=self.get_serializer_context())
+        return self.get_paginated_response(serializer.data)
 
         # school_id = request.GET.get("school_id")
         # print(school_id)
