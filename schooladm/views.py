@@ -40,6 +40,8 @@ class SchoolAdmSelectView(mixins.ListModelMixin,
         manual_parameters=[
             openapi.Parameter('school_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
                               description='学校的id'),
+            openapi.Parameter('s_adm_name', openapi.IN_QUERY, type=openapi.TYPE_STRING,
+                              description='学校管理员的名称'),
             openapi.Parameter('TOKEN', openapi.IN_HEADER, type=openapi.TYPE_STRING, description='超管TOKEN'),
         ]
     )
@@ -48,9 +50,25 @@ class SchoolAdmSelectView(mixins.ListModelMixin,
         if check_token:
             return check_token
 
+        # 学校
         school_id = request.GET.get("school_id")
-        print(school_id)
+        schooladm = Schooladm.objects.filter(school_id=school_id)
 
-        instance = self.queryset.filter(school=school_id)
-        serializer = self.get_serializer(instance)
+        # 名字
+        adm_name = request.GET.get("s_adm_name")
+        if adm_name:
+            schooladm = schooladm.filter(user__user_name=adm_name)
+
+        # print(schooladm)
+        serializer = self.get_serializer(schooladm, many=True)
         return response_success_200(data=serializer.data)
+
+        # school_id = request.GET.get("school_id")
+        # print(school_id)
+        #
+        # instance = self.queryset.filter(school=school_id)
+        # serializer = self.get_serializer(instance, many=True)
+        # return response_success_200(data=serializer.data)
+
+
+
